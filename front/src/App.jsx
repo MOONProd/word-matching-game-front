@@ -4,6 +4,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { createRoot } from 'react-dom/client';
 import {RouterObject} from './RouterList';
 import { RecoilRoot } from 'recoil';
+import './index.css';
 
 
 createRoot(document.getElementById('root')).render(
