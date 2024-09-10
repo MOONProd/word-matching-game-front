@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function MainPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const navigate = useNavigate();
 
     const toggleModal = () => {
         setIsModalOpen(!isModalOpen);
     };
+
+    const startGame = () => {
+        navigate('/map');
+    }
 
     return (
         <div className="flex flex-col items-center justify-center h-screen">
@@ -40,7 +46,8 @@ function MainPage() {
                 >
                     게임방법
                 </button>
-                <button className="border-2 border-black rounded-full px-8 py-2 text-lg">게임시작</button>
+                <button className="border-2 border-black rounded-full px-8 py-2 text-lg"
+                        onClick={startGame}>게임시작</button>
             </div>
 
             {/* 모달 창 */}
