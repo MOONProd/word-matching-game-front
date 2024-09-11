@@ -1,20 +1,20 @@
-import {Layout} from "./layout/Layout.jsx";
-import {Test} from "./pages/Test.jsx";
+// import {Layout} from "./layout/Layout.jsx";
+import MainPage from "./pages/MainPage.jsx";
+// import {Test} from "./pages/Test.jsx";
 import { createBrowserRouter } from "react-router-dom";
+import { MapPage } from "./pages/MapPage.jsx";
 
 
 
 export const RouterList = () => [
     {
         path: "/",
-        element: <Layout />,
-        children: [
-            {
-                // 지도 예시, localhost:5173/test 로 가면 확인 가능
-                path: "test",
-                element: <Test />,
-            },
-        ],
+        element: <MainPage />,
+
+    },
+    {
+        path: "/map",
+        element: <MapPage />,
     },
 ]
 
