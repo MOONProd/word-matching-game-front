@@ -1,9 +1,10 @@
 // import { Layout } from "./layout/Layout.jsx";
 import MainPage from "./pages/MainPage.jsx";
 import { ChatPage } from "./pages/ChatPage.jsx";
-import { Test } from "./pages/Test.jsx";
+
 import { createBrowserRouter } from "react-router-dom";
 import { MapPage } from "./pages/MapPage.jsx";
+import Test from "./pages/Test.jsx";
 
 export const RouterList = () => [
     {
@@ -23,7 +24,7 @@ export const RouterList = () => [
         children: [
             {
                 path: "done",
-                element: <Test />,
+                element: <Test/>,
             },
         ],
     },
