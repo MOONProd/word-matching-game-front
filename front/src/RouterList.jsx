@@ -10,7 +10,6 @@ export const RouterList = () => [
     {
         path: "/",
         element: <MainPage />,
-
     },
     {
         path: "/map",

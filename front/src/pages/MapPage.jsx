@@ -16,9 +16,11 @@ export const MapPage = () => {
     useEffect(() => {
         setMapKey((prevKey) => prevKey + 1);
     }, [mapData]);
+    
 
     return (
         <div style={{ maxWidth: '1000px', height: '600px', margin: 'auto' }}>
+            <div className="mb-10">hahahah</div>
             <APIProvider apiKey={googleMapApi}>
                 <div style={{ height: '100%', width: '100%' }}>
                     {mapData && (
@@ -33,13 +35,12 @@ export const MapPage = () => {
                                 key={mapKey}
                                 position={{ lat: mapData.lat, lng: mapData.long }}
                                 onClick={() => setOpenInfoWindowId(mapKey)}
+                                // content={markerContent} // 사용자 정의 SVG 마커
                             >
-                                {/* 타입에 따른 마커 색깔변경 */}
-                                {mapData.type === '향수 공방' && <Pin background="purple" />}
-                                {mapData.type === '기타' && <Pin background="gray" />}
-                                {!['향수 공방', '기타'].includes(mapData.type) && (
-                                    <Pin background="default" />
-                                )}
+                                <Pin scale={3} 
+                                     background={"#FFBB00"}>
+                                    {/* <img src="../src/assets/gaguli.png"/> */}
+                                </Pin>
                             </AdvancedMarker>
 
                             {openInfoWindowId === mapKey && (
