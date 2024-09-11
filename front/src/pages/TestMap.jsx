@@ -4,7 +4,7 @@ import { useRecoilValue } from "recoil";
 import { mapAtom } from "../recoil/testAtom";
 "use client";
 
-export const Test = () => {
+export const TestMap = () => {
     const googleMapApi = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
     const googleMapId = import.meta.env.VITE_APP_GOOGLE_MAPS_ID;
 
