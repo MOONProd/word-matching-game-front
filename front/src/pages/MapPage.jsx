@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { APIProvider, Map, AdvancedMarker, InfoWindow, Pin } from "@vis.gl/react-google-maps";
+import { APIProvider, Map, AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 import { useRecoilValue } from "recoil";
-import { mapAtom } from "../recoil/testAtom";
+import { SeoulAtom } from "../recoil/SeoulAtom";
 
 export const MapPage = () => {
     const googleMapApi = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
     const googleMapId = import.meta.env.VITE_APP_GOOGLE_MAPS_ID;
 
-    const mapData = useRecoilValue(mapAtom);
-    const [openInfoWindowId, setOpenInfoWindowId] = useState(null);
+    const seoulLocal = useRecoilValue(SeoulAtom);
     const [mapKey, setMapKey] = useState(0);
-    const [markerPosition, setMarkerPosition] = useState({ lat: 37.5665, lng: 126.9780 });
+    const [markerPosition, setMarkerPosition] = useState({ lat: seoulLocal.lat, lng: seoulLocal.long });
 
     useEffect(() => {
         setMapKey((prevKey) => prevKey + 1);
-    }, [mapData]);
+    }, [seoulLocal]);
 
     const handleMarkerDragStart = (event) => {
         console.log("Drag started", event.latLng.lat(), event.latLng.lng());
@@ -29,13 +28,13 @@ export const MapPage = () => {
         console.log("Drag ended", event.latLng.lat(), event.latLng.lng());
         setMarkerPosition({ lat: event.latLng.lat(), lng: event.latLng.lng() });
     };
-
+    
 
     return (
         <div style={{ maxWidth: '1000px', height: '600px', margin: 'auto' }}>
             <APIProvider apiKey={googleMapApi}>
                 <div style={{ height: '100%', width: '100%' }}>
-                    {mapData && (
+                    {seoulLocal && (
                         <Map
                             key={mapKey}
                             defaultZoom={18}
@@ -51,21 +50,9 @@ export const MapPage = () => {
                                 onDrag={handleMarkerDrag}
                                 onDragEnd={handleMarkerDragEnd}
                             >
-                                <Pin scale={3} background={"#FFBB00"} />
+                                <Pin scale={3} 
+                                     background={"#FFBB00"}/>
                             </AdvancedMarker>
-
-                            {openInfoWindowId === mapKey && (
-                                <InfoWindow
-                                    key={mapKey}
-                                    position={{ lat: markerPosition.lat, lng: markerPosition.lng }}
-                                    onCloseClick={() => setOpenInfoWindowId(null)}
-                                >
-                                    <div>
-                                        <p><strong>유형:</strong> {mapData.type}</p>
-                                        <p><strong>주소:</strong> {mapData.description}</p>
-                                    </div>
-                                </InfoWindow>
-                            )}
                         </Map>
                     )}
                 </div>
