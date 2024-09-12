@@ -2,52 +2,62 @@ import React, { useEffect, useState } from "react";
 import { APIProvider, Map, AdvancedMarker, InfoWindow, Pin } from "@vis.gl/react-google-maps";
 import { useRecoilValue } from "recoil";
 import { mapAtom } from "../recoil/testAtom";
-"use client";
 
 export const MapPage = () => {
     const googleMapApi = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
     const googleMapId = import.meta.env.VITE_APP_GOOGLE_MAPS_ID;
 
-    const mapData = useRecoilValue(mapAtom); //리코일
+    const mapData = useRecoilValue(mapAtom);
     const [openInfoWindowId, setOpenInfoWindowId] = useState(null);
-    const [mapKey, setMapKey] = useState(0); // 첫번째 값, 즉 리스트의 첫번째 값을 기준점으로 함
+    const [mapKey, setMapKey] = useState(0);
+    const [markerPosition, setMarkerPosition] = useState({ lat: 37.5665, lng: 126.9780 });
 
-    // 첫번째 값을 통한 강제 첫 리렌더링
     useEffect(() => {
         setMapKey((prevKey) => prevKey + 1);
     }, [mapData]);
-    
 
-    
+    const handleMarkerDragStart = (event) => {
+        console.log("Drag started", event.latLng.lat(), event.latLng.lng());
+    };
+
+    const handleMarkerDrag = (event) => {
+        console.log("Dragging", event.latLng.lat(), event.latLng.lng());
+        setMarkerPosition({ lat: event.latLng.lat(), lng: event.latLng.lng() });
+    };
+
+    const handleMarkerDragEnd = (event) => {
+        console.log("Drag ended", event.latLng.lat(), event.latLng.lng());
+        setMarkerPosition({ lat: event.latLng.lat(), lng: event.latLng.lng() });
+    };
+
+
     return (
         <div style={{ maxWidth: '1000px', height: '600px', margin: 'auto' }}>
-            <div className="mb-10">hahahah</div>
             <APIProvider apiKey={googleMapApi}>
                 <div style={{ height: '100%', width: '100%' }}>
                     {mapData && (
                         <Map
-                            key={mapKey} // 강제 리렌더링
+                            key={mapKey}
                             defaultZoom={18}
-                            defaultCenter={{ lat: mapData.lat, lng: mapData.long }}
+                            defaultCenter={{ lat: markerPosition.lat, lng: markerPosition.lng }}
                             mapId={googleMapId}
                         >
-                            {/* 마커부분 */}
                             <AdvancedMarker
                                 key={mapKey}
-                                position={{ lat: mapData.lat, lng: mapData.long }}
+                                position={{ lat: markerPosition.lat, lng: markerPosition.lng }}
                                 onClick={() => setOpenInfoWindowId(mapKey)}
-                                // content={markerContent} // 사용자 정의 SVG 마커
+                                draggable={true} // 드래그 가능 설정
+                                onDragStart={handleMarkerDragStart}
+                                onDrag={handleMarkerDrag}
+                                onDragEnd={handleMarkerDragEnd}
                             >
-                                <Pin scale={3} 
-                                     background={"#FFBB00"}>
-                                    {/* <img src="../src/assets/gaguli.png"/> */}
-                                </Pin>
+                                <Pin scale={3} background={"#FFBB00"} />
                             </AdvancedMarker>
 
                             {openInfoWindowId === mapKey && (
                                 <InfoWindow
                                     key={mapKey}
-                                    position={{ lat: mapData.lat, lng: mapData.long }}
+                                    position={{ lat: markerPosition.lat, lng: markerPosition.lng }}
                                     onCloseClick={() => setOpenInfoWindowId(null)}
                                 >
                                     <div>
@@ -62,5 +72,4 @@ export const MapPage = () => {
             </APIProvider>
         </div>
     );
-}
-
+};
