@@ -13,7 +13,7 @@ export const RouterList = () => [
         element: <MainPage />,
     },
     {
-        path: "/fristPlay",
+        path: "/firstPlay",
         element: <FirstPlayMap />,
     },
     {
