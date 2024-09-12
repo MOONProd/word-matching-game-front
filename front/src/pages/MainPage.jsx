@@ -10,7 +10,7 @@ function MainPage() {
     };
 
     const startGame = () => {
-        navigate('/map');
+        navigate('/secondPlay');
     }
 
     return (
