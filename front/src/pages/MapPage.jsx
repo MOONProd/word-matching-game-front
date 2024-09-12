@@ -51,7 +51,10 @@ export const MapPage = () => {
                                 onDragEnd={handleMarkerDragEnd}
                             >
                                 <Pin scale={3} 
-                                     background={"#FFBB00"}/>
+                                     background={"#FFBB00"}
+                                     borderColor={"#FFBB00"}>
+                                    <img src="../src/assets/gaguli.png" width="50" height="50"/>
+                                </Pin>
                             </AdvancedMarker>
                         </Map>
                     )}
