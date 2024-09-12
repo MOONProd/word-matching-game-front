@@ -18,6 +18,7 @@ export const MapPage = () => {
     }, [mapData]);
     
 
+    
     return (
         <div style={{ maxWidth: '1000px', height: '600px', margin: 'auto' }}>
             <div className="mb-10">hahahah</div>
