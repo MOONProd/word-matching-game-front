@@ -16,5 +16,6 @@ export const mapAtom = atom({
         { name: "SNU, Gwanak-gu", lat: 37.4780, long: 126.9527 },
         { name: "Sillim, Gwanak-gu", lat: 37.4840, long: 126.9296 },
         { name: "CAU", lat: 37.5045, long: 126.9576 },
+        { name: "Jeju", lat: 33.4996, long: 126.5312 },
     ],
 });
