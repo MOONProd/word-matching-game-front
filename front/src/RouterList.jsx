@@ -5,6 +5,7 @@ import { ChatPage } from "./pages/ChatPage.jsx";
 import { createBrowserRouter } from "react-router-dom";
 import { MapPage } from "./pages/MapPage.jsx";
 import Test from "./pages/Test.jsx";
+import {LoginPage} from "./pages/LoginPage.jsx";
 
 export const RouterList = () => [
     {
@@ -23,9 +24,13 @@ export const RouterList = () => [
         path: "/login",
         children: [
             {
-                path: "done",
-                element: <Test/>,
+                path: "",
+                element: <LoginPage />,
             },
+            {
+                path: "done",
+                element: <Test />
+            }
         ],
     },
 ];
