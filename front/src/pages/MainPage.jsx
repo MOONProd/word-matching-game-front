@@ -53,37 +53,38 @@ function MainPage() {
         >
             {/* 왼쪽 사인 이미지 */}
             <img 
-                src="../src/assets/sign.png" 
-                alt="Left Sign" 
-                style={{ 
-                    width: '240px', 
-                    height: '240px', 
-                    position: 'absolute', 
-                    left: '64px', 
-                    bottom: '192px', 
-                    cursor: 'pointer',
-                    transform: hovered === 'left' ? 'rotate(-10deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.3s ease'
-                }}
-                data-path="/firstPlay"
-                onClick={handleSignClick}
-                onMouseEnter={() => handleMouseEnter('left')}
-                onMouseLeave={handleMouseLeave}
-            />
+            src="../src/assets/sign.png" 
+            className="w-1/6 max-w-xs h-auto"  // 너비를 부모의 1/4로 설정하고, 최대 너비를 제한
+            alt="Left Sign" 
+            style={{ 
+                position: 'absolute',
+                left: '5%',  // 화면의 5% 지점에 위치
+                bottom: '25%', // 화면의 25% 지점에 위치
+                objectFit: 'contain', // 이미지가 비율을 유지하며 잘리지 않도록 설정
+                cursor: 'pointer',
+                transform: hovered === 'left' ? 'rotate(-10deg)' : 'rotate(0deg)',
+                transition: 'transform 0.3s ease',
+               
+            }}
+            data-path="/firstPlay"
+            onClick={handleSignClick}
+            onMouseEnter={() => handleMouseEnter('left')}
+            onMouseLeave={handleMouseLeave}
+        />
 
             {/* 오른쪽 사인 이미지 */}
             <img 
                 src="../src/assets/sign.png" 
+                className="w-1/6 max-w-xs h-auto"  // 너비를 부모의 1/4로 설정하고, 최대 너비를 제한
                 alt="Right Sign" 
                 style={{ 
-                    width: '240px', 
-                    height: '240px', 
                     position: 'absolute', 
-                    right: '64px', 
-                    bottom: '192px', 
+                    right: '5%', 
+                    bottom: '25%', 
+                    objectFit: 'contain',
                     cursor: 'pointer',
                     transform: hovered === 'right' ? 'rotate(10deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.3s ease'
+                    transition: 'transform 0.3s ease',
                 }}
                 data-path="/secondPlay"
                 onClick={handleSignClick}
