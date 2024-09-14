@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function MainPage() {
@@ -9,30 +9,18 @@ function MainPage() {
 
     const [isAnimating, setIsAnimating] = useState(false);
     
+    const toggleState = (event)=>{
+        const target = event.currentTarget.getAttribute('data-target');
+        const isOpen = target === 'modal' ? isModalOpen : isRankOpen;
+        const setIsOpen = target === 'modal' ? setIsModalOpen : setIsRankOpen;
 
-    const toggleModal = () => {
-        if (isModalOpen) {
+        if (isOpen) {
             setIsAnimating(false);
             setTimeout(() => {
-                setIsModalOpen(false);
+                setIsOpen(false);
             }, 500);
         } else {
-            setIsModalOpen(true);
-            setTimeout(() => {
-                setIsAnimating(true);
-            }, 10);
-        }
-    };
-
-
-    const toggleRank = () => {
-        if (isRankOpen) {
-            setIsAnimating(false);
-            setTimeout(() => {
-                setIsRankOpen(false);
-            }, 500);
-        } else {
-            setIsRankOpen(true);
+            setIsOpen(true);
             setTimeout(() => {
                 setIsAnimating(true);
             }, 10);
@@ -47,12 +35,9 @@ function MainPage() {
         setHovered(null);
     };
     
-    const handleSignClickLeft = () => {
-        navigate('/firstPlay');
-    };
-    
-    const handleSignClickRight = () => {
-        navigate('/secondPlay');
+    const handleSignClick = (event)=>{
+        const path = event.currentTarget.getAttribute('data-path');
+        navigate(path);
     };
 
     return (
@@ -80,7 +65,8 @@ function MainPage() {
                     transform: hovered === 'left' ? 'rotate(-10deg)' : 'rotate(0deg)',
                     transition: 'transform 0.3s ease'
                 }}
-                onClick={handleSignClickLeft}
+                data-path="/firstPlay"
+                onClick={handleSignClick}
                 onMouseEnter={() => handleMouseEnter('left')}
                 onMouseLeave={handleMouseLeave}
             />
@@ -99,7 +85,8 @@ function MainPage() {
                     transform: hovered === 'right' ? 'rotate(10deg)' : 'rotate(0deg)',
                     transition: 'transform 0.3s ease'
                 }}
-                onClick={handleSignClickRight}
+                data-path="/secondPlay"
+                onClick={handleSignClick}
                 onMouseEnter={() => handleMouseEnter('right')}
                 onMouseLeave={handleMouseLeave}
             />
@@ -108,12 +95,14 @@ function MainPage() {
             <div className="absolute bottom-32 flex flex-col space-y-4 mb-4">
                 <button 
                     className="border-2 border-black rounded-full px-8 py-2 text-lg"
-                    onClick={toggleModal}
+                    data-target="modal"
+                    onClick={toggleState}
                 >
                     게임방법
                 </button>
                 <button className="border-2 border-black rounded-full px-8 py-2 text-lg"
-                        onClick={toggleRank}>이웃순위</button>
+                        data-target="rank"
+                        onClick={toggleState}>이웃순위</button>
             </div>
 
             {/* 모달 창 배경에 이거 보류 bg-black bg-opacity-50 */}
@@ -134,7 +123,8 @@ function MainPage() {
                         {/* 닫기 버튼 */}
                         <button 
                             className="absolute top-4 right-4 px-4 py-2 bg-amber-700 text-white rounded-full"
-                            onClick={toggleModal}
+                            data-target="modal"
+                            onClick={toggleState}
                         >
                             닫기
                         </button>
@@ -166,7 +156,8 @@ function MainPage() {
                         {/* 닫기 버튼 */}
                         <button 
                             className="absolute top-4 right-4 px-4 py-2 bg-amber-700 text-white rounded-full"
-                            onClick={toggleRank}
+                            data-target="rank"
+                            onClick={toggleState}
                         >
                             닫기
                         </button>
