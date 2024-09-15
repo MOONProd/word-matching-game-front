@@ -1,4 +1,5 @@
 import React from 'react';
+import '../assets/fonts/font.css';
 
 function ResultPage() {
     const userName = "사용자 이름";
@@ -15,7 +16,8 @@ function ResultPage() {
     const loserNewTotalScore = loserCurrentScore - pointsLost;
 
     return (
-        <div className="flex flex-col items-center min-h-screen bg-blue-50 p-4 space-y-10">
+        <div className="flex flex-col items-center min-h-screen bg-blue-50 p-4 space-y-10"
+             style={{ fontFamily: 'MyCustomFont, sans-serif' }}>
             {/* Header 영역 */}
             <header className="mt-12 mb-12 flex items-center justify-center space-x-4 text-center">
                 <img 
@@ -42,7 +44,7 @@ function ResultPage() {
                     +{pointsGained}점
                 </div>
                 <div className="text-2xl text-gray-700">
-                    (총 점수: {newTotalScore}점)
+                    총 점수: {newTotalScore}점
                 </div>
             </div>
 
@@ -62,12 +64,12 @@ function ResultPage() {
                     -{pointsLost}점
                 </div>
                 <div className="text-xl text-gray-700">
-                    (총 점수: {loserNewTotalScore}점)
+                    총 점수: {loserNewTotalScore}점
                 </div>
             </div>
 
             {/* 확인 버튼 */}
-            <div className="mt-8">
+            <div className="mt-80">
                 <button className="bg-green-500 text-white px-6 py-3 rounded-full text-xl">
                     확인
                 </button>
