@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../assets/fonts/font.css';
 
 function MainPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,15 +46,25 @@ function MainPage() {
                 style={{
                     width: '100%',
                     height: '100vh',
-                    backgroundImage: 'url(../src/assets/word.jpg)',
+                    backgroundImage: 'url(../src/assets/background.png)',
                     backgroundSize: '100% auto', // 가로를 100%로 맞추고, 세로는 비율에 맞게 조정
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
                 }}
         >
+            <img
+            src="../src/assets/title.png"
+            className="mt-5 w-1/2 max-w-ms h-auto"
+            alt="Title"
+            style={{ 
+                position: 'absolute',
+                top: '2%',
+                objectFit: 'contain', // 이미지가 비율을 유지하며 잘리지 않도록 설정
+            }}
+            />
             {/* 왼쪽 사인 이미지 */}
             <img 
-            src="../src/assets/sign.png" 
+            src="../src/assets/leftSign.png" 
             className="w-1/6 max-w-xs h-auto"  // 너비를 부모의 1/4로 설정하고, 최대 너비를 제한
             alt="Left Sign" 
             style={{ 
@@ -74,7 +85,7 @@ function MainPage() {
 
             {/* 오른쪽 사인 이미지 */}
             <img 
-                src="../src/assets/sign.png" 
+                src="../src/assets/rightSign.png" 
                 className="w-1/6 max-w-xs h-auto"  // 너비를 부모의 1/4로 설정하고, 최대 너비를 제한
                 alt="Right Sign" 
                 style={{ 
@@ -93,17 +104,22 @@ function MainPage() {
             />
 
             {/* 버튼들 */}
-            <div className="absolute bottom-32 flex flex-col space-y-4 mb-4">
-                <button 
-                    className="border-2 border-black rounded-full px-8 py-2 text-lg"
-                    data-target="modal"
-                    onClick={toggleState}
-                >
-                    게임방법
-                </button>
-                <button className="border-2 border-black rounded-full px-8 py-2 text-lg"
-                        data-target="rank"
-                        onClick={toggleState}>이웃순위</button>
+            <div className="absolute bottom-20 flex flex-col mb-4"
+                style={{ fontFamily: 'MyCustomFont, sans-serif' }}>
+                <div>
+                    <button 
+                        className="border-2 border-black rounded-full px-8 py-3 text-2xl"
+                        data-target="modal"
+                        onClick={toggleState}
+                    >
+                        게임방법
+                    </button>
+                </div>
+                <div className="mt-4"> {/* 버튼 사이의 간격을 mt-4로 설정 */}
+                    <button className="border-2 border-black rounded-full px-8 py-3 text-2xl"
+                            data-target="rank"
+                            onClick={toggleState}>이웃순위</button>
+                </div>
             </div>
 
             {/* 모달 창 배경에 이거 보류 bg-black bg-opacity-50 */}
