@@ -4,6 +4,7 @@ import MainPage from "./pages/MainPage.jsx";
 import { createBrowserRouter } from "react-router-dom";
 import { SecondPlayMap } from "./pages/SecondPlayMap.jsx";
 import FirstPlayMap from "./pages/FirstPlayMap.jsx";
+import ResultPage from "./pages/ResultPage.jsx";
 
 
 
@@ -19,6 +20,10 @@ export const RouterList = () => [
     {
         path: "/secondPlay",
         element: <SecondPlayMap />,
+    },
+    {
+        path: "/result",
+        element: <ResultPage />,
     },
 ]
 
