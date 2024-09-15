@@ -15,17 +15,24 @@ function ResultPage() {
     const newTotalScore = userCurrentScore + pointsGained;
     const loserNewTotalScore = loserCurrentScore - pointsLost;
 
+    // 조건에 따라 이미지와 텍스트를 변경
+    // const isWin = result === 'win'; //백에서 데이터 받아올 방법
+    const isWin = true; //예시데이터
+    const headerImage = isWin ? '../src/assets/trophyGagul.png' : '../src/assets/tearGagul.png';
+    const headerText = isWin ? 'You Win!' : 'You Lose...';
+    const headerTextColor = isWin ? 'text-green-500' : 'text-red-500';
+
     return (
         <div className="flex flex-col items-center min-h-screen bg-blue-50 p-4 space-y-10"
              style={{ fontFamily: 'MyCustomFont, sans-serif' }}>
             {/* Header 영역 */}
             <header className="mt-12 mb-12 flex items-center justify-center space-x-4 text-center">
                 <img 
-                    src='../src/assets/trophyGagul.png'
+                    src={headerImage}
                     className='w-1/4 max-w-xs h-auto'
-                    alt="Trophy Gagul"
+                    alt={isWin ? "Trophy Gagul" : "Lose Image"}
                 />
-                <h1 className="text-5xl font-bold text-green-500">You Win!</h1>
+                <h1 className={`text-5xl font-bold ${headerTextColor}`}>{headerText}</h1>
             </header>
 
             {/* 이긴 사용자 프로필 사진과 이름 */}
