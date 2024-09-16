@@ -3,6 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import '../assets/fonts/font.css';
 
 function MainPage() {
+    const userData = [
+        { id: 1, username: '이웃1', score: 100, profilePic: 'https://via.placeholder.com/150' },
+        { id: 2, username: '이웃2', score: 90, profilePic: 'https://via.placeholder.com/150' },
+        { id: 3, username: '이웃3', score: 85, profilePic: 'https://via.placeholder.com/150' },
+        { id: 4, username: '이웃4', score: 80, profilePic: 'https://via.placeholder.com/150' },
+        { id: 5, username: '이웃5', score: 75, profilePic: 'https://via.placeholder.com/150' },
+    ]; // 유저 점수 데이터 예시
+
+    // 점수 기준으로 내림차순 정렬
+    const sortedUserData = userData.sort((a, b) => b.score - a.score);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isRankOpen, setIsRankOpen] = useState(false);
     const [hovered, setHovered] = useState(null);
@@ -192,14 +203,36 @@ function MainPage() {
                         {/* 텍스트 콘텐츠 */}
                         <div className="text-center text-white">
                             <h2 className="text-2xl font-bold mb-4">이웃순위</h2>
-                            <p>여기서는 이웃들의 순위를 확인할 수 있습니다. </p>
-                            <p className="mt-2"><strong>순위:</strong></p>
+                            
+                            {/* 1위 사용자 */}
+                            <div className="flex justify-around text-center items-center space-x-4 mb-4">
+                                <img 
+                                    src={sortedUserData[0].profilePic} 
+                                    alt={`${sortedUserData[0].username} 프로필`}
+                                    className="w-24 h-24 rounded-full mx-0 mb-4"
+                                />
+                                
+                                    <div className="mx-10 text-xl font-bold">{sortedUserData[0].username}</div>
+                                    <div className="text-lg text-green-600">{sortedUserData[0].score}점</div>
+                                
+                            </div>
+
+                            {/* 2위 ~ 5위 사용자 */}
                             <ol className="list-decimal list-inside">
-                                <li>이웃1 - 100점</li>
-                                <li>이웃2 - 90점</li>
-                                <li>이웃3 - 85점</li>
-                                <li>이웃4 - 80점</li>
-                                <li>이웃5 - 75점</li>
+                                {sortedUserData.slice(1, 5).map((user, index) => (
+                                    <li key={user.id} className="flex justify-around items-center mb-4">
+                                        <img 
+                                            src={user.profilePic} 
+                                            alt={`${user.username} 프로필`}
+                                            className="w-16 h-16 rounded-full mr-4"
+                                        />
+                                      
+                                        <p className="text-lg font-semibold">{user.username}</p>
+                                        <p className="text-md text-green-500">{user.score}점</p>
+                                        
+                                        
+                                    </li>
+                                ))}
                             </ol>
                         </div>
 
