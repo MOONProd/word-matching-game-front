@@ -149,15 +149,17 @@ function MainPage() {
 
                         {/* 텍스트 콘텐츠 */}
                         <div className="text-center text-white">
-                            <h2 className="text-2xl font-bold mb-4">게임방법</h2>
-                            <p className="mt-10">이 게임은 주어진 단어로 새로운 단어를 이어가는 게임입니다. </p>
-                            <p className="mt-2"><strong>예시:</strong> "사과" → "과일" → "일출"</p>
-                            <br/>
-                            <p>선공을 선택 시, 현재 접속한 이웃에게 대결 신청을 할 수 있습니다.</p>
-                            <p>후공을 선택 시, 원하는 지역에서 대결을 대기합니다.</p>
-                            <br/>
-                            <p>한 게임에서 이기면 +30점, 지면 -20점이 누적됩니다.</p>
-                            <p>누적된 점수로 순위가 매겨집니다.</p>
+                            <h2 className="text-2xl font-bold">게임방법</h2>
+                        </div>
+                        <div className="flex flex-col mt-28 items-center h-full text-black text-lg">
+                            <p className="text-center">이 게임은 주어진 단어로 새로운 단어를 이어가는 게임입니다.</p>
+                            <p className="mt-2 text-center"><strong>예시:</strong> "사과" → "과일" → "일출"</p>
+                            <br />
+                            <p className="text-center">선공을 선택 시, 현재 접속한 이웃에게 대결 신청을 할 수 있습니다.</p>
+                            <p className="text-center">후공을 선택 시, 원하는 지역에서 대결을 대기합니다.</p>
+                            <br />
+                            <p className="text-center">한 게임에서 이기면 +30점, 지면 -20점이 누적됩니다.</p>
+                            <p className="text-center">누적된 점수로 순위가 매겨집니다.</p>
                         </div>
                     </div>
                 </div>
