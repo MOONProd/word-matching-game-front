@@ -205,7 +205,7 @@ function MainPage() {
                             <h2 className="text-2xl font-bold mb-4">이웃순위</h2>
                             
                             {/* 1위 사용자 */}
-                            <div className="flex justify-around text-center items-center space-x-4 mb-4">
+                            <div className="flex justify-around text-center items-center space-x-4 mb-4 text-black">
                                 <img 
                                     src={sortedUserData[0].profilePic} 
                                     alt={`${sortedUserData[0].username} 프로필`}
@@ -220,7 +220,7 @@ function MainPage() {
                             {/* 2위 ~ 5위 사용자 */}
                             <ol className="list-decimal list-inside">
                                 {sortedUserData.slice(1, 5).map((user, index) => (
-                                    <li key={user.id} className="flex justify-around items-center mb-4">
+                                    <li key={user.id} className="flex justify-around items-center mb-4 text-black">
                                         <img 
                                             src={user.profilePic} 
                                             alt={`${user.username} 프로필`}
