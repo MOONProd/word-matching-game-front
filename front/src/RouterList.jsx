@@ -5,6 +5,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { SecondPlayMap } from "./pages/SecondPlayMap.jsx";
 import FirstPlayMap from "./pages/FirstPlayMap.jsx";
 import ResultPage from "./pages/ResultPage.jsx";
+import ChatPlay from "./pages/ChatPlay.jsx";
 
 
 
@@ -20,6 +21,10 @@ export const RouterList = () => [
     {
         path: "/secondPlay",
         element: <SecondPlayMap />,
+    },
+    {
+        path: "/play",
+        element: <ChatPlay />,
     },
     {
         path: "/result",

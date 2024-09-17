@@ -118,6 +118,7 @@ function FirstPlayMap(props) {
                         <h3>사용자님에게 게임을 신청하시겠습니까? </h3>
                         <button 
                             className="mt-4 px-4 py-2 bg-green-500 text-white rounded-full"
+                            onClick={()=>{navigate('/play'); setIsModalOpen(false)}}
                         >
                             예
                         </button>
