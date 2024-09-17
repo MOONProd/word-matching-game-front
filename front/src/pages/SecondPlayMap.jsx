@@ -96,7 +96,11 @@ export const SecondPlayMap = () => {
                     fontSize: '16px'
                 }}
             >
-              <img src="../src/assets/images/home.png" class="w-5 max-w-xs md:max-w-sm lg:max-w-md" alt="Home Icon" />
+               <img 
+                    src="../src/assets/svg/home.svg" 
+                    className="w-5 max-w-xs md:max-w-sm lg:max-w-md" 
+                    alt="Home Icon" 
+                />
 
             </button>
         </div>

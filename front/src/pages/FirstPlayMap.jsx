@@ -3,7 +3,7 @@ import { APIProvider, Map, AdvancedMarker, Pin } from "@vis.gl/react-google-maps
 import { useRecoilValue } from "recoil";
 import { mapAtom } from "../recoil/testAtom";
 import { useNavigate } from "react-router-dom";
-import Loading from "../assets/loading";
+// import Loading from "../assets/loading";
 
 function FirstPlayMap(props) {
     const googleMapApi = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
@@ -59,7 +59,7 @@ function FirstPlayMap(props) {
                                 options={{
                                     mapTypeControl: false,
                                 }}
-                                onLoad={handleMapLoad}  // 지도 로드 완료 시 호출
+                                // onLoad={handleMapLoad}  // 지도 로드 완료 시 호출
                             >
                                 {mapData.map((location, index) => {
                                     const color = getRandomColor();
@@ -101,7 +101,11 @@ function FirstPlayMap(props) {
                     fontSize: '16px'
                 }}
             >
-              <img src="../src/assets/images/home.png" className="w-5 max-w-xs md:max-w-sm lg:max-w-md" alt="Home Icon" />
+                <img 
+                    src="../src/assets/svg/home.svg" 
+                    className="w-5 max-w-xs md:max-w-sm lg:max-w-md" 
+                    alt="Home Icon" 
+                />
 
             </button>
 
