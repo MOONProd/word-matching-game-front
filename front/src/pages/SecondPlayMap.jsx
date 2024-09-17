@@ -64,7 +64,7 @@ export const SecondPlayMap = () => {
                                 <Pin scale={3} 
                                      background={"#FFBB00"}
                                      borderColor={"#FFBB00"}>
-                                    <img src="../src/assets/gaguli.png" width="50" height="50"/>
+                                    <img src="../src/assets/images/gaguli.png" width="50" height="50"/>
                                 </Pin>
                             </AdvancedMarker>
                             {infoWindowOpen && (
@@ -96,7 +96,7 @@ export const SecondPlayMap = () => {
                     fontSize: '16px'
                 }}
             >
-              <img src="../src/assets/home.png" class="w-5 max-w-xs md:max-w-sm lg:max-w-md" alt="Home Icon" />
+              <img src="../src/assets/images/home.png" class="w-5 max-w-xs md:max-w-sm lg:max-w-md" alt="Home Icon" />
 
             </button>
         </div>

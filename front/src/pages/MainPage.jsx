@@ -57,14 +57,14 @@ function MainPage() {
                 style={{
                     width: '100%',
                     height: '100vh',
-                    backgroundImage: 'url(../src/assets/background.png)',
+                    backgroundImage: 'url(../src/assets/images/background.png)',
                     backgroundSize: '100% auto', // 가로를 100%로 맞추고, 세로는 비율에 맞게 조정
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
                 }}
         >
             <img
-            src="../src/assets/title.png"
+            src="../src/assets/images/title.png"
             className="mt-5 w-1/2 max-w-ms h-auto"
             alt="Title"
             style={{ 
@@ -75,7 +75,7 @@ function MainPage() {
             />
             {/* 왼쪽 사인 이미지 */}
             <img 
-            src="../src/assets/leftSign.png" 
+            src="../src/assets/images/leftSign.png" 
             className="w-1/6 max-w-xs h-auto"  // 너비를 부모의 1/4로 설정하고, 최대 너비를 제한
             alt="Left Sign" 
             style={{ 
@@ -96,7 +96,7 @@ function MainPage() {
 
             {/* 오른쪽 사인 이미지 */}
             <img 
-                src="../src/assets/rightSign.png" 
+                src="../src/assets/images/rightSign.png" 
                 className="w-1/6 max-w-xs h-auto"  // 너비를 부모의 1/4로 설정하고, 최대 너비를 제한
                 alt="Right Sign" 
                 style={{ 
@@ -140,7 +140,7 @@ function MainPage() {
                         className={`relative p-8 rounded-lg max-w-lg w-full transform transition-transform duration-500 ease-in-out
                             ${ isAnimating ? 'translate-y-0' : 'translate-y-full'}`}
                         style={{
-                            backgroundImage: 'url(../src/assets/test-modal.png)',
+                            backgroundImage: 'url(../src/assets/images/test-modal.png)',
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             backgroundRepeat: 'no-repeat',
@@ -182,7 +182,7 @@ function MainPage() {
                         className={`relative p-8 rounded-lg max-w-lg w-full transform transition-transform duration-500 ease-in-out 
                             ${ isAnimating ? 'translate-y-0' : 'translate-y-full'}`}
                         style={{
-                            backgroundImage: 'url(../src/assets/test-modal.png)',
+                            backgroundImage: 'url(../src/assets/images/test-modal.png)',
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             backgroundRepeat: 'no-repeat',

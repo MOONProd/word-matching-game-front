@@ -18,7 +18,7 @@ function ResultPage() {
     // 조건에 따라 이미지와 텍스트를 변경
     // const isWin = result === 'win'; //백에서 데이터 받아올 방법
     const isWin = true; //예시데이터
-    const headerImage = isWin ? '../src/assets/trophyGagul.png' : '../src/assets/tearGagul.png';
+    const headerImage = isWin ? '../src/assets/images/trophyGagul.png' : '../src/assets/images/tearGagul.png';
     const headerText = isWin ? 'You Win!' : 'You Lose...';
     const headerTextColor = isWin ? 'text-green-500' : 'text-red-500';
 
