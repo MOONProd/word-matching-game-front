@@ -112,17 +112,17 @@ function FirstPlayMap(props) {
             {/* 모달 창 */}
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white p-8 rounded-lg max-w-lg w-full">
-                        <h2 className="text-2xl font-bold mb-4">게임신청</h2>
-                        <p>사용자님에게 게임을 신청하시겠습니까? </p>
-                        <p className="mt-2"><strong>예시:</strong> "사과" → "과일" → "일출"</p>
+                    <div className="bg-white text-center p-8 rounded-lg max-w-lg w-full"
+                         style={{ fontFamily: 'MyCustomFont, sans-serif' }}>
+                        <h1 className="text-2xl font-bold mb-4">게임신청</h1>
+                        <h3>사용자님에게 게임을 신청하시겠습니까? </h3>
                         <button 
-                            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full"
+                            className="mt-4 px-4 py-2 bg-green-500 text-white rounded-full"
                         >
                             예
                         </button>
                         <button 
-                            className="mt-4 px-4 py-2 bg-white text-blue-500 rounded-full"
+                            className="mt-4 px-4 py-2 text-green-500 rounded-full"
                             onClick={()=>{navigate('/firstPlay'); setIsModalOpen(false)}}
                         >
                             아니요
