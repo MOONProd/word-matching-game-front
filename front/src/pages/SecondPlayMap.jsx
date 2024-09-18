@@ -27,11 +27,13 @@ export const SecondPlayMap = () => {
     const handleMarkerDrag = (event) => {
         console.log("Dragging", event.latLng.lat(), event.latLng.lng());
         setMarkerPosition({ lat: event.latLng.lat(), lng: event.latLng.lng() });
+        setInfoWindowOpen(false);
     };
 
     const handleMarkerDragEnd = (event) => {
         console.log("Drag ended", event.latLng.lat(), event.latLng.lng());
         setMarkerPosition({ lat: event.latLng.lat(), lng: event.latLng.lng() });
+        setInfoWindowOpen(true);
     };
 
     const handleHomeClick = ()=>{
@@ -51,6 +53,8 @@ export const SecondPlayMap = () => {
                             mapId={googleMapId}
                             options={{
                                 mapTypeControl: false,
+                                minZoom: 15,
+                                maxZoom: 20,
                             }}
                         >
                             <AdvancedMarker
