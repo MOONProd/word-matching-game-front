@@ -3,6 +3,7 @@ import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from "@vis.gl/react
 import { useRecoilValue } from "recoil";
 import { SeoulAtom } from "../recoil/SeoulAtom";
 import { useNavigate } from "react-router-dom";
+import Loading from "../assets/loading";
 
 export const SecondPlayMap = () => {
     const googleMapApi = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
@@ -69,10 +70,21 @@ export const SecondPlayMap = () => {
                             </AdvancedMarker>
                             {infoWindowOpen && (
                                 <InfoWindow
-                                    position={{ lat: markerPosition.lat, lng: markerPosition.lng }}
+                                    position={{ lat: markerPosition.lat+0.0005, lng: markerPosition.lng }}
                                     maxWidth={200}
-                                    onCloseClick={() => setInfoWindowOpen(false)}>
+                                    headerDisabled={true}
+                                >
+                                    <div style={{ fontFamily: 'MyCustomFont, sans-serif', fontSize: '16px' }}
+                                         className="text-center">
                                     게임을 하고자 하는 지역으로 드래그 해주세요.
+                                    <br/>
+                                <button 
+                                    className="mt-4 px-4 py-2 bg-green-500 text-white rounded-full"
+                                    onClick={()=>{navigate('/play')}}
+                                    >
+                                        결정!
+                                </button>
+                                    </div>
                                 </InfoWindow>
                             )}
                         </Map>
