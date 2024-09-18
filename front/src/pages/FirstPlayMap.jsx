@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { APIProvider, Map, AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 import { useRecoilValue } from "recoil";
 import { mapAtom } from "../recoil/testAtom";
 import { useNavigate } from "react-router-dom";
-// import Loading from "../assets/loading";
+import Loading from "../assets/loading";
 
 function FirstPlayMap(props) {
     const googleMapApi = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
@@ -12,8 +12,9 @@ function FirstPlayMap(props) {
 
     const mapData = useRecoilValue(mapAtom);
     const [mapKey, setMapKey] = useState(0);
-    // const [isLoading, setIsLoading] = useState(false);  // 로딩 상태 관리
+    const [isLoading, setIsLoading] = useState(false);  // 로딩 상태 관리
     const [isModalOpen,setIsModalOpen] = useState(false);
+    const mapRef = useRef(null);  // 맵 참조
 
     const pinColors = ["#FFBB00", "#FF5733", "#33FF57", "#3357FF", "#FF33A6"];
 
@@ -34,24 +35,32 @@ function FirstPlayMap(props) {
         setMapKey((prevKey) => prevKey + 1);
     }, []);
 
-    // const handleMapLoad = () => {
-    //     console.log("load!");
-    //     setIsLoading(false);  // 지도가 로드되면 로딩 상태를 false로 설정
-    // };
+    useEffect(() => {
+        if (mapRef.current) {
+            const mapInstance = mapRef.current;
+
+            // Google Maps의 tilesloaded 이벤트에 리스너 추가
+            mapInstance.addListener('tilesloaded', () => {
+                console.log('Tiles have been loaded');
+                setIsLoading(false);  // 타일이 로드되면 상태를 업데이트
+            });
+        }
+    }, [mapRef.current]);
 
     return (
         // 지도 전체화면
         <div style={{ maxWidth: '100vw', height: '100vh', margin: 'auto' }}>
-            {/* {isLoading ? (
+            {isLoading ? (
                 <div className="flex items-center justify-center h-full">
                     <h2>로딩중...</h2>
                     <Loading/>
                 </div>
-            ) : ( */}
+            ) : (
                 <APIProvider apiKey={googleMapApi}>
                     <div style={{ height: '100%', width: '100%' }}>
                         {mapData && (
                             <Map
+                                ref={mapRef}  // 맵 참조 설정
                                 key={mapKey}
                                 defaultZoom={10}
                                 defaultCenter={{ lat: 37.5665, lng: 126.9780 }}
@@ -59,7 +68,6 @@ function FirstPlayMap(props) {
                                 options={{
                                     mapTypeControl: false,
                                 }}
-                                // onLoad={handleMapLoad}  // 지도 로드 완료 시 호출
                             >
                                 {mapData.map((location, index) => {
                                     const color = getRandomColor();
@@ -83,7 +91,7 @@ function FirstPlayMap(props) {
                         )}
                     </div>
                 </APIProvider>
-            {/* )} */}
+            )}
 
             <button
                 onClick={handleHomeClick}
