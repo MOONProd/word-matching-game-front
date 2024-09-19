@@ -1,6 +1,5 @@
 // import {Layout} from "./layout/Layout.jsx";
 import MainPage from "./pages/MainPage.jsx";
-import {MapPage} from "./pages/MapPage.jsx";
 import {ChatPage} from "./pages/ChatPage.jsx";
 import Test from "./pages/Test.jsx";
 import TestTwo from "./pages/TestTwo.jsx";
@@ -8,7 +7,6 @@ import {LoginPage} from "./pages/LoginPage.jsx";
 import ProtectedRoute from "./pages/ProtectedRoute.jsx";
 import {createBrowserRouter} from "react-router-dom";
 import ResultPage from "./pages/ResultPage.jsx";
-import ChatPlay from "./pages/ChatPlay.jsx";
 import FirstPlayMap from "./pages/FirstPlayMap.jsx";
 import {SecondPlayMap} from "./pages/SecondPlayMap.jsx"; // Ensure the path is correct
 
@@ -24,10 +22,6 @@ export const RouterList = () => [
     {
         path: "/secondPlay",
         element: <SecondPlayMap />,
-    },
-    {
-        path: "/play",
-        element: <ChatPlay />,
     },
     {
         path: "/result",

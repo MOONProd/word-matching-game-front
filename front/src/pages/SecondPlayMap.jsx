@@ -3,7 +3,7 @@ import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from "@vis.gl/react
 import { useRecoilValue } from "recoil";
 import { SeoulAtom } from "../recoil/SeoulAtom";
 import { useNavigate } from "react-router-dom";
-import Loading from "../assets/loading";
+
 
 export const SecondPlayMap = () => {
     const googleMapApi = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
@@ -84,7 +84,7 @@ export const SecondPlayMap = () => {
                                     <br/>
                                 <button 
                                     className="mt-4 px-4 py-2 bg-green-500 text-white rounded-full"
-                                    onClick={()=>{navigate('/play')}}
+                                    onClick={()=>{navigate('/chat')}}
                                     >
                                         결정!
                                 </button>
