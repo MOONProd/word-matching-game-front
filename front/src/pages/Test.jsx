@@ -1,65 +1,66 @@
-import React, { useEffect, useState } from "react";
-import { APIProvider, Map, AdvancedMarker, InfoWindow, Pin } from "@vis.gl/react-google-maps";
-import { useRecoilValue } from "recoil";
-import { mapAtom } from "../recoil/testAtom";
-"use client";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-export const Test = () => {
-    const googleMapApi = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
-    const googleMapId = import.meta.env.VITE_APP_GOOGLE_MAPS_ID;
+function Test(props) {
+    const [user, setUser] = useState(null);
+    const navigate = useNavigate();
 
-    const mapData = useRecoilValue(mapAtom); //리코일
-    const [openInfoWindowId, setOpenInfoWindowId] = useState(null);
-    const [mapKey, setMapKey] = useState(0); // 첫번째 값, 즉 리스트의 첫번째 값을 기준점으로 함
-
-    // 첫번째 값을 통한 강제 첫 리렌더링
     useEffect(() => {
-        setMapKey((prevKey) => prevKey + 1);
-    }, [mapData]);
+        fetch('/auth/user-info', {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then(response => {
+                if (response.status === 401) {
+                    console.log('User is not authenticated. Redirecting to login.');
+                    navigate('/login');
+                    return null; // Stop further processing
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data) {
+                    setUser(data);
+
+                    // Store tokens in localStorage
+                    if (data.accessToken) {
+                        localStorage.setItem('accessToken', data.accessToken);
+                        console.log('Access token stored in localStorage.');
+                    } else {
+                        console.warn('No access token received from server.');
+                    }
+
+                    if (data.refreshToken) {
+                        localStorage.setItem('refreshToken', data.refreshToken);
+                        console.log('Refresh token stored in localStorage.');
+                    } else {
+                        console.warn('No refresh token received from server.');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching user data:', error);
+            });
+    }, [navigate]);
+
+    const handleNavigate = () => {
+        navigate('/login/dummy');
+    };
 
     return (
-        <div style={{ maxWidth: '1000px', height: '600px', margin: 'auto' }}>
-            <div className="mb-10">hahahah</div>
-            <APIProvider apiKey={googleMapApi}>
-                <div style={{ height: '100%', width: '100%' }}>
-                    {mapData && (
-                        <Map
-                            key={mapKey} // 강제 리렌더링
-                            defaultZoom={18}
-                            defaultCenter={{ lat: mapData.lat, lng: mapData.long }}
-                            mapId={googleMapId}
-                        >
-                            {/* 마커부분 */}
-                            <AdvancedMarker
-                                key={mapKey}
-                                position={{ lat: mapData.lat, lng: mapData.long }}
-                                onClick={() => setOpenInfoWindowId(mapKey)}
-                            >
-                                {/* 타입에 따른 마커 색깔변경 */}
-                                {mapData.type === '향수 공방' && <Pin background="purple" />}
-                                {mapData.type === '기타' && <Pin background="gray" />}
-                                {!['향수 공방', '기타'].includes(mapData.type) && (
-                                    <Pin background="default" />
-                                )}
-                            </AdvancedMarker>
-
-                            {openInfoWindowId === mapKey && (
-                                <InfoWindow
-                                    key={mapKey}
-                                    position={{ lat: mapData.lat, lng: mapData.long }}
-                                    onCloseClick={() => setOpenInfoWindowId(null)}
-                                >
-                                    <div>
-                                        <p><strong>유형:</strong> {mapData.type}</p>
-                                        <p><strong>주소:</strong> {mapData.description}</p>
-                                    </div>
-                                </InfoWindow>
-                            )}
-                        </Map>
-                    )}
+        <div>
+            <div><h1>오....?</h1></div>
+            {user ? (
+                <div>
+                    <h1>흠..... 자네의 이름은 {user.name}이고</h1>
+                    <h1>이메일은 {user.email}이구먼 으헤헿ㅎ</h1>
+                    <button onClick={handleNavigate}>Go to TestTwo</button>
                 </div>
-            </APIProvider>
+            ) : (
+                <h1>뭔가 보인다....!</h1>
+            )}
         </div>
     );
 }
 
+export default Test;
