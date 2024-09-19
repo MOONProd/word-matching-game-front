@@ -11,6 +11,7 @@ import FirstPlayMap from "./pages/FirstPlayMap.jsx";
 import {SecondPlayMap} from "./pages/SecondPlayMap.jsx"; // Ensure the path is correct
 import WaitingPage from "./pages/WaitingPage.jsx";
 import NewLoginPage from "./pages/NewLoginPage.jsx";
+import NicknamePage from "./pages/NicknamePage.jsx";
 
 export const RouterList = () => [
     {
@@ -50,7 +51,7 @@ export const RouterList = () => [
             },
             {
                 path: "done",
-                element: <Test />
+                element: <NicknamePage />
             },
             {
                 path: "dummy",
