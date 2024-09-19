@@ -17,7 +17,7 @@ function NicknamePage() {
             return;
         }
 
-        const data = { nickname: nickname };
+        const data = { "nickname": nickname };
         fetch('/auth/set-nickname', {
             method: 'POST',
             headers: {
