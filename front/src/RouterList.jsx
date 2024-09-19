@@ -1,5 +1,4 @@
-// RouterList.js
-import React from 'react';
+// import {Layout} from "./layout/Layout.jsx";
 import MainPage from "./pages/MainPage.jsx";
 import {MapPage} from "./pages/MapPage.jsx";
 import {ChatPage} from "./pages/ChatPage.jsx";
@@ -15,8 +14,20 @@ export const RouterList = () => [
         element: <MainPage />,
     },
     {
-        path: "/map",
-        element: <MapPage />,
+        path: "/firstPlay",
+        element: <FirstPlayMap />,
+    },
+    {
+        path: "/secondPlay",
+        element: <SecondPlayMap />,
+    },
+    {
+        path: "/play",
+        element: <ChatPlay />,
+    },
+    {
+        path: "/result",
+        element: <ResultPage />,
     },
     {
         path: "/chat",
