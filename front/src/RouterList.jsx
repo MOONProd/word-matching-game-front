@@ -6,7 +6,11 @@ import Test from "./pages/Test.jsx";
 import TestTwo from "./pages/TestTwo.jsx";
 import {LoginPage} from "./pages/LoginPage.jsx";
 import ProtectedRoute from "./pages/ProtectedRoute.jsx";
-import {createBrowserRouter} from "react-router-dom"; // Ensure the path is correct
+import {createBrowserRouter} from "react-router-dom";
+import ResultPage from "./pages/ResultPage.jsx";
+import ChatPlay from "./pages/ChatPlay.jsx";
+import FirstPlayMap from "./pages/FirstPlayMap.jsx";
+import {SecondPlayMap} from "./pages/SecondPlayMap.jsx"; // Ensure the path is correct
 
 export const RouterList = () => [
     {
@@ -31,7 +35,7 @@ export const RouterList = () => [
     },
     {
         path: "/chat",
-        element: <ChatPage />,
+        element: <ProtectedRoute element={<ChatPage />} /> ,
     },
     {
         path: "/login",
