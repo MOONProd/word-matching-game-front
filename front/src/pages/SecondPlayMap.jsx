@@ -15,6 +15,7 @@ export const SecondPlayMap = () => {
     const [markerPosition, setMarkerPosition] = useState({ lat: seoulLocal.lat, lng: seoulLocal.long });
     
     const [infoWindowOpen, setInfoWindowOpen] = useState(true);
+    const [overlayVisible, setOverlayVisible] = useState(true);
 
     useEffect(() => {
         setMapKey((prevKey) => prevKey + 1);
@@ -33,16 +34,43 @@ export const SecondPlayMap = () => {
     const handleMarkerDragEnd = (event) => {
         console.log("Drag ended", event.latLng.lat(), event.latLng.lng());
         setMarkerPosition({ lat: event.latLng.lat(), lng: event.latLng.lng() });
-        setInfoWindowOpen(true);
     };
 
     const handleHomeClick = ()=>{
         navigate('/');
     };
+
+    const handleOverlayClose = () => {
+        setOverlayVisible(false);
+    };
     
 
     return (
-        <div style={{ maxWidth: '100vw', height: '100vh', margin: 'auto' }}>
+        <div style={{ maxWidth: '100vw', height: '100vh', margin: 'auto', position: 'relative' }}>
+             {overlayVisible && (
+                <div 
+                    className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
+                    style={{ zIndex: 1000 }} // Map 위에 오버레이를 배치하도록 z-index 설정
+                >
+                    <div 
+                        className="bg-white p-8 rounded-lg text-center"
+                        style={{
+                            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
+                            zIndex: 1000,
+                            fontFamily: 'MyCustomFont, sans-serif',
+                        }}
+                    >
+                        <h2 className="text-xl font-bold mb-4">핀을 드래그 해주세요!</h2>
+                        <p>게임을 하고자 하는 지역으로 드래그 해주세요.</p>
+                        <button
+                            onClick={handleOverlayClose}
+                            className="mt-4 px-4 py-2 bg-green-500 text-white rounded-full"
+                        >
+                            확인
+                        </button>
+                    </div>
+                </div>
+            )}
             <APIProvider apiKey={googleMapApi}>
                 <div style={{ height: '100%', width: '100%' }}>
                     {seoulLocal && (
@@ -67,8 +95,8 @@ export const SecondPlayMap = () => {
                                 onDragEnd={handleMarkerDragEnd}
                             >
                                 <Pin scale={3} 
-                                     background={"#FFBB00"}
-                                     borderColor={"#FFBB00"}>
+                                    background={"#FFBB00"}
+                                    borderColor={"#FFBB00"}>
                                     <img src="../src/assets/images/gaguli.png" width="50" height="50"/>
                                 </Pin>
                             </AdvancedMarker>
@@ -78,16 +106,9 @@ export const SecondPlayMap = () => {
                                     maxWidth={200}
                                     headerDisabled={true}
                                 >
-                                    <div style={{ fontFamily: 'MyCustomFont, sans-serif', fontSize: '16px' }}
-                                         className="text-center">
-                                    게임을 하고자 하는 지역으로 드래그 해주세요.
-                                    <br/>
-                                <button 
-                                    className="mt-4 px-4 py-2 bg-green-500 text-white rounded-full"
-                                    onClick={()=>{navigate('/chat')}}
-                                    >
-                                        결정!
-                                </button>
+                                    <div style={{ fontFamily: 'MyCustomFont, sans-serif', fontSize: '16px', fontWeight: 'bold' }}
+                                        className="text-center">
+                                    원하는 지역에 도달하면 핀을 클릭해주세요!
                                     </div>
                                 </InfoWindow>
                             )}
@@ -112,7 +133,7 @@ export const SecondPlayMap = () => {
                     fontSize: '16px'
                 }}
             >
-               <img 
+            <img 
                     src="../src/assets/svg/home.svg" 
                     className="w-5 max-w-xs md:max-w-sm lg:max-w-md" 
                     alt="Home Icon" 
@@ -120,5 +141,6 @@ export const SecondPlayMap = () => {
 
             </button>
         </div>
+      
     );
 };
