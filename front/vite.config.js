@@ -17,18 +17,21 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        // target: 'http://localhost:8080',
+        target: 'http://10.10.220.36:8080',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
         secure: false,
       },
       '/auth': {
-        target: 'http://localhost:8080',
+        // target: 'http://localhost:8080',
+        target: 'http://10.10.220.36:8080',
         changeOrigin: true,
         secure: false,
       },
       '/ws': {
-        target: 'http://localhost:8080',
+        // target: 'http://localhost:8080',
+        target: 'http://10.10.220.36:8080',
         ws: true,
         changeOrigin: true,
         secure: false,
