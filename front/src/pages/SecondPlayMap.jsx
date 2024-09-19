@@ -3,6 +3,7 @@ import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from "@vis.gl/react
 import { useRecoilValue } from "recoil";
 import { SeoulAtom } from "../recoil/SeoulAtom";
 import { useNavigate } from "react-router-dom";
+import Loading from "../assets/loading";
 
 
 export const SecondPlayMap = () => {
@@ -36,8 +37,17 @@ export const SecondPlayMap = () => {
         setMarkerPosition({ lat: event.latLng.lat(), lng: event.latLng.lng() });
     };
 
-    const handleHomeClick = ()=>{
+    const handleHomeClick = () => {
         navigate('/');
+    };
+
+    const handleinfoClick = () => {
+       setOverlayVisible(true);
+       setInfoWindowOpen(true);
+    };
+
+    const handleLoadClick = () => {
+        //대기방으로 입장
     };
 
     const handleOverlayClose = () => {
@@ -81,7 +91,6 @@ export const SecondPlayMap = () => {
                             mapId={googleMapId}
                             options={{
                                 mapTypeControl: false,
-                                minZoom: 15,
                                 maxZoom: 20,
                             }}
                         >
@@ -96,7 +105,8 @@ export const SecondPlayMap = () => {
                             >
                                 <Pin scale={3} 
                                     background={"#FFBB00"}
-                                    borderColor={"#FFBB00"}>
+                                    borderColor={"#FFBB00"}
+                                >
                                     <img src="../src/assets/images/gaguli.png" width="50" height="50"/>
                                 </Pin>
                             </AdvancedMarker>
@@ -108,7 +118,8 @@ export const SecondPlayMap = () => {
                                 >
                                     <div style={{ fontFamily: 'MyCustomFont, sans-serif', fontSize: '16px', fontWeight: 'bold' }}
                                         className="text-center">
-                                    원하는 지역에 도달하면 핀을 클릭해주세요!
+                                    원하는 지역에 도달하면 <br/>
+                                    아래 버튼을 클릭해주세요!
                                     </div>
                                 </InfoWindow>
                             )}
@@ -139,6 +150,49 @@ export const SecondPlayMap = () => {
                     alt="Home Icon" 
                 />
 
+            </button>
+
+            {(!overlayVisible) &&  (           
+                <button
+                    onClick={handleinfoClick}
+                    style={{
+                        position: 'absolute',
+                        top: '10px',
+                        left: '80px',
+                        zIndex: 1000,
+                        backgroundColor: '#fff',
+                        border: 'none',
+                        padding: '10px 15px',
+                        borderRadius: '5px',
+                        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        fontFamily: 'MyCustomFont, sans-serif',
+                    }}
+                >
+                안내멘트 다시보기
+                </button>
+            )}
+
+            <button
+                onClick={handleLoadClick}
+                className="bg-green-900 text-white items-center"
+                style={{
+                    position: 'absolute',
+                    bottom: '30px',
+                    left: '45%',
+                    zIndex: 999,
+                    border: 'none',
+                    padding: '10px 15px',
+                    borderRadius: '5px',
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    fontSize: '20px',
+                    fontFamily: 'MyCustomFont, sans-serif',
+                }}
+            >
+           위치 결정!
             </button>
         </div>
       
