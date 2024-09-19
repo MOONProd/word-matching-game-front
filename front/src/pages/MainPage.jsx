@@ -120,6 +120,7 @@ function MainPage() {
                 <div>
                     <button 
                         className="border-2 border-black rounded-full px-8 py-3 text-2xl"
+                        style={{zIndex: 100}}
                         data-target="modal"
                         onClick={toggleState}
                     >
