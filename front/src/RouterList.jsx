@@ -9,6 +9,7 @@ import {createBrowserRouter} from "react-router-dom";
 import ResultPage from "./pages/ResultPage.jsx";
 import FirstPlayMap from "./pages/FirstPlayMap.jsx";
 import {SecondPlayMap} from "./pages/SecondPlayMap.jsx"; // Ensure the path is correct
+import WaitingPage from "./pages/WaitingPage.jsx";
 
 export const RouterList = () => [
     {
@@ -22,6 +23,10 @@ export const RouterList = () => [
     {
         path: "/secondPlay",
         element: <SecondPlayMap />,
+    },
+    {
+        path: "/wait",
+        element: <WaitingPage />,
     },
     {
         path: "/result",

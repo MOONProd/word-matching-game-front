@@ -48,6 +48,7 @@ export const SecondPlayMap = () => {
 
     const handleLoadClick = () => {
         //대기방으로 입장
+        navigate('/wait');
     };
 
     const handleOverlayClose = () => {
