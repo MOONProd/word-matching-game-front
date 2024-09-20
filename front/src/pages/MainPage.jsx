@@ -57,7 +57,7 @@ function MainPage() {
                 style={{
                     width: '100%',
                     height: '100vh',
-                    backgroundImage: 'url(../src/assets/images/background.png)',
+                    backgroundImage: 'url(../src/assets/images/bg.png)',
                     backgroundSize: '100% auto', // 가로를 100%로 맞추고, 세로는 비율에 맞게 조정
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
@@ -119,17 +119,20 @@ function MainPage() {
                 style={{ fontFamily: 'MyCustomFont, sans-serif' }}>
                 <div>
                     <button 
-                        className="border-2 border-black rounded-full px-8 py-3 text-2xl"
+                        className="border-solid border-2 border-black rounded-full 
+                        bg-white px-8 py-3 text-2xl hover:bg-gray-200 transition duration-150"
                         data-target="modal"
-                        onClick={toggleState}
-                    >
+                        onClick={toggleState}>
                         게임방법
                     </button>
                 </div>
                 <div className="mt-4"> {/* 버튼 사이의 간격을 mt-4로 설정 */}
-                    <button className="border-2 border-black rounded-full px-8 py-3 text-2xl"
+                    <button className="border-solid border-2 border-black rounded-full 
+                          bg-white px-8 py-3 text-2xl hover:bg-gray-200 transition duration-150"
                             data-target="rank"
-                            onClick={toggleState}>이웃순위</button>
+                            onClick={toggleState}>
+                            이웃순위
+                    </button>
                 </div>
             </div>
 
