@@ -20,7 +20,7 @@ export default defineConfig({
         target: 'http://localhost:8080',
         // target: 'http://10.10.220.36:8080',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        // rewrite: (path) => path.replace(/^\/api/, ''),
         secure: false,
       },
       '/auth': {

@@ -7,34 +7,34 @@ const UserInfo = ({ children }) => {
     const [user, setUser] = useRecoilState(userAtom);
     const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     if (!user) {
-    //         // Fetch user info from the backend if it doesn't exist in the Recoil state
-    //         fetch('/api/userinfo-here', {
-    //             method: 'GET',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             credentials: 'include', // Include cookies if necessary
-    //         })
-    //             .then(response => {
-    //                 if (!response.ok) {
-    //                     console.log(response.status);
-    //                     throw new Error(`Network response was not ok: ${response.status}`);
-    //                 }
-    //                 return response.json();
-    //             })
-    //             .then(data => {
-    //                 console.log("Fetched user info:", data);
-    //                 setUser(data);
-    //             })
-    //             .catch(error => {
-    //                 console.log('Error fetching user info:', error);
-    //                 // Redirect to login if the user is not authenticated or an error occurs
-    //                 navigate('/login');
-    //             });
-    //     }
-    // }, [user, setUser, navigate]);
+    useEffect(() => {
+        if (!user) {
+            // Fetch user info from the backend if it doesn't exist in the Recoil state
+            fetch('/api/userinfo-here', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include', // Include cookies if necessary
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        console.log(response.status);
+                        throw new Error(`Network response was not ok: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Fetched user info:", data);
+                    setUser(data);
+                })
+                .catch(error => {
+                    console.log('Error fetching user info:', error);
+                    // Redirect to login if the user is not authenticated or an error occurs
+                    navigate('/login');
+                });
+        }
+    }, [user, setUser, navigate]);
 
     console.log("This is user info:", user);
 
