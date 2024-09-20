@@ -78,6 +78,24 @@ function NicknamePage() {
         });
     };
 
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            event.preventDefault();
+            // Chrome에서는 이 문자열이 설정되어야 경고창이 표시됨
+            event.returnValue = ''; // 메시지 내용은 대부분의 브라우저에서 무시됨
+            return ''; // 이 리턴이 있어야 경고가 제대로 동작
+        };
+
+        // beforeunload 이벤트 등록
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        // cleanup 함수로 컴포넌트 언마운트 시 이벤트 제거
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
+
+
     return (
         <Container maxWidth="sm" style={{ marginTop: '50px', textAlign: 'center' }}>
             <Typography variant="h4" gutterBottom>
