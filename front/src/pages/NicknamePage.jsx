@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { TextField, Button, Container, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -26,7 +26,6 @@ function NicknamePage() {
             })
             .then(data => {
                 if (data) {
-                    setUser(data);
 
                     // Store tokens in localStorage
                     if (data.accessToken) {
