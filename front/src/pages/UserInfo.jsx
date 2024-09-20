@@ -10,7 +10,7 @@ const UserInfo = ({ children }) => {
     useEffect(() => {
         if (!user) {
             // Fetch user info from the backend if it doesn't exist in the Recoil state
-            fetch('/api/user-info', {
+            fetch('/api/userinfo-here', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
