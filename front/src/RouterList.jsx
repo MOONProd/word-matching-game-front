@@ -12,6 +12,7 @@ import {SecondPlayMap} from "./pages/SecondPlayMap.jsx"; // Ensure the path is c
 import WaitingPage from "./pages/WaitingPage.jsx";
 import NewLoginPage from "./pages/NewLoginPage.jsx";
 import NicknamePage from "./pages/NicknamePage.jsx";
+import {GamePage} from "./pages/GamePage.jsx";
 
 export const RouterList = () => [
     {
@@ -32,7 +33,7 @@ export const RouterList = () => [
     },
     {
         path: "/wait",
-        element: <WaitingPage />,
+        element: <ProtectedRoute element={<WaitingPage />}/>,
     },
     {
         path: "/result",
@@ -41,6 +42,10 @@ export const RouterList = () => [
     {
         path: "/chat",
         element: <ProtectedRoute element={<ChatPage />} /> ,
+    },
+    {
+        path: "/wordgame",
+        element: <ProtectedRoute element={<GamePage />} /> ,
     },
     {
         path: "/login",
