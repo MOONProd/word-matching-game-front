@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import UserInfo from './UserInfo'; // Import UserInfo component
 
 function ProtectedRoute({ element }) {
     const [isValid, setIsValid] = useState(null);
@@ -18,9 +19,9 @@ function ProtectedRoute({ element }) {
         fetch('/auth/check-token', {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${accessToken}`
+                'Authorization': `Bearer ${accessToken}`,
             },
-            credentials: 'include' // Include cookies if necessary
+            credentials: 'include', // Include cookies if necessary
         })
             .then(response => {
                 if (response.status === 200) {
@@ -46,8 +47,12 @@ function ProtectedRoute({ element }) {
         return <Navigate to="/login" />;
     }
 
-    // Token is valid
-    return element;
+    // If token is valid, render UserInfo component to ensure user information is fetched
+    return (
+        <UserInfo>
+            {element}
+        </UserInfo>
+    );
 }
 
 export default ProtectedRoute;
