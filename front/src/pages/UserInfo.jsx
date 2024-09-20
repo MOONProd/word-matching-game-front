@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
-import { userAtom } from './userAtom'; // Adjust the path as necessary
+import { userAtom } from '../recoil/userAtom'; // Adjust the path as necessary
 import { useNavigate } from 'react-router-dom';
 
 const UserInfo = ({ children }) => {
@@ -10,7 +10,7 @@ const UserInfo = ({ children }) => {
     useEffect(() => {
         if (!user) {
             // Fetch user info from the backend if it doesn't exist in the Recoil state
-            fetch('/api/user-info', {
+            fetch('/api/userinfo-here', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
