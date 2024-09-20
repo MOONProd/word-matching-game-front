@@ -11,6 +11,44 @@ function NicknamePage() {
         setNickname(event.target.value);
     };
 
+    useEffect(() => {
+        fetch('/auth/user-info', {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then(response => {
+                if (response.status === 401) {
+                    console.log('User is not authenticated. Redirecting to login.');
+                    navigate('/login');
+                    return null; // Stop further processing
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data) {
+                    setUser(data);
+
+                    // Store tokens in localStorage
+                    if (data.accessToken) {
+                        localStorage.setItem('accessToken', data.accessToken);
+                        console.log('Access token stored in localStorage.');
+                    } else {
+                        console.warn('No access token received from server.');
+                    }
+
+                    if (data.refreshToken) {
+                        localStorage.setItem('refreshToken', data.refreshToken);
+                        console.log('Refresh token stored in localStorage.');
+                    } else {
+                        console.warn('No refresh token received from server.');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching user data:', error);
+            });
+    }, [navigate]);
+
     const handleSubmit = () => {
         if (nickname.trim() === '') {
             setError('닉네임을 입력해주세요.');
