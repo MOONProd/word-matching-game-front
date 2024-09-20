@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
-import { userAtom } from './userAtom'; // Adjust the path as necessary
+import { userAtom } from '../recoil/userAtom'; // Adjust the path as necessary
 import { useNavigate } from 'react-router-dom';
 
 const UserInfo = ({ children }) => {
