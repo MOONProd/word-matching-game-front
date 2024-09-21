@@ -38,7 +38,7 @@ export const SecondPlayMap = () => {
     };
 
     const handleHomeClick = () => {
-        navigate('/');
+        navigate('/main');
     };
 
     const handleinfoClick = () => {
@@ -48,7 +48,7 @@ export const SecondPlayMap = () => {
 
     const handleLoadClick = () => {
         //대기방으로 입장
-        navigate('/wait');
+        navigate('/main/secondPlay/wait');
     };
 
     const handleOverlayClose = () => {

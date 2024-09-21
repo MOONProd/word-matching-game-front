@@ -1,66 +1,82 @@
-// import {Layout} from "./layout/Layout.jsx";
-import MainPage from "./pages/MainPage.jsx";
-import {ChatPage} from "./pages/ChatPage.jsx";
-import Test from "./pages/Test.jsx";
-import TestTwo from "./pages/TestTwo.jsx";
-import {LoginPage} from "./pages/LoginPage.jsx";
-import ProtectedRoute from "./pages/ProtectedRoute.jsx";
-import {createBrowserRouter} from "react-router-dom";
-import ResultPage from "./pages/ResultPage.jsx";
-import FirstPlayMap from "./pages/FirstPlayMap.jsx";
-import {SecondPlayMap} from "./pages/SecondPlayMap.jsx"; // Ensure the path is correct
-import WaitingPage from "./pages/WaitingPage.jsx";
-import NewLoginPage from "./pages/NewLoginPage.jsx";
-import NicknamePage from "./pages/NicknamePage.jsx";
-import {GamePage} from "./pages/GamePage.jsx";
+import { createBrowserRouter } from 'react-router-dom';
+import MainPage from './pages/MainPage.jsx';
+import {ChatPage} from './pages/ChatPage.jsx';
+import ResultPage from './pages/ResultPage.jsx';
+import FirstPlayMap from './pages/FirstPlayMap.jsx';
+import {SecondPlayMap} from './pages/SecondPlayMap.jsx';
+import WaitingPage from './pages/WaitingPage.jsx';
+import NewLoginPage from './pages/NewLoginPage.jsx';
+import NicknamePage from './pages/NicknamePage.jsx';
+import {GamePage} from './pages/GamePage.jsx';
+import ProtectedRoute from './pages/ProtectedRoute.jsx';
 
 export const RouterList = () => [
     {
         path: "/",
-        element: <MainPage />,
+        element: <NewLoginPage />, // 로그인 전 접근 가능
     },
     {
-        path: "/newlogin",
-        element: <NewLoginPage />,
-    },
-    {
-        path: "/firstPlay",
-        element: <FirstPlayMap />,
-    },
-    {
-        path: "/secondPlay",
-        element: <SecondPlayMap />,
-    },
-    {
-        path: "/wait",
-        element: <ProtectedRoute element={<WaitingPage />}/>,
-    },
-    {
-        path: "/result",
-        element: <ResultPage />,
-    },
-    {
-        path: "/chat",
-        element: <ProtectedRoute element={<ChatPage />} /> ,
-    },
-    {
-        path: "/wordgame",
-        element: <ProtectedRoute element={<GamePage />} /> ,
-    },
-    {
-        path: "/login",
+        path: "/done",
+        element: <ProtectedRoute />, // 로그인 후 접근
         children: [
             {
                 path: "",
-                element: <LoginPage />,
+                element: <NicknamePage />,
+            },
+        ],
+    },
+    {
+        path: "/main",
+        element: <ProtectedRoute />, // 로그인 후 접근
+        children: [
+            {
+                path: "",
+                element: <MainPage />,
             },
             {
-                path: "done",
-                element: <NicknamePage />
+                path: "firstPlay",
+                element: <FirstPlayMap />,
             },
             {
-                path: "dummy",
-                element: <ProtectedRoute element={<TestTwo />} />
+                path: "secondPlay",
+                children: [
+                    {
+                        path: "",
+                        element: <SecondPlayMap />,
+                    },
+                    {
+                        path: "wait",
+                        element: <WaitingPage />,
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        path: "/chat",
+        element: <ProtectedRoute />, // 로그인 후 접근
+        children: [
+            {
+                path: "",
+                element: <ChatPage />,
+            },
+            {
+                path: "result",
+                element: <ResultPage />,
+            },
+        ],
+    },
+    {
+        path: "/wordgame",
+        element: <ProtectedRoute />, // 로그인 후 접근
+        children: [
+            {
+                path: "",
+                element: <GamePage />,
+            },
+            {
+                path: "result",
+                element: <ResultPage />,
             },
         ],
     },

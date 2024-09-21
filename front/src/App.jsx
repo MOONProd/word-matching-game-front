@@ -10,7 +10,7 @@ import './App.css';
 createRoot(document.getElementById('root')).render(
     <StrictMode>
         <RecoilRoot>
-            <RouterProvider router={RouterObject} />
+            <RouterProvider router={RouterObject}/>
         </RecoilRoot>
     </StrictMode>,
 );

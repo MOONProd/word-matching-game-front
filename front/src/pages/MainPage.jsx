@@ -88,7 +88,7 @@ function MainPage() {
                 transition: 'transform 0.3s ease',
                
             }}
-            data-path="/firstPlay"
+            data-path="/main/firstPlay"
             onClick={handleSignClick}
             onMouseEnter={() => handleMouseEnter('left')}
             onMouseLeave={handleMouseLeave}
@@ -108,7 +108,7 @@ function MainPage() {
                     transform: hovered === 'right' ? 'rotate(10deg)' : 'rotate(0deg)',
                     transition: 'transform 0.3s ease',
                 }}
-                data-path="/secondPlay"
+                data-path="/main/secondPlay"
                 onClick={handleSignClick}
                 onMouseEnter={() => handleMouseEnter('right')}
                 onMouseLeave={handleMouseLeave}

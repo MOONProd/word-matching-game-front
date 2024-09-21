@@ -23,7 +23,7 @@ function FirstPlayMap(props) {
     };
 
     const handleHomeClick = ()=>{
-        navigate('/');
+        navigate('/main');
     };
 
     const handlePinClick = ()=>{
@@ -132,7 +132,7 @@ function FirstPlayMap(props) {
                         </button>
                         <button 
                             className="mt-4 px-4 py-2 text-green-500 rounded-full"
-                            onClick={()=>{navigate('/firstPlay'); setIsModalOpen(false)}}
+                            onClick={()=>{navigate('/main/firstPlay'); setIsModalOpen(false)}}
                         >
                             아니요
                         </button>

@@ -1,58 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import UserInfo from './UserInfo'; // Import UserInfo component
+import { useNavigate, Outlet } from 'react-router-dom';
 
-function ProtectedRoute({ element }) {
-    const [isValid, setIsValid] = useState(null);
+const ProtectedRoute = () => {
+    const [user, setUser] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
-
-        if (!accessToken) {
-            // No access token found
-            console.log('No access token found. Redirecting to login.');
-            setIsValid(false);
-            return;
-        }
-
-        // Call the server to check token validity
-        fetch('/auth/check-token', {
+        fetch('/auth/user-info', {
             method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-            },
-            credentials: 'include', // Include cookies if necessary
+            credentials: 'include'
         })
-            .then(response => {
-                if (response.status === 200) {
-                    setIsValid(true);
-                } else {
-                    setIsValid(false);
-                }
-            })
-            .catch(error => {
-                console.error('Error checking token validity:', error);
-                setIsValid(false);
-            });
-    }, []);
+        .then(response => {
+            if (response.status === 401) {
+                console.log('User is not authenticated. Redirecting to login.');
+                navigate('/');
+                return null;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data) {
+                setUser(data);
+                localStorage.setItem('accessToken', data.accessToken);
+                localStorage.setItem('refreshToken', data.refreshToken);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+        });
+    }, [navigate]);
 
-    if (isValid === null) {
-        // Still checking token validity
-        return <div>Loading...</div>;
+    if (!user) {
+        return <div>Loading...</div>; // 로딩 상태
     }
 
-    if (isValid === false) {
-        // Token is invalid or expired
-        console.log('Access token is invalid or expired. Redirecting to login.');
-        return <Navigate to="/login" />;
-    }
-
-    // If token is valid, render UserInfo component to ensure user information is fetched
     return (
-        <UserInfo>
-            {element}
-        </UserInfo>
+        <div>
+            <Outlet/> {/* 인증 성공 시 자식 라우트 렌더링 */}
+        </div>
     );
-}
+};
 
 export default ProtectedRoute;
