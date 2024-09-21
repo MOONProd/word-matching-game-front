@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
+import UserInfo from './UserInfo';
 
 const ProtectedRoute = () => {
     const [user, setUser] = useState(null);
