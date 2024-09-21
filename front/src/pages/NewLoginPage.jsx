@@ -1,11 +1,8 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { useSetRecoilState } from 'recoil';
-// import { loginState } from '../recoil/loginAtom';
 
 function NewLoginPage() {
     const navigate = useNavigate();
-    // const setIsValid = useSetRecoilState(loginState);
 
     // Google 로그인 함수
     const googleLogin = () => {
@@ -20,7 +17,6 @@ function NewLoginPage() {
         if (token) {
             // 토큰이 있는 경우: 로컬 스토리지에 저장하고 상태 업데이트
             localStorage.setItem('accessToken', token);
-            // setIsValid(true); // 로그인 상태 업데이트
             navigate('/main'); // 메인 페이지로 이동
         }
     }, [navigate]);
