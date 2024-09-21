@@ -3,6 +3,7 @@ import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from "@vis.gl/react
 import { useRecoilValue } from "recoil";
 import { SeoulAtom } from "../recoil/SeoulAtom";
 import { useNavigate } from "react-router-dom";
+import { userAtom } from '../recoil/userAtom';
 import Loading from "../assets/loading";
 
 
@@ -14,9 +15,11 @@ export const SecondPlayMap = () => {
     const seoulLocal = useRecoilValue(SeoulAtom);
     const [mapKey, setMapKey] = useState(0);
     const [markerPosition, setMarkerPosition] = useState({ lat: seoulLocal.lat, lng: seoulLocal.long });
-    
+
     const [infoWindowOpen, setInfoWindowOpen] = useState(true);
     const [overlayVisible, setOverlayVisible] = useState(true);
+
+    const user = useRecoilValue(userAtom);
 
     useEffect(() => {
         setMapKey((prevKey) => prevKey + 1);
@@ -46,24 +49,48 @@ export const SecondPlayMap = () => {
        setInfoWindowOpen(true);
     };
 
-    const handleLoadClick = () => {
-        //대기방으로 입장
-        navigate('/wait');
+    const handleLoadClick = async () => {
+        // Send the marker position to the server
+        try {
+            const response = await fetch('/api/room', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include', // Include cookies if necessary
+                body: JSON.stringify({
+                    userId: user.userInformation.id,
+                    latitude: markerPosition.lat,
+                    longitude: markerPosition.lng,
+                }),
+            });
+
+            if (!response.ok) {
+                // Handle error
+                throw new Error('Failed to create room');
+            }
+
+            // Proceed to waiting room
+            navigate('/wait');
+        } catch (error) {
+            console.error('Error creating room:', error);
+            // Optionally display an error message to the user
+        }
     };
 
     const handleOverlayClose = () => {
         setOverlayVisible(false);
     };
-    
+
 
     return (
         <div style={{ maxWidth: '100vw', height: '100vh', margin: 'auto', position: 'relative' }}>
              {overlayVisible && (
-                <div 
+                <div
                     className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
                     style={{ zIndex: 1000 }} // Map 위에 오버레이를 배치하도록 z-index 설정
                 >
-                    <div 
+                    <div
                         className="bg-white p-8 rounded-lg text-center"
                         style={{
                             boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
@@ -98,13 +125,13 @@ export const SecondPlayMap = () => {
                             <AdvancedMarker
                                 key={mapKey}
                                 position={{ lat: markerPosition.lat, lng: markerPosition.lng }}
-                                
+
                                 draggable={true} // 드래그 가능 설정
                                 onDragStart={handleMarkerDragStart}
                                 onDrag={handleMarkerDrag}
                                 onDragEnd={handleMarkerDragEnd}
                             >
-                                <Pin scale={3} 
+                                <Pin scale={3}
                                     background={"#FFBB00"}
                                     borderColor={"#FFBB00"}
                                 >
@@ -145,15 +172,15 @@ export const SecondPlayMap = () => {
                     fontSize: '16px'
                 }}
             >
-            <img 
-                    src="../src/assets/svg/home.svg" 
-                    className="w-5 max-w-xs md:max-w-sm lg:max-w-md" 
-                    alt="Home Icon" 
+            <img
+                    src="../src/assets/svg/home.svg"
+                    className="w-5 max-w-xs md:max-w-sm lg:max-w-md"
+                    alt="Home Icon"
                 />
 
             </button>
 
-            {(!overlayVisible) &&  (           
+            {(!overlayVisible) &&  (
                 <button
                     onClick={handleinfoClick}
                     style={{
@@ -196,6 +223,6 @@ export const SecondPlayMap = () => {
            위치 결정!
             </button>
         </div>
-      
+
     );
 };

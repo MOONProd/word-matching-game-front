@@ -25,11 +25,11 @@ export const RouterList = () => [
     },
     {
         path: "/firstPlay",
-        element: <FirstPlayMap />,
+        element: <ProtectedRoute element={<FirstPlayMap />} />,
     },
     {
         path: "/secondPlay",
-        element: <SecondPlayMap />,
+        element:<ProtectedRoute element={<SecondPlayMap />} />,
     },
     {
         path: "/wait",
