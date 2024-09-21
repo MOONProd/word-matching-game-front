@@ -35,9 +35,9 @@ const ProtectedRoute = () => {
     }
 
     return (
-        <div>
+        <UserInfo>
             <Outlet/> {/* 인증 성공 시 자식 라우트 렌더링 */}
-        </div>
+        </UserInfo>
     );
 };
 
