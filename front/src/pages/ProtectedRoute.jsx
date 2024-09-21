@@ -1,53 +1,37 @@
-import React, { useEffect, useState } from 'react';
+// src/pages/ProtectedRoute.jsx
+import React from 'react';
 import { Navigate } from 'react-router-dom';
-import UserInfo from './UserInfo'; // Import UserInfo component
+import UserInfo from './UserInfo';
+import { useQuery } from '@tanstack/react-query';
 
 function ProtectedRoute({ element }) {
-    const [isValid, setIsValid] = useState(null);
-
-    useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
-
-        if (!accessToken) {
-            // No access token found
-            console.log('No access token found. Redirecting to login.');
-            setIsValid(false);
-            return;
-        }
-
-        // Call the server to check token validity
-        fetch('/auth/check-token', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-            },
-            credentials: 'include', // Include cookies if necessary
-        })
-            .then(response => {
-                if (response.status === 200) {
-                    setIsValid(true);
-                } else {
-                    setIsValid(false);
-                }
-            })
-            .catch(error => {
-                console.error('Error checking token validity:', error);
-                setIsValid(false);
+    const { isLoading, isError } = useQuery({
+        queryKey: ['checkToken'],
+        queryFn: async () => {
+            const response = await fetch('/auth/check-token', {
+                method: 'GET',
+                credentials: 'include', // Include cookies if necessary
             });
-    }, []);
 
-    if (isValid === null) {
-        // Still checking token validity
+            if (!response.ok) {
+                throw new Error('Unauthorized');
+            }
+
+            // Return any necessary data (optional)
+            return response.status;
+        },
+        retry: false, // Optional: prevent retries if unauthorized
+    });
+
+    if (isLoading) {
         return <div>Loading...</div>;
     }
 
-    if (isValid === false) {
-        // Token is invalid or expired
+    if (isError) {
         console.log('Access token is invalid or expired. Redirecting to login.');
         return <Navigate to="/login" />;
     }
 
-    // If token is valid, render UserInfo component to ensure user information is fetched
     return (
         <UserInfo>
             {element}

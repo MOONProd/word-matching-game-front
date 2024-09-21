@@ -9,7 +9,7 @@ import {createBrowserRouter} from "react-router-dom";
 import ResultPage from "./pages/ResultPage.jsx";
 import FirstPlayMap from "./pages/FirstPlayMap.jsx";
 import {SecondPlayMap} from "./pages/SecondPlayMap.jsx"; // Ensure the path is correct
-import WaitingPage from "./pages/WaitingPage.jsx";
+import {WaitingPage} from "./pages/WaitingPage.jsx";
 import NewLoginPage from "./pages/NewLoginPage.jsx";
 import NicknamePage from "./pages/NicknamePage.jsx";
 import {GamePage} from "./pages/GamePage.jsx";

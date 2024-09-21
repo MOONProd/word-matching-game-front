@@ -1,49 +1,119 @@
+// src/pages/UserInfo.jsx
 import React, { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
-import { userAtom } from '../recoil/userAtom'; // Adjust the path as necessary
+import { userAtom } from '../recoil/userAtom';
 import { useNavigate } from 'react-router-dom';
+import { useQueries } from '@tanstack/react-query';
 
 const UserInfo = ({ children }) => {
     const [user, setUser] = useRecoilState(userAtom);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (!user) {
-            // Fetch user info from the backend if it doesn't exist in the Recoil state
-            fetch('/api/userinfo-here', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include', // Include cookies if necessary
-            })
-                .then(response => {
+    const results = useQueries({
+        queries: [
+            {
+                queryKey: ['username'],
+                queryFn: async () => {
+                    const response = await fetch('/api/username', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'include',
+                    });
                     if (!response.ok) {
-                        console.log(response.status);
-                        throw new Error(`Network response was not ok: ${response.status}`);
+                        if (response.status === 401) {
+                            throw new Error('Unauthorized');
+                        } else if (response.status === 404) {
+                            throw new Error('Username not found');
+                        } else {
+                            throw new Error(`Error fetching username: ${response.status}`);
+                        }
+                    }
+                    const data = await response.json();
+                    return data.username;
+                },
+            },
+            {
+                queryKey: ['userInfo'],
+                queryFn: async () => {
+                    const response = await fetch('/api/userinfo-here', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'include',
+                    });
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            return null; // Handle user info not found
+                        } else if (response.status === 401) {
+                            throw new Error('Unauthorized');
+                        } else {
+                            throw new Error(`Error fetching user information: ${response.status}`);
+                        }
                     }
                     return response.json();
-                })
-                .then(data => {
-                    console.log("Fetched user info:", data);
-                    setUser(data);
-                })
-                .catch(error => {
-                    console.log('Error fetching user info:', error);
-                    // Redirect to login if the user is not authenticated or an error occurs
-                    navigate('/login');
-                });
+                },
+            },
+        ],
+    });
+
+    const usernameResult = results[0];
+    const userInfoResult = results[1];
+
+    useEffect(() => {
+        if (!user && usernameResult.isSuccess && userInfoResult.isSuccess) {
+            const username = usernameResult.data;
+            const userInfoData = userInfoResult.data;
+
+            console.log('Fetched username:', username);
+            console.log('Fetched user info:', userInfoData);
+
+            setUser({
+                username: username,
+                userInformation: userInfoData,
+            });
         }
-    }, [user, setUser, navigate]);
+    }, [
+        user,
+        usernameResult.isSuccess,
+        userInfoResult.isSuccess,
+        usernameResult.data,
+        userInfoResult.data,
+        setUser,
+    ]);
 
-    console.log("This is user info:", user);
+    if (usernameResult.isLoading || userInfoResult.isLoading) {
+        return <div>Loading user information...</div>;
+    }
 
-    // While user info is loading, show a loading indicator
-    // if (!user) {
-    //     return <div>Loading user information...</div>;
-    // }
+    if (usernameResult.isError) {
+        console.log('Error fetching username:', usernameResult.error);
+        if (usernameResult.error.message === 'Unauthorized') {
+            navigate('/login');
+            return null;
+        } else {
+            console.error('An error occurred:', usernameResult.error);
+            return <div>Error loading user information</div>;
+        }
+    }
 
-    // Once user info is available, render the wrapped components
+    if (userInfoResult.isError) {
+        console.log('Error fetching user info:', userInfoResult.error);
+        if (userInfoResult.error.message === 'Unauthorized') {
+            navigate('/login');
+            return null;
+        } else {
+            console.error('An error occurred:', userInfoResult.error);
+            return <div>Error loading user information</div>;
+        }
+    }
+
+    if (!user) {
+        return <div>Loading user information...</div>;
+    }
+
     return <>{children}</>;
 };
 
