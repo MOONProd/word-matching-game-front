@@ -15,6 +15,7 @@ function FirstPlayMap(props) {
     const [mapKey, setMapKey] = useState(0);
     const [isLoading, setIsLoading] = useState(true);  // Set initial loading state to true
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedRoom, setSelectedRoom] = useState(null); // New state for selected room
     const mapRef = useRef(null);
 
     const pinColors = ["#FFBB00", "#FF5733", "#33FF57", "#3357FF", "#FF33A6"];
@@ -28,11 +29,9 @@ function FirstPlayMap(props) {
     };
 
     const handlePinClick = (room) => {
-        // Use room data to connect to the user
         console.log('Pin clicked for room:', room);
+        setSelectedRoom(room); // Store the selected room
         setIsModalOpen(true);
-        // Optionally, store the selected room in state
-        // setSelectedRoom(room);
     };
 
     useEffect(() => {
@@ -76,6 +75,28 @@ function FirstPlayMap(props) {
             });
         }
     }, [mapRef.current]);
+
+    const handleJoinRoom = () => {
+        if (selectedRoom) {
+            // Verify the room's location before proceeding
+            fetch(`/api/room/${selectedRoom.id}/verify-location?latitude=${selectedRoom.roomLocationLatitude}&longitude=${selectedRoom.roomLocationLongitude}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.roomExists) {
+                        // If room exists, navigate to WaitingPage
+                        navigate(`/wait/${selectedRoom.id}`, { state: { room: selectedRoom } });
+                        setIsModalOpen(false);
+                    } else {
+                        // If room doesn't exist, show an alert
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error verifying room location:', error);
+                    alert("There was an error verifying the room location.");
+                });
+        }
+    };
 
     return (
         <div style={{ maxWidth: '100vw', height: '100vh', margin: 'auto' }}>
@@ -169,17 +190,13 @@ function FirstPlayMap(props) {
                         <h3>사용자님에게 게임을 신청하시겠습니까?</h3>
                         <button
                             className="mt-4 px-4 py-2 bg-green-500 text-white rounded-full"
-                            onClick={() => {
-                                navigate('/chat');
-                                setIsModalOpen(false);
-                            }}
+                            onClick={handleJoinRoom} // Modified here
                         >
                             예
                         </button>
                         <button
                             className="mt-4 px-4 py-2 text-green-500 rounded-full"
                             onClick={() => {
-                                navigate('/firstPlay');
                                 setIsModalOpen(false);
                             }}
                         >

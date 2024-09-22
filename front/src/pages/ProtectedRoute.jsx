@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 import UserInfo from './UserInfo';
 import { useQuery } from '@tanstack/react-query';
 
-function ProtectedRoute({ element }) {
+function ProtectedRoute({ children }) {
     const { isLoading, isError } = useQuery({
         queryKey: ['checkToken'],
         queryFn: async () => {
@@ -34,7 +34,7 @@ function ProtectedRoute({ element }) {
 
     return (
         <UserInfo>
-            {element}
+            {children}
         </UserInfo>
     );
 }

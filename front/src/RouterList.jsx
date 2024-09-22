@@ -1,66 +1,97 @@
-// import {Layout} from "./layout/Layout.jsx";
-import MainPage from "./pages/MainPage.jsx";
-import {ChatPage} from "./pages/ChatPage.jsx";
-import Test from "./pages/Test.jsx";
-import TestTwo from "./pages/TestTwo.jsx";
-import {LoginPage} from "./pages/LoginPage.jsx";
-import ProtectedRoute from "./pages/ProtectedRoute.jsx";
-import {createBrowserRouter} from "react-router-dom";
-import ResultPage from "./pages/ResultPage.jsx";
-import FirstPlayMap from "./pages/FirstPlayMap.jsx";
-import {SecondPlayMap} from "./pages/SecondPlayMap.jsx"; // Ensure the path is correct
-import {WaitingPage} from "./pages/WaitingPage.jsx";
-import NewLoginPage from "./pages/NewLoginPage.jsx";
-import NicknamePage from "./pages/NicknamePage.jsx";
-import {GamePage} from "./pages/GamePage.jsx";
+// src/router/RouterList.js
+import React from 'react';
+import { createBrowserRouter } from 'react-router-dom';
+
+// Import your components
+import MainPage from './pages/MainPage.jsx';
+import NewLoginPage from './pages/NewLoginPage.jsx';
+import FirstPlayMap from './pages/FirstPlayMap.jsx';
+import {SecondPlayMap} from './pages/SecondPlayMap.jsx';
+import {WaitingPage} from './pages/WaitingPage.jsx';
+import ResultPage from './pages/ResultPage.jsx';
+import {ChatPage} from './pages/ChatPage.jsx';
+import {GamePage} from './pages/GamePage.jsx';
+import {LoginPage} from './pages/LoginPage.jsx';
+import NicknamePage from './pages/NicknamePage.jsx';
+import TestTwo from './pages/TestTwo.jsx';
+import ProtectedRoute from './pages/ProtectedRoute.jsx';
+import PresenceTracker from "./pages/PresenseTracker.jsx";
+
+// Ensure all imports are correct and paths are adjusted as per your project structure
 
 export const RouterList = () => [
     {
-        path: "/",
+        path: '/',
         element: <MainPage />,
     },
     {
-        path: "/newlogin",
+        path: '/newlogin',
         element: <NewLoginPage />,
     },
     {
-        path: "/firstPlay",
-        element: <ProtectedRoute element={<FirstPlayMap />} />,
+        path: '/firstPlay',
+        element: (
+            <ProtectedRoute>
+                <FirstPlayMap />
+            </ProtectedRoute>
+        ),
     },
     {
-        path: "/secondPlay",
-        element:<ProtectedRoute element={<SecondPlayMap />} />,
+        path: '/secondPlay',
+        element: (
+            <ProtectedRoute>
+                <SecondPlayMap />
+            </ProtectedRoute>
+        ),
     },
     {
-        path: "/wait/:roomId",
-        element: <ProtectedRoute element={<WaitingPage />} />,
+        path: '/wait/:roomId',
+        element: (
+            <ProtectedRoute>
+                <PresenceTracker>
+                    <WaitingPage />
+                </PresenceTracker>
+            </ProtectedRoute>
+        ),
     },
     {
-        path: "/result",
+        path: '/result',
         element: <ResultPage />,
     },
     {
-        path: "/chat",
-        element: <ProtectedRoute element={<ChatPage />} /> ,
+        path: '/chat',
+        element: (
+            <ProtectedRoute>
+                <ChatPage />
+            </ProtectedRoute>
+        ),
     },
     {
-        path: "/wordgame",
-        element: <ProtectedRoute element={<GamePage />} /> ,
+        path: '/wordgame',
+        element: (
+            <ProtectedRoute>
+                <GamePage />
+            </ProtectedRoute>
+        ),
     },
     {
-        path: "/login",
+        path: '/login',
         children: [
             {
-                path: "",
+                path: '',
                 element: <LoginPage />,
             },
             {
-                path: "done",
-                element: <NicknamePage />
+                path: 'done',
+                element: <NicknamePage />,
             },
             {
-                path: "dummy",
-                element: <ProtectedRoute element={<TestTwo />} />
+                path: 'dummy',
+                element: (
+                    <ProtectedRoute>
+                        <TestTwo />
+                    </ProtectedRoute>
+                ),
             },
         ],
     },
