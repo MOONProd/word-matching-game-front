@@ -52,6 +52,34 @@ function MainPage() {
         navigate(path);
     };
 
+    const handleLogout = () => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        fetch('/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include' // Include cookies if necessary
+        })
+            .then(response => {
+                if (response.ok) {
+                    // Clear tokens from localStorage
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                    // Redirect to login page
+                    navigate('/');
+                } else {
+                    throw new Error('Logout failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error during logout:', error);
+                // Handle error appropriately (e.g., show a message)
+            });
+    };
+
     return (
         <div className="flex flex-col items-center justify-center relative h-screen"
                 style={{
@@ -132,6 +160,19 @@ function MainPage() {
                             data-target="rank"
                             onClick={toggleState}>
                             이웃순위
+                    </button>
+                </div>
+            </div>
+
+            <div className="absolute top-2 right-8 flex flex-col mb-4"
+                style={{ fontFamily: 'MyCustomFont, sans-serif' }}>
+                <div>
+                    <button 
+                        className="border-solid border-2 border-black rounded-full 
+                        bg-white px-4 py-1 text-sm font-bold hover:bg-gray-200 transition duration-150"
+                        data-target="modal"
+                        onClick={handleLogout}>
+                        로그아웃
                     </button>
                 </div>
             </div>
