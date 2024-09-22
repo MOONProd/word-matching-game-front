@@ -31,7 +31,7 @@ const UserInfo = ({ children }) => {
                 .catch(error => {
                     console.log('Error fetching user info:', error);
                     // Redirect to login if the user is not authenticated or an error occurs
-                    navigate('/login');
+                    navigate('/');
                 });
         }
     }, [user, setUser, navigate]);

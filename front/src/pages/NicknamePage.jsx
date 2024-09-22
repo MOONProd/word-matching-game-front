@@ -19,7 +19,7 @@ function NicknamePage() {
             .then(response => {
                 if (response.status === 401) {
                     console.log('User is not authenticated. Redirecting to login.');
-                    navigate('/login');
+                    navigate('/');
                     return null; // Stop further processing
                 }
                 return response.json();
