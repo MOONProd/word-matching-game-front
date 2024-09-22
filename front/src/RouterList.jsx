@@ -32,8 +32,8 @@ export const RouterList = () => [
         element:<ProtectedRoute element={<SecondPlayMap />} />,
     },
     {
-        path: "/wait",
-        element: <ProtectedRoute element={<WaitingPage />}/>,
+        path: "/wait/:roomId",
+        element: <ProtectedRoute element={<WaitingPage />} />,
     },
     {
         path: "/result",
