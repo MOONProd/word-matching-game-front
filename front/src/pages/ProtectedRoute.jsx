@@ -3,6 +3,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import UserInfo from './UserInfo';
 import { useQuery } from '@tanstack/react-query';
+import PresenceTracker from '../pages/PresenseTracker.jsx'; // Import PresenceTracker
 
 function ProtectedRoute({ children }) {
     const { isLoading, isError } = useQuery({
@@ -33,9 +34,11 @@ function ProtectedRoute({ children }) {
     }
 
     return (
-        <UserInfo>
-            {children}
-        </UserInfo>
+        <PresenceTracker>
+            <UserInfo>
+                {children}
+            </UserInfo>
+        </PresenceTracker>
     );
 }
 

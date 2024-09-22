@@ -4,11 +4,14 @@ import { APIProvider, Map, AdvancedMarker, Pin } from "@vis.gl/react-google-maps
 // import { mapAtom } from "../recoil/testAtom";
 import { useNavigate } from "react-router-dom";
 import Loading from "../assets/loading";
+import {userPresenceAtom} from "../recoil/userPresenseAtom.jsx";
+import {useSetRecoilState} from "recoil";
 
 function FirstPlayMap(props) {
     const googleMapApi = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
     const googleMapId = import.meta.env.VITE_APP_GOOGLE_MAPS_ID;
     const navigate = useNavigate();
+    const setUserPresence = useSetRecoilState(userPresenceAtom);
 
     // const mapData = useRecoilValue(mapAtom);
     const [roomData, setRoomData] = useState([]);
@@ -83,12 +86,17 @@ function FirstPlayMap(props) {
                 .then(response => response.json())
                 .then(data => {
                     if (data.roomExists) {
-                        // If room exists, navigate to WaitingPage
+                        // If room exists, store the roomId in userPresenceAtom
+                        setUserPresence(prev => ({
+                            ...prev,
+                            roomId: selectedRoom.id, // Set the room ID
+                        }));
+
+                        // Navigate to WaitingPage
                         navigate(`/wait/${selectedRoom.id}`, { state: { room: selectedRoom } });
                         setIsModalOpen(false);
                     } else {
-                        // If room doesn't exist, show an alert
-                        alert(data.message);
+                        alert(data.message); // Room doesn't exist
                     }
                 })
                 .catch(error => {

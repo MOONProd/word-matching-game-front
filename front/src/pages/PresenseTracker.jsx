@@ -2,28 +2,28 @@
 import React, { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { useLocation } from 'react-router-dom';
-import { userPresenceAtom } from '../recoil/userPresenseAtom';
+import { userPresenceAtom } from '../recoil/userPresenseAtom'; // Importing the correct atom
 
-let stompClient = null; // Assume this is set when you connect to the WebSocket
-
-const PresenceTracker = ({ children }) => {
-    const [isUserPresent, setIsUserPresent] = useRecoilState(userPresenceAtom);
+const PresenceTracker = ({ children, stompClient }) => {
+    const [userPresence, setUserPresence] = useRecoilState(userPresenceAtom); // Get roomId and presence state from Recoil
+    const { roomId } = userPresence; // Extract roomId from the atom
     const location = useLocation();
-    console.log(location);
+    const currentPath = location.pathname; // Track the current path
 
     useEffect(() => {
-        // User is navigating to a new page, disconnect WebSocket
-        if (stompClient && stompClient.connected) {
-            stompClient.over().disconnect(() => {
-                console.log("WebSocket disconnected due to page change.");
-            });
+        // Check if user is on a /wait/:roomId route
+        if (currentPath.startsWith('/wait')) {
+            setUserPresence((prev) => ({ ...prev, isUserPresent: true })); // User is on /wait route
+        } else {
+            // User has left the /wait route, disconnect the WebSocket if available
+            if (stompClient && stompClient.connected && roomId) {
+                stompClient.disconnect(() => {
+                    console.log(`WebSocket disconnected for room ${roomId} as user left the /wait route.`);
+                });
+            }
+            setUserPresence((prev) => ({ ...prev, isUserPresent: false })); // Mark user as not present
         }
-        setIsUserPresent(false); // Mark the user as not present
-
-        return () => {
-            // Optionally handle any cleanup if necessary
-        };
-    }, [location, setIsUserPresent]); // Effect will run on location change
+    }, [currentPath, roomId, stompClient, setUserPresence]); // Effect runs on path change
 
     return <>{children}</>;
 };
