@@ -44,7 +44,7 @@ export const WaitingPage = () => {
             }
         } else {
             // If user data is not available, navigate to login or handle accordingly
-            navigate('/login');
+            navigate('/main');
         }
 
         // Handle browser refresh or closing the tab

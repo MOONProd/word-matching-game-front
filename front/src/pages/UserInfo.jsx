@@ -91,7 +91,7 @@ const UserInfo = ({ children }) => {
     if (usernameResult.isError) {
         console.log('Error fetching username:', usernameResult.error);
         if (usernameResult.error.message === 'Unauthorized') {
-            navigate('/login');
+            navigate('/main');
             return null;
         } else {
             console.error('An error occurred:', usernameResult.error);
@@ -102,7 +102,7 @@ const UserInfo = ({ children }) => {
     if (userInfoResult.isError) {
         console.log('Error fetching user info:', userInfoResult.error);
         if (userInfoResult.error.message === 'Unauthorized') {
-            navigate('/login');
+            navigate('/main');
             return null;
         } else {
             console.error('An error occurred:', userInfoResult.error);

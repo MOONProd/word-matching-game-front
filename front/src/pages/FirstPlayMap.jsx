@@ -102,6 +102,7 @@ function FirstPlayMap(props) {
                 .catch(error => {
                     console.error('Error verifying room location:', error);
                     alert("There was an error verifying the room location.");
+                    window.location.reload();
                 });
         }
     };
