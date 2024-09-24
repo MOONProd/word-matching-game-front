@@ -22,7 +22,7 @@ function NewLoginPage(props) {
                         className="border-solid border-2 border-black rounded-full 
                         bg-white px-8 py-3 text-2xl hover:bg-gray-200 transition duration-150"
                         data-target="modal"
-                        onClick={()=>{navigate('/login')}}
+                        onClick={()=>{navigate('/login/done')}}
                     >
                         로그인
                     </button>
