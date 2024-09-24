@@ -58,7 +58,9 @@ export const RouterList = () => [
                         path: 'wait/:roomId',
                         element: (
                             <PresenceTracker>
-                                <WaitingPage />
+                                <UserInfo>
+                                    <WaitingPage />
+                                </UserInfo>
                             </PresenceTracker>
                         ),
                     },
