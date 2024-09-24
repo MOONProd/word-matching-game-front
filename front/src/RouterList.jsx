@@ -17,32 +17,29 @@ import NicknamePage from './pages/NicknamePage.jsx';
 import ProtectedRoute from './pages/ProtectedRoute.jsx';
 import PresenceTracker from "./pages/PresenseTracker.jsx";
 import UserInfo from "./pages/UserInfo.jsx";
-import { ChatLogicProvider } from './pages/ChatLogic.jsx';
+
 
 // Ensure all imports are correct and paths are adjusted as per your project structure
 
 export const RouterList = () => [
+    
     {
         path: '/',
         element: <NewLoginPage />,
     },
     {
         path: '/login/done',
-        element: <ProtectedRoute />, // 로그인 후 접근
-        children: [
-            {
-                path: '',
-                element: <NicknamePage />,
-            },
-        ],
+        element: (
+            <ProtectedRoute>
+                <NicknamePage/>
+            </ProtectedRoute>
+        ), // 로그인 후 접근
     },
     {
         path: '/main',
         element: (
             <ProtectedRoute>
-                <ChatLogicProvider> {/* /main 경로에서 ChatLogicProvider 적용 */}
-                    <Outlet /> {/* 자식 컴포넌트를 렌더링 */}
-                </ChatLogicProvider>
+                <Outlet /> {/* 자식 컴포넌트를 렌더링 */}
             </ProtectedRoute>
         ), // 로그인 후 접근
         children: [

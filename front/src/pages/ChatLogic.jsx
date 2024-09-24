@@ -3,6 +3,7 @@ import { over } from 'stompjs';
 import SockJS from 'sockjs-client';
 import { useRecoilValue } from 'recoil';
 import { userAtom } from '../recoil/userAtom';
+import { useLocation } from 'react-router-dom';
 
 let stompClient = null;
 
@@ -16,15 +17,14 @@ export const ChatLogicProvider = ({ children }) => {
     const [connected, setConnected] = useState(false); // 연결 상태
 
     useEffect(() => {
+    
         if (user && user.username) {
             connectWebSocket(user.username);
+        } else {
+            handleUserLeave();
         }
-        return () => {
-            if (stompClient) {
-                stompClient.disconnect();
-            }
-        };
     }, [user]);
+    
 
     // WebSocket 연결 함수
     const connectWebSocket = (username) => {
@@ -37,7 +37,7 @@ export const ChatLogicProvider = ({ children }) => {
         
         setConnected(true);
         stompClient.subscribe('/chatroom/public', onMessageReceived);
-        
+        console.log("Websocket subscribe!");
         let chatMessage = {
             senderName: username,
             status: 'JOIN'
@@ -63,6 +63,20 @@ export const ChatLogicProvider = ({ children }) => {
                 status: 'MESSAGE'
             };
             stompClient.send('/app/message', {}, JSON.stringify(chatMessage));
+        }
+    };
+
+    // WebSocket 연결 해제 함수
+    const handleUserLeave = () => {
+        console.log('User leaving');
+        if (stompClient && stompClient.connected) {
+            let chatMessage = {
+                senderName: user.username,
+                status: 'LEAVE',
+            };
+            stompClient.send(`/app/message`, {}, JSON.stringify(chatMessage));
+            stompClient.disconnect(() => console.log('Disconnected from WebSocket'));
+            setConnected(false); // 연결 상태를 false로 설정
         }
     };
 

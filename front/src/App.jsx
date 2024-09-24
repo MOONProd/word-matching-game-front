@@ -5,6 +5,7 @@ import { RecoilRoot } from 'recoil';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import QueryClient and QueryClientProvider
 import { RouterObject } from './RouterList';
 import './App.css';
+import { ChatLogicProvider } from './pages/ChatLogic.jsx';
 
 // Create an instance of QueryClient
 const queryClient = new QueryClient();
@@ -14,7 +15,9 @@ createRoot(document.getElementById('root')).render(
     <StrictMode>
         <RecoilRoot>
             <QueryClientProvider client={queryClient}>
-                <RouterProvider router={RouterObject} />
+                <ChatLogicProvider>
+                    <RouterProvider router={RouterObject}/>
+                </ChatLogicProvider>
             </QueryClientProvider>
         </RecoilRoot>
     </StrictMode>,
