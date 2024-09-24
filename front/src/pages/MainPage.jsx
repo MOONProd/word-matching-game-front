@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../assets/fonts/font.css';
+import { useChat } from './ChatLogic';
 
 function MainPage() {
     const userData = [
@@ -20,7 +21,16 @@ function MainPage() {
     const navigate = useNavigate();
 
     const [isAnimating, setIsAnimating] = useState(false);
-    
+    const { messages, sendMessage, connected } = useChat(); // Chat Logic의 상태와 함수 가져오기
+    const [message, setMessage] = useState('');
+
+    const handleSendMessage = () => {
+        if (message.trim() !== '') {
+            sendMessage(message); // 메시지 전송
+            setMessage(''); // 메시지 입력 필드 초기화
+        }
+    };
+
     const toggleState = (event)=>{
         const target = event.currentTarget.getAttribute('data-target');
         const isOpen = target === 'modal' ? isModalOpen : isRankOpen;
@@ -219,6 +229,44 @@ function MainPage() {
                     </div>
                 </div>
             )}
+
+        {/* 메인페이지 내 전체 채팅방 */}
+        <div style={{
+                position: 'absolute',
+                bottom: '10px',
+                left: '10px',
+                width: '500px',
+                height: '200px',
+                backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                borderRadius: '10px',
+                padding: '10px',
+                display: 'flex',
+                flexDirection: 'column',
+                color: 'white'
+            }}>
+                <h3>전체채팅</h3>
+                <div style={{ flexGrow: 1, overflowY: 'auto', marginBottom: '10px' }}>
+                    <ul style={{ listStyleType: 'none', padding: 0 }}>
+                        {messages.map((msg, index) => (
+                            <li key={index} style={{ padding: '5px 0' }}>
+                                <strong>{msg.senderName}:</strong> {msg.message}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                <div style={{ display: 'flex' }}>
+                    <input
+                        type="text"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="메시지를 입력하세요."
+                        style={{ flexGrow: 1, marginRight: '10px', padding: '5px', color:'black' }}
+                    />
+                    <button onClick={handleSendMessage} style={{ padding: '5px 10px' }}>
+                        Send
+                    </button>
+                </div>
+            </div>
 
             {isRankOpen && (
                 <div className="fixed inset-0 flex items-center justify-center">

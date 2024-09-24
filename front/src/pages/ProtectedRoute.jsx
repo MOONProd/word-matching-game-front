@@ -1,45 +1,43 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom';
-import UserInfo from './UserInfo';
+// src/pages/ProtectedRoute.jsx
+import React from 'react';
+import {Navigate, Outlet} from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 
-const ProtectedRoute = () => {
-    const [user, setUser] = useState(null);
-    const navigate = useNavigate();
+function ProtectedRoute({ children }) {
 
-    useEffect(() => {
-        fetch('/auth/user-info', {
-            method: 'GET',
-            credentials: 'include'
-        })
-        .then(response => {
-            if (response.status === 401) {
-                console.log('User is not authenticated. Redirecting to login.');
-                navigate('/');
-                return null;
+
+    const { isLoading, isError } = useQuery({
+        queryKey: ['checkToken'],
+        queryFn: async () => {
+            const response = await fetch('/auth/check-token', {
+                method: 'GET',
+                credentials: 'include', // Include cookies if necessary
+            });
+
+            if (!response.ok) {
+                throw new Error('Unauthorized');
             }
-            return response.json();
-        })
-        .then(data => {
-            if (data) {
-                setUser(data);
-                localStorage.setItem('accessToken', data.accessToken);
-                localStorage.setItem('refreshToken', data.refreshToken);
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching user data:', error);
-        });
-    }, [navigate]);
 
-    if (!user) {
-        return <div>Loading...</div>; // 로딩 상태
+            // Return any necessary data (optional)
+            return response.status;
+        },
+        retry: false, // Optional: prevent retries if unauthorized
+    });
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (isError) {
+        console.log('Access token is invalid or expired. Redirecting to login.');
+        return <Navigate to="/" />;
     }
 
     return (
-        <UserInfo>
-            <Outlet/> {/* 인증 성공 시 자식 라우트 렌더링 */}
-        </UserInfo>
+        <>
+            {children}
+        </>
     );
-};
+}
 
 export default ProtectedRoute;

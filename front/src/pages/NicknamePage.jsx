@@ -26,7 +26,6 @@ function NicknamePage() {
             })
             .then(data => {
                 if (data) {
-
                     // Store tokens in localStorage
                     if (data.accessToken) {
                         localStorage.setItem('accessToken', data.accessToken);
@@ -40,6 +39,15 @@ function NicknamePage() {
                         console.log('Refresh token stored in localStorage.');
                     } else {
                         console.warn('No refresh token received from server.');
+                    }
+
+                    // Check the user status
+                    if (data.status === 'noexist') {
+                        console.log('User does not exist, redirecting to set nickname.');
+                        // User does not have a nickname, stay on the nickname setting page
+                    } else if (data.status === 'exist') {
+                        console.log('User exists, redirecting to main page.');
+                        navigate('/main'); // Redirect to main page if user already exists
                     }
                 }
             })
@@ -63,33 +71,30 @@ function NicknamePage() {
             credentials: 'include',
             body: JSON.stringify(data)
         })
-        .then(response => {
-            if (response.ok) {
-                console.log('닉네임 설정 성공');
-                navigate('/'); // 설정 후 메인 페이지로 이동
-            } else {
-                console.error('닉네임 설정 실패');
-                setError('닉네임 설정에 실패했습니다.');
-            }
-        })
-        .catch(error => {
-            console.error('Error during nickname setting:', error);
-            setError('서버와의 통신 중 오류가 발생했습니다.');
-        });
+            .then(response => {
+                if (response.ok) {
+                    console.log('닉네임 설정 성공');
+                    navigate('/main'); // 설정 후 메인 페이지로 이동
+                } else {
+                    console.error('닉네임 설정 실패');
+                    setError('닉네임 설정에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error during nickname setting:', error);
+                setError('서버와의 통신 중 오류가 발생했습니다.');
+            });
     };
 
     useEffect(() => {
         const handleBeforeUnload = (event) => {
             event.preventDefault();
-            // Chrome에서는 이 문자열이 설정되어야 경고창이 표시됨
-            event.returnValue = ''; // 메시지 내용은 대부분의 브라우저에서 무시됨
-            return ''; // 이 리턴이 있어야 경고가 제대로 동작
+            event.returnValue = '';
+            return '';
         };
 
-        // beforeunload 이벤트 등록
         window.addEventListener('beforeunload', handleBeforeUnload);
 
-        // cleanup 함수로 컴포넌트 언마운트 시 이벤트 제거
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };

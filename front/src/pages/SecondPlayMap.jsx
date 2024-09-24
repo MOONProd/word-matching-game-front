@@ -3,6 +3,7 @@ import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from "@vis.gl/react
 import { useRecoilValue } from "recoil";
 import { SeoulAtom } from "../recoil/SeoulAtom";
 import { useNavigate } from "react-router-dom";
+import { userAtom } from '../recoil/userAtom';
 import Loading from "../assets/loading";
 
 
@@ -17,6 +18,8 @@ export const SecondPlayMap = () => {
     
     const [infoWindowOpen, setInfoWindowOpen] = useState(true);
     const [overlayVisible, setOverlayVisible] = useState(true);
+
+    const user = useRecoilValue(userAtom);
 
     useEffect(() => {
         setMapKey((prevKey) => prevKey + 1);
@@ -46,9 +49,37 @@ export const SecondPlayMap = () => {
        setInfoWindowOpen(true);
     };
 
-    const handleLoadClick = () => {
-        //대기방으로 입장
-        navigate('/main/secondPlay/wait');
+    const handleLoadClick = async () => {
+        // Send the marker position to the server
+        try {
+            const response = await fetch('/api/room', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include', // Include cookies if necessary
+                body: JSON.stringify({
+                    userId: user.userInformation.id,
+                    latitude: markerPosition.lat,
+                    longitude: markerPosition.lng,
+                }),
+            });
+
+            if (!response.ok) {
+                // Handle error
+                throw new Error('Failed to create room');
+            }
+
+            // Get the room ID (host ID) from the response if available
+            const data = await response.json();
+            const roomId = data.roomId || user.userInformation.id;
+
+            // Proceed to waiting room, pass roomId and isHost flag
+            navigate(`/main/secondPlay/wait/${roomId}`, { state: { isHost: true } });
+        } catch (error) {
+            console.error('Error creating room:', error);
+            // Optionally display an error message to the user
+        }
     };
 
     const handleOverlayClose = () => {
@@ -118,9 +149,9 @@ export const SecondPlayMap = () => {
                                     headerDisabled={true}
                                 >
                                     <div style={{ fontFamily: 'MyCustomFont, sans-serif', fontSize: '16px', fontWeight: 'bold' }}
-                                        className="text-center">
-                                    원하는 지역에 도달하면 <br/>
-                                    아래 버튼을 클릭해주세요!
+                                         className="text-center">
+                                        원하는 지역에 도달하면 <br/>
+                                        아래 버튼을 클릭해주세요!
                                     </div>
                                 </InfoWindow>
                             )}
