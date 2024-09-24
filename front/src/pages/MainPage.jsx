@@ -17,6 +17,8 @@ function MainPage() {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isRankOpen, setIsRankOpen] = useState(false);
+    const [isLogoutModal, setIsLogoutModal] = useState(false);
+
     const [hovered, setHovered] = useState(null);
     const navigate = useNavigate();
 
@@ -31,11 +33,35 @@ function MainPage() {
         }
     };
 
-    const toggleState = (event)=>{
+    const toggleState = (event) => {
         const target = event.currentTarget.getAttribute('data-target');
-        const isOpen = target === 'modal' ? isModalOpen : isRankOpen;
-        const setIsOpen = target === 'modal' ? setIsModalOpen : setIsRankOpen;
-
+        let isOpen, setIsOpen;
+    
+        // target에 따라 상태를 변경할 상태와 그 함수를 설정합니다.
+        switch (target) {
+            case 'modal':
+                isOpen = isModalOpen;
+                setIsOpen = setIsModalOpen;
+                break;
+            case 'rank':
+                isOpen = isRankOpen;
+                setIsOpen = setIsRankOpen;
+                break;
+            case 'logout':
+                isOpen = isLogoutModal;
+                setIsOpen = setIsLogoutModal;
+                break;
+            default:
+                return;
+        }
+    
+        // 로그아웃 모달의 경우 애니메이션 없이 열기/닫기 설정
+        if (target === 'logout') {
+            setIsOpen(!isOpen);
+            return; // 로그아웃 모달에서 애니메이션 로직을 건너뜁니다.
+        }
+    
+        // 다른 모달들의 애니메이션 로직
         if (isOpen) {
             setIsAnimating(false);
             setTimeout(() => {
@@ -48,6 +74,7 @@ function MainPage() {
             }, 10);
         }
     };
+    
 
     const handleMouseEnter = (direction) => {
         setHovered(direction);
@@ -180,8 +207,8 @@ function MainPage() {
                     <button 
                         className="border-solid border-2 border-black rounded-full 
                         bg-white px-4 py-1 text-sm font-bold hover:bg-gray-200 transition duration-150"
-                        data-target="modal"
-                        onClick={handleLogout}>
+                        data-target="logout"
+                        onClick={toggleState}>
                         로그아웃
                     </button>
                 </div>
@@ -331,6 +358,42 @@ function MainPage() {
                     </div>
                 </div>
             )}
+
+            {/* 로그아웃 모달 */}
+            {isLogoutModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div 
+                        className="relative p-8 rounded-lg max-w-lg w-full bg-white" // 애니메이션 클래스 제거
+                        style={{
+                            width: '400px',
+                            height: '200px',
+                            fontFamily: 'MyCustomFont, sans-serif',
+                        }}
+                    >
+
+                        {/* 로그아웃 확인 내용 */}
+                        <div className="text-center mt-8">
+                            <h2 className="text-2xl font-bold mb-4">로그아웃 하시겠습니까?</h2>
+                            <div className="flex justify-center mt-4 space-x-4">
+                                <button 
+                                    className="px-4 py-2 bg-red-500 text-white rounded-full"
+                                    onClick={handleLogout} // 실제 로그아웃 핸들러 호출
+                                >
+                                    로그아웃
+                                </button>
+                                <button 
+                                    className="px-4 py-2 bg-gray-300 text-black rounded-full"
+                                    data-target="logout" // 로그아웃 모달 닫기
+                                    onClick={toggleState}
+                                >
+                                    취소
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
 
         </div>
     );
