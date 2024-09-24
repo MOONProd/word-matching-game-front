@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../assets/fonts/font.css';
 import { useChat } from './ChatLogic';
+import RuleModal from '../modal/RuleModal';
+import RankModal from '../modal/RankModal';
+import LogoutModal from '../modal/LogoutModal';
 
 function MainPage() {
     const userData = [
@@ -18,11 +21,14 @@ function MainPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isRankOpen, setIsRankOpen] = useState(false);
     const [isLogoutModal, setIsLogoutModal] = useState(false);
+    
+    // 개별 애니메이션 상태 관리
+    const [isModalAnimating, setIsModalAnimating] = useState(false);
+    const [isRankAnimating, setIsRankAnimating] = useState(false);
 
     const [hovered, setHovered] = useState(null);
     const navigate = useNavigate();
 
-    const [isAnimating, setIsAnimating] = useState(false);
     const { messages, sendMessage, connected } = useChat(); // Chat Logic의 상태와 함수 가져오기
     const [message, setMessage] = useState('');
 
@@ -35,17 +41,19 @@ function MainPage() {
 
     const toggleState = (event) => {
         const target = event.currentTarget.getAttribute('data-target');
-        let isOpen, setIsOpen;
+        let isOpen, setIsOpen, setIsAnimating;
     
         // target에 따라 상태를 변경할 상태와 그 함수를 설정합니다.
         switch (target) {
             case 'modal':
                 isOpen = isModalOpen;
                 setIsOpen = setIsModalOpen;
+                setIsAnimating = setIsModalAnimating;
                 break;
             case 'rank':
                 isOpen = isRankOpen;
                 setIsOpen = setIsRankOpen;
+                setIsAnimating = setIsRankAnimating;
                 break;
             case 'logout':
                 isOpen = isLogoutModal;
@@ -214,49 +222,6 @@ function MainPage() {
                 </div>
             </div>
 
-            {/* 모달 창 배경에 이거 보류 bg-black bg-opacity-50 */}
-            {isModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center">
-                    <div 
-                        className={`relative p-8 rounded-lg max-w-lg w-full transform transition-transform duration-500 ease-in-out
-                            ${ isAnimating ? 'translate-y-0' : 'translate-y-full'}`}
-                        style={{
-                            backgroundImage: 'url(../src/assets/images/test-modal.png)',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            backgroundRepeat: 'no-repeat',
-                            width: '800px',
-                            height: '600px',
-                            fontFamily: 'MyCustomFont, sans-serif',
-                        }}
-                    >
-                        {/* 닫기 버튼 */}
-                        <button 
-                            className="absolute top-4 right-4 px-4 py-2 bg-amber-700 text-white rounded-full"
-                            data-target="modal"
-                            onClick={toggleState}
-                        >
-                            닫기
-                        </button>
-
-                        {/* 텍스트 콘텐츠 */}
-                        <div className="text-center text-white">
-                            <h2 className="text-2xl font-bold">게임방법</h2>
-                        </div>
-                        <div className="flex flex-col mt-28 items-center h-full text-black text-lg">
-                            <p className="text-center">이 게임은 주어진 단어로 새로운 단어를 이어가는 게임입니다.</p>
-                            <p className="mt-2 text-center"><strong>예시:</strong> "사과" → "과일" → "일출"</p>
-                            <br />
-                            <p className="text-center">선공을 선택 시, 현재 접속한 이웃에게 대결 신청을 할 수 있습니다.</p>
-                            <p className="text-center">후공을 선택 시, 원하는 지역에서 대결을 대기합니다.</p>
-                            <br />
-                            <p className="text-center">한 게임에서 이기면 +30점, 지면 -20점이 누적됩니다.</p>
-                            <p className="text-center">누적된 점수로 순위가 매겨집니다.</p>
-                        </div>
-                    </div>
-                </div>
-            )}
-
         {/* 메인페이지 내 전체 채팅방 */}
         <div style={{
                 position: 'absolute',
@@ -295,104 +260,14 @@ function MainPage() {
                 </div>
             </div>
 
-            {isRankOpen && (
-                <div className="fixed inset-0 flex items-center justify-center">
-                    <div 
-                        className={`relative p-8 rounded-lg max-w-lg w-full transform transition-transform duration-500 ease-in-out 
-                            ${ isAnimating ? 'translate-y-0' : 'translate-y-full'}`}
-                        style={{
-                            backgroundImage: 'url(../src/assets/images/test-modal.png)',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            backgroundRepeat: 'no-repeat',
-                            width: '800px',
-                            height: '600px',
-                            fontFamily: 'MyCustomFont, sans-serif',
-                        }}
-                    >
-                        {/* 닫기 버튼 */}
-                        <button 
-                            className="absolute top-4 right-4 px-4 py-2 bg-amber-700 text-white rounded-full"
-                            data-target="rank"
-                            onClick={toggleState}
-                        >
-                            닫기
-                        </button>
+        {/* 게임 방법 모달 */}
+        <RuleModal isOpen={isModalOpen} isAnimating={isModalAnimating} onClose={() => setIsModalOpen(false)} />
 
-                        {/* 텍스트 콘텐츠 */}
-                        <div className="text-center text-white">
-                            <h2 className="text-2xl font-bold mb-4">이웃순위</h2>
-                            
-                            {/* 1위 사용자 */}
-                            <div className="flex justify-around text-center items-center space-x-4 mb-4 text-black">
-                                <img 
-                                    src={sortedUserData[0].profilePic} 
-                                    alt={`${sortedUserData[0].username} 프로필`}
-                                    className="w-24 h-24 rounded-full mx-0 mb-4"
-                                />
-                                
-                                    <div className="mx-10 text-xl font-bold">{sortedUserData[0].username}</div>
-                                    <div className="text-lg text-green-600">{sortedUserData[0].score}점</div>
-                                
-                            </div>
+        {/* 이웃 순위 모달 */}
+        <RankModal isOpen={isRankOpen} isAnimating={isRankAnimating} onClose={() => setIsRankOpen(false)} userData={sortedUserData} />
 
-                            {/* 2위 ~ 5위 사용자 */}
-                            <ol className="list-decimal list-inside">
-                                {sortedUserData.slice(1, 5).map((user, index) => (
-                                    <li key={user.id} className="flex justify-around items-center mb-4 text-black">
-                                        <img 
-                                            src={user.profilePic} 
-                                            alt={`${user.username} 프로필`}
-                                            className="w-16 h-16 rounded-full mr-4"
-                                        />
-                                      
-                                        <p className="text-lg font-semibold">{user.username}</p>
-                                        <p className="text-md text-green-500">{user.score}점</p>
-                                        
-                                        
-                                    </li>
-                                ))}
-                            </ol>
-                        </div>
-
-                    </div>
-                </div>
-            )}
-
-            {/* 로그아웃 모달 */}
-            {isLogoutModal && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div 
-                        className="relative p-8 rounded-lg max-w-lg w-full bg-white" // 애니메이션 클래스 제거
-                        style={{
-                            width: '400px',
-                            height: '200px',
-                            fontFamily: 'MyCustomFont, sans-serif',
-                        }}
-                    >
-
-                        {/* 로그아웃 확인 내용 */}
-                        <div className="text-center mt-8">
-                            <h2 className="text-2xl font-bold mb-4">로그아웃 하시겠습니까?</h2>
-                            <div className="flex justify-center mt-4 space-x-4">
-                                <button 
-                                    className="px-4 py-2 bg-red-500 text-white rounded-full"
-                                    onClick={handleLogout} // 실제 로그아웃 핸들러 호출
-                                >
-                                    로그아웃
-                                </button>
-                                <button 
-                                    className="px-4 py-2 bg-gray-300 text-black rounded-full"
-                                    data-target="logout" // 로그아웃 모달 닫기
-                                    onClick={toggleState}
-                                >
-                                    취소
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+        {/* 로그아웃 모달 */}
+        <LogoutModal isOpen={isLogoutModal} onLogout={handleLogout} onClose={() => setIsLogoutModal(false)} />
 
 
         </div>
@@ -400,3 +275,5 @@ function MainPage() {
 }
 
 export default MainPage;
+
+//<a href="https://www.flaticon.com/kr/free-icons/-" title="새롭게 하다 아이콘">새롭게 하다 아이콘 제작자: GOFOX - Flaticon</a>
