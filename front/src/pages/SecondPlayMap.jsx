@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { userAtom } from '../recoil/userAtom';
 import Loading from "../assets/loading";
 
+
 export const SecondPlayMap = () => {
     const googleMapApi = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
     const googleMapId = import.meta.env.VITE_APP_GOOGLE_MAPS_ID;
@@ -14,7 +15,7 @@ export const SecondPlayMap = () => {
     const seoulLocal = useRecoilValue(SeoulAtom);
     const [mapKey, setMapKey] = useState(0);
     const [markerPosition, setMarkerPosition] = useState({ lat: seoulLocal.lat, lng: seoulLocal.long });
-
+    
     const [infoWindowOpen, setInfoWindowOpen] = useState(true);
     const [overlayVisible, setOverlayVisible] = useState(true);
 
@@ -44,8 +45,8 @@ export const SecondPlayMap = () => {
     };
 
     const handleinfoClick = () => {
-        setOverlayVisible(true);
-        setInfoWindowOpen(true);
+       setOverlayVisible(true);
+       setInfoWindowOpen(true);
     };
 
     const handleLoadClick = async () => {
@@ -84,15 +85,16 @@ export const SecondPlayMap = () => {
     const handleOverlayClose = () => {
         setOverlayVisible(false);
     };
+    
 
     return (
         <div style={{ maxWidth: '100vw', height: '100vh', margin: 'auto', position: 'relative' }}>
-            {overlayVisible && (
-                <div
+             {overlayVisible && (
+                <div 
                     className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
                     style={{ zIndex: 1000 }} // Map 위에 오버레이를 배치하도록 z-index 설정
                 >
-                    <div
+                    <div 
                         className="bg-white p-8 rounded-lg text-center"
                         style={{
                             boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
@@ -127,14 +129,15 @@ export const SecondPlayMap = () => {
                             <AdvancedMarker
                                 key={mapKey}
                                 position={{ lat: markerPosition.lat, lng: markerPosition.lng }}
-                                draggable={true}
+                                
+                                draggable={true} // 드래그 가능 설정
                                 onDragStart={handleMarkerDragStart}
                                 onDrag={handleMarkerDrag}
                                 onDragEnd={handleMarkerDragEnd}
                             >
-                                <Pin scale={3}
-                                     background={"#FFBB00"}
-                                     borderColor={"#FFBB00"}
+                                <Pin scale={3} 
+                                    background={"#FFBB00"}
+                                    borderColor={"#FFBB00"}
                                 >
                                     <img src="../src/assets/images/gaguli.png" width="50" height="50"/>
                                 </Pin>
@@ -173,15 +176,15 @@ export const SecondPlayMap = () => {
                     fontSize: '16px'
                 }}
             >
-                <img
-                    src="../src/assets/svg/home.svg"
-                    className="w-5 max-w-xs md:max-w-sm lg:max-w-md"
-                    alt="Home Icon"
+            <img 
+                    src="../src/assets/svg/home.svg" 
+                    className="w-5 max-w-xs md:max-w-sm lg:max-w-md" 
+                    alt="Home Icon" 
                 />
 
             </button>
 
-            {(!overlayVisible) &&  (
+            {(!overlayVisible) &&  (           
                 <button
                     onClick={handleinfoClick}
                     style={{
@@ -199,7 +202,7 @@ export const SecondPlayMap = () => {
                         fontFamily: 'MyCustomFont, sans-serif',
                     }}
                 >
-                    안내멘트 다시보기
+                안내멘트 다시보기
                 </button>
             )}
 
@@ -221,9 +224,9 @@ export const SecondPlayMap = () => {
                     fontFamily: 'MyCustomFont, sans-serif',
                 }}
             >
-                위치 결정!
+           위치 결정!
             </button>
         </div>
-
+      
     );
 };
