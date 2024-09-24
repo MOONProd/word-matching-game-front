@@ -19,7 +19,7 @@ function NicknamePage() {
             .then(response => {
                 if (response.status === 401) {
                     console.log('User is not authenticated. Redirecting to login.');
-                    navigate('/login');
+                    navigate('/');
                     return null; // Stop further processing
                 }
                 return response.json();
@@ -42,6 +42,7 @@ function NicknamePage() {
                         console.warn('No refresh token received from server.');
                     }
                 }
+                navigate('/main');
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
