@@ -16,6 +16,7 @@ import NicknamePage from './pages/NicknamePage.jsx';
 // import TestTwo from './pages/TestTwo.jsx';
 import ProtectedRoute from './pages/ProtectedRoute.jsx';
 import PresenceTracker from "./pages/PresenseTracker.jsx";
+import UserInfo from "./pages/UserInfo.jsx";
 
 // Ensure all imports are correct and paths are adjusted as per your project structure
 
@@ -40,7 +41,7 @@ export const RouterList = () => [
         children: [
             {
                 path: '',
-                element: <MainPage />,
+                element: <UserInfo><MainPage /></UserInfo>,
             },
             {
                 path: 'firstPlay',
