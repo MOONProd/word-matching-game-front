@@ -40,7 +40,7 @@ export const SecondPlayMap = () => {
     };
 
     const handleHomeClick = () => {
-        navigate('/');
+        navigate('/main');
     };
 
     const handleinfoClick = () => {
@@ -74,7 +74,7 @@ export const SecondPlayMap = () => {
             const roomId = data.roomId || user.userInformation.id;
 
             // Proceed to waiting room, pass roomId and isHost flag
-            navigate(`/wait/${roomId}`, { state: { isHost: true } });
+            navigate(`/main/secondPlay/wait/${roomId}`, { state: { isHost: true } });
         } catch (error) {
             console.error('Error creating room:', error);
             // Optionally display an error message to the user

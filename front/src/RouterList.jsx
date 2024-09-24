@@ -11,9 +11,9 @@ import {WaitingPage} from './pages/WaitingPage.jsx';
 import ResultPage from './pages/ResultPage.jsx';
 import {ChatPage} from './pages/ChatPage.jsx';
 import {GamePage} from './pages/GamePage.jsx';
-import {LoginPage} from './pages/LoginPage.jsx';
+// import {LoginPage} from './pages/LoginPage.jsx';
 import NicknamePage from './pages/NicknamePage.jsx';
-import TestTwo from './pages/TestTwo.jsx';
+// import TestTwo from './pages/TestTwo.jsx';
 import ProtectedRoute from './pages/ProtectedRoute.jsx';
 import PresenceTracker from "./pages/PresenseTracker.jsx";
 
@@ -22,77 +22,78 @@ import PresenceTracker from "./pages/PresenseTracker.jsx";
 export const RouterList = () => [
     {
         path: '/',
-        element: <MainPage />,
-    },
-    {
-        path: '/newlogin',
         element: <NewLoginPage />,
     },
     {
-        path: '/firstPlay',
-        element: (
-            <ProtectedRoute>
-                <FirstPlayMap />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: '/secondPlay',
-        element: (
-            <ProtectedRoute>
-                <SecondPlayMap />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: '/wait/:roomId',
-        element: (
-            <ProtectedRoute>
-                <PresenceTracker>
-                    <WaitingPage />
-                </PresenceTracker>
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: '/result',
-        element: <ResultPage />,
-    },
-    {
-        path: '/chat',
-        element: (
-            <ProtectedRoute>
-                <ChatPage />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: '/wordgame',
-        element: (
-            <ProtectedRoute>
-                <GamePage />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: '/login',
+        path: '/login/done',
+        element: <ProtectedRoute />, // 로그인 후 접근
         children: [
             {
                 path: '',
-                element: <LoginPage />,
-            },
-            {
-                path: 'done',
                 element: <NicknamePage />,
             },
+        ],
+    },
+    {
+        path: '/main',
+        element: <ProtectedRoute />, // 로그인 후 접근
+        children: [
             {
-                path: 'dummy',
-                element: (
-                    <ProtectedRoute>
-                        <TestTwo />
-                    </ProtectedRoute>
-                ),
+                path: '',
+                element: <MainPage />,
             },
+            {
+                path: 'firstPlay',
+                element: <FirstPlayMap />,
+            },
+            {
+                path: 'secondPlay',
+                children: [
+                    {
+                        path: '',
+                        element: <SecondPlayMap />,
+                    },
+                    {
+                        path: 'wait/:roomId',
+                        element: (
+                            <PresenceTracker>
+                                <WaitingPage />
+                            </PresenceTracker>
+                        ),
+                    },
+                ],
+            },
+        ],
+
+    },
+    {
+        path: '/chat',
+        element: <ProtectedRoute />,
+        children: [
+            {
+                path: '',
+                element: <ChatPage />,
+            },
+            {
+                path: 'result',
+                element: <ResultPage />,
+            },
+
+        ],
+    },
+    {
+        path: '/wordgame',
+        element: <ProtectedRoute />,
+        children: [
+            {
+                path: '',
+                element: <GamePage />,
+            },
+            {
+                path: 'result',
+                element: <ResultPage />,
+            },
+
         ],
     },
 ];

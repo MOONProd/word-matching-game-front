@@ -28,7 +28,7 @@ function FirstPlayMap(props) {
     };
 
     const handleHomeClick = () => {
-        navigate('/');
+        navigate('/main');
     };
 
     const handlePinClick = (room) => {
@@ -93,7 +93,7 @@ function FirstPlayMap(props) {
                         }));
 
                         // Navigate to WaitingPage
-                        navigate(`/wait/${selectedRoom.id}`, { state: { room: selectedRoom } });
+                        navigate(`/main/secondPlay/wait/${selectedRoom.id}`, { state: { room: selectedRoom } });
                         setIsModalOpen(false);
                     } else {
                         alert(data.message); // Room doesn't exist
@@ -204,9 +204,8 @@ function FirstPlayMap(props) {
                         </button>
                         <button
                             className="mt-4 px-4 py-2 text-green-500 rounded-full"
-                            onClick={() => {
-                                setIsModalOpen(false);
-                            }}
+                            onClick={()=>{navigate('/main/firstPlay'); setIsModalOpen(false)}}
+
                         >
                             아니요
                         </button>
