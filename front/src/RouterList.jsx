@@ -16,7 +16,7 @@ export const RouterList = () => [
         element: <NewLoginPage />, // 로그인 전 접근 가능
     },
     {
-        path: "/done",
+        path: "/login/done",
         element: <ProtectedRoute />, // 로그인 후 접근
         children: [
             {
