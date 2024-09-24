@@ -1,6 +1,6 @@
 // src/router/RouterList.js
 import React from 'react';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Outlet } from 'react-router-dom';
 
 // Import your components
 import MainPage from './pages/MainPage.jsx';
@@ -18,30 +18,38 @@ import ProtectedRoute from './pages/ProtectedRoute.jsx';
 import PresenceTracker from "./pages/PresenseTracker.jsx";
 import UserInfo from "./pages/UserInfo.jsx";
 
+
 // Ensure all imports are correct and paths are adjusted as per your project structure
 
 export const RouterList = () => [
+    
     {
         path: '/',
         element: <NewLoginPage />,
     },
     {
         path: '/login/done',
-        element: <ProtectedRoute />, // 로그인 후 접근
-        children: [
-            {
-                path: '',
-                element: <NicknamePage />,
-            },
-        ],
+        element: (
+            <ProtectedRoute>
+                <NicknamePage/>
+            </ProtectedRoute>
+        ), // 로그인 후 접근
     },
     {
         path: '/main',
-        element: <ProtectedRoute />, // 로그인 후 접근
+        element: (
+            <ProtectedRoute>
+                <Outlet /> {/* 자식 컴포넌트를 렌더링 */}
+            </ProtectedRoute>
+        ), // 로그인 후 접근
         children: [
             {
                 path: '',
-                element: <UserInfo><MainPage /></UserInfo>,
+                element: (
+                    <UserInfo>
+                        <MainPage />
+                    </UserInfo>
+                ),
             },
             {
                 path: 'firstPlay',
