@@ -4,6 +4,7 @@ import {Navigate, Outlet} from 'react-router-dom';
 import UserInfo from './UserInfo';
 import { useQuery } from '@tanstack/react-query';
 import PresenceTracker from '../pages/PresenseTracker.jsx'; // Import PresenceTracker
+import { ChatLogicProvider } from './ChatLogic.jsx';
 
 function ProtectedRoute({ children }) {
     const { isLoading, isError } = useQuery({
@@ -34,16 +35,9 @@ function ProtectedRoute({ children }) {
     }
 
     return (
-
-
-
-        <Outlet />
-
-        //<PresenceTracker>
-        //     <UserInfo>
-        //         {children}
-        //     </UserInfo>
-        //</PresenceTracker>
+        <>
+            {children}
+        </>
     );
 }
 

@@ -1,6 +1,6 @@
 // src/router/RouterList.js
 import React from 'react';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Outlet } from 'react-router-dom';
 
 // Import your components
 import MainPage from './pages/MainPage.jsx';
@@ -17,6 +17,7 @@ import NicknamePage from './pages/NicknamePage.jsx';
 import ProtectedRoute from './pages/ProtectedRoute.jsx';
 import PresenceTracker from "./pages/PresenseTracker.jsx";
 import UserInfo from "./pages/UserInfo.jsx";
+import { ChatLogicProvider } from './pages/ChatLogic.jsx';
 
 // Ensure all imports are correct and paths are adjusted as per your project structure
 
@@ -37,11 +38,21 @@ export const RouterList = () => [
     },
     {
         path: '/main',
-        element: <ProtectedRoute />, // 로그인 후 접근
+        element: (
+            <ProtectedRoute>
+                <ChatLogicProvider> {/* /main 경로에서 ChatLogicProvider 적용 */}
+                    <Outlet /> {/* 자식 컴포넌트를 렌더링 */}
+                </ChatLogicProvider>
+            </ProtectedRoute>
+        ), // 로그인 후 접근
         children: [
             {
                 path: '',
-                element: <UserInfo><MainPage /></UserInfo>,
+                element: (
+                    <UserInfo>
+                        <MainPage />
+                    </UserInfo>
+                ),
             },
             {
                 path: 'firstPlay',
@@ -58,7 +69,9 @@ export const RouterList = () => [
                         path: 'wait/:roomId',
                         element: (
                             <PresenceTracker>
-                                <WaitingPage />
+                                <UserInfo>
+                                    <WaitingPage />
+                                </UserInfo>
                             </PresenceTracker>
                         ),
                     },
