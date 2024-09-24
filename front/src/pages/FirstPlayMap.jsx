@@ -180,12 +180,20 @@ function FirstPlayMap(props) {
                     position: "absolute",
                     top: "10px",
                     left: "80px",
-                    backgroundColor: "yellow",
-                    border: "solid"
+                    backgroundColor: "#fff",
+                    border: 'none',
+                    padding: '10px 15px',
+                    borderRadius: '5px',
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
+                    cursor: 'pointer',
                 }}
                 onClick={() => window.location.reload()}
             >
-                새로고침
+                <img 
+                    src="../src/assets/svg/refresh.svg"
+                    className="w-5 max-w-xs md:max-w-sm lg:max-w-md"
+                    alt="Refresh Icon"
+                />
             </button>
 
             {/* Modal Window */}
