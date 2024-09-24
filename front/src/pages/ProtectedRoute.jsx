@@ -1,6 +1,6 @@
 // src/pages/ProtectedRoute.jsx
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import {Navigate, Outlet} from 'react-router-dom';
 import UserInfo from './UserInfo';
 import { useQuery } from '@tanstack/react-query';
 import PresenceTracker from '../pages/PresenseTracker.jsx'; // Import PresenceTracker
@@ -34,11 +34,16 @@ function ProtectedRoute({ children }) {
     }
 
     return (
-        <PresenceTracker>
+
+
+
+        // <Outlet />
+
+        //<PresenceTracker>
             <UserInfo>
                 {children}
             </UserInfo>
-        </PresenceTracker>
+        //</PresenceTracker>
     );
 }
 
