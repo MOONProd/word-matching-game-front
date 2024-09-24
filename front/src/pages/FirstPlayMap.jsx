@@ -124,9 +124,7 @@ function FirstPlayMap(props) {
                                 defaultZoom={10}
                                 defaultCenter={{ lat: 37.5665, lng: 126.9780 }}
                                 mapId={googleMapId}
-                                options={{
-                                    mapTypeControl: false,
-                                }}
+                                disableDefaultUI = {true}
                             >
                                 {roomData.map((room, index) => {
                                     const color = getRandomColor();

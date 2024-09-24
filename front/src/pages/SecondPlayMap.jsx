@@ -122,9 +122,9 @@ export const SecondPlayMap = () => {
                             defaultCenter={{ lat: markerPosition.lat, lng: markerPosition.lng }}
                             mapId={googleMapId}
                             options={{
-                                mapTypeControl: false,
                                 maxZoom: 20,
                             }}
+                            disableDefaultUI = {true}
                         >
                             <AdvancedMarker
                                 key={mapKey}
