@@ -74,7 +74,7 @@ function NicknamePage() {
             .then(response => {
                 if (response.ok) {
                     console.log('닉네임 설정 성공');
-                    navigate('/'); // 설정 후 메인 페이지로 이동
+                    navigate('/main'); // 설정 후 메인 페이지로 이동
                 } else {
                     console.error('닉네임 설정 실패');
                     setError('닉네임 설정에 실패했습니다.');

@@ -37,12 +37,12 @@ function ProtectedRoute({ children }) {
 
 
 
-        // <Outlet />
+        <Outlet />
 
         //<PresenceTracker>
-            <UserInfo>
-                {children}
-            </UserInfo>
+        //     <UserInfo>
+        //         {children}
+        //     </UserInfo>
         //</PresenceTracker>
     );
 }

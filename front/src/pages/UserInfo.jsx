@@ -1,3 +1,4 @@
+// src/pages/UserInfo.jsx
 import React, { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { userAtom } from '../recoil/userAtom';
@@ -30,7 +31,7 @@ const UserInfo = ({ children }) => {
                         }
                     }
                     const data = await response.json();
-                    return { username: data.username, status: data.status };  // Returning status along with username
+                    return data.username;
                 },
             },
             {
@@ -63,25 +64,16 @@ const UserInfo = ({ children }) => {
 
     useEffect(() => {
         if (!user && usernameResult.isSuccess && userInfoResult.isSuccess) {
-            const { username, status } = usernameResult.data;  // Destructure status from response
+            const username = usernameResult.data;
             const userInfoData = userInfoResult.data;
 
             console.log('Fetched username:', username);
             console.log('Fetched user info:', userInfoData);
-            console.log('User status:', status);  // Log the status
 
-            if (status === 'noexist') {
-                // Navigate to the nickname setup page if user does not exist
-                navigate('/set-nickname');
-            } else if (status === 'exist') {
-                // Set the user information in Recoil state
-                setUser({
-                    username: username,
-                    userInformation: userInfoData,
-                });
-                // Navigate to the main page
-                navigate('/main');
-            }
+            setUser({
+                username: username,
+                userInformation: userInfoData,
+            });
         }
     }, [
         user,
@@ -90,7 +82,6 @@ const UserInfo = ({ children }) => {
         usernameResult.data,
         userInfoResult.data,
         setUser,
-        navigate,
     ]);
 
     if (usernameResult.isLoading || userInfoResult.isLoading) {
@@ -127,3 +118,5 @@ const UserInfo = ({ children }) => {
 };
 
 export default UserInfo;
+
+
