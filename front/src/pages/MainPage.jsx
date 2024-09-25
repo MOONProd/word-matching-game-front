@@ -256,21 +256,21 @@ function MainPage() {
 
                 </div>
                 <div style={{ display: 'flex' }}>
-                <input
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="메시지를 입력하세요."
-                    style={{ flexGrow: 1, marginRight: '10px', padding: '5px', color:'black' }}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            handleSendMessage(); // 엔터 키를 누르면 메시지 전송
-                        }
-                    }}
-                />
-                <button onClick={handleSendMessage} style={{ padding: '5px 10px' }}>
-                    Send
-                </button>
+                    <input
+                        type="text"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="메시지를 입력하세요."
+                        style={{ flexGrow: 1, marginRight: '10px', padding: '5px', color:'black' }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                handleSendMessage(); // 엔터 키를 누르면 메시지 전송
+                            }
+                        }}
+                    />
+                    <button onClick={handleSendMessage} style={{ padding: '5px 10px' }}>
+                        Send
+                    </button>
                 </div>
             </div>
 
