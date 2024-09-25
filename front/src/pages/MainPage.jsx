@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../assets/fonts/font.css';
 import { useChat } from './ChatLogic';
@@ -35,6 +35,20 @@ function MainPage() {
 
     const { messages, sendMessage, connectedUsers } = useChat();
     const [message, setMessage] = useState('');
+
+    // Ref 생성: 채팅 메시지 리스트의 스크롤 조작을 위해 사용
+    const messagesEndRef = useRef(null);
+
+    // 메시지가 추가될 때마다 스크롤을 최신 메시지로 이동
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]); // messages가 변경될 때마다 실행
+
+    const scrollToBottom = () => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
     const handleSendMessage = () => {
         if (message.trim() !== '') {
@@ -263,6 +277,8 @@ function MainPage() {
                                 )}
                             </li>
                         ))}
+                        {/* 아래로 스크롤 조작을 위한 더미 div */}
+                        <div ref={messagesEndRef} />
                     </ul>
 
                 </div>
