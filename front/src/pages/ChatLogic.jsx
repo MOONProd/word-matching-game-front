@@ -3,44 +3,53 @@ import { over } from 'stompjs';
 import SockJS from 'sockjs-client';
 import { useRecoilValue } from 'recoil';
 import { userAtom } from '../recoil/userAtom';
-import { useLocation } from 'react-router-dom';
 
 let stompClient = null;
 
-// Create a context for the chat
-const ChatContext = createContext();
+const ChatContext = createContext(undefined);
 
-// ChatLogic Provider Component
 export const ChatLogicProvider = ({ children }) => {
-    const user = useRecoilValue(userAtom); // Recoil 상태에서 유저 정보 가져오기
-    const [messages, setMessages] = useState([]); // 전체 채팅 메시지 목록
-    const [connected, setConnected] = useState(false); // 연결 상태
+    const user = useRecoilValue(userAtom);
+    const [messages, setMessages] = useState([]);
+    const [connected, setConnected] = useState(false);
 
     useEffect(() => {
-    
-        if (user && user.username) {
-            connectWebSocket(user.username);
+        if (user && user.username && user.userInformation && user.userInformation.id) {
+            connectWebSocket(user.username, user.userInformation.id);
         } else {
             handleUserLeave();
         }
-    }, [user]);
-    
 
-    // WebSocket 연결 함수
-    const connectWebSocket = (username) => {
+        // Cleanup on component unmount
+        return () => {
+            handleUserLeave();
+        };
+    }, [user]);
+
+    const connectWebSocket = (username, userId) => {
         let Sock = new SockJS('/ws');
         stompClient = over(Sock);
-        stompClient.connect({}, () => onConnected(username), onError);
+
+        console.log("User data from atom: ", user);
+
+        // Adjust the headers to match the structure of your user data
+        const headers = {
+            userId: userId.toString(),
+            username: username
+        };
+
+        stompClient.connect(headers, () => onConnected(username, userId), onError);
     };
 
-    const onConnected = (username) => {
-        
+    const onConnected = (username, userId) => {
         setConnected(true);
         stompClient.subscribe('/chatroom/public', onMessageReceived);
-        console.log("Websocket subscribe!");
+        console.log("Websocket subscribed to /chatroom/public");
+
         let chatMessage = {
             senderName: username,
-            status: 'JOIN'
+            status: 'JOIN',
+            userId: userId
         };
         stompClient.send('/app/message', {}, JSON.stringify(chatMessage));
     };
@@ -48,35 +57,36 @@ export const ChatLogicProvider = ({ children }) => {
     const onMessageReceived = (payload) => {
         try {
             let payloadData = JSON.parse(payload.body);
-            console.log('Received message:', payloadData); // 수신된 메시지 로그
+            console.log('Received message:', payloadData);
             setMessages((prevMessages) => [...prevMessages, payloadData]);
         } catch (error) {
             console.error("Message Parsing Error: ", error, payload.body);
         }
     };
 
-    const sendMessage = (message) => {
-        if (stompClient && user) {
+    const sendMessage = (messageContent) => {
+        if (stompClient && user && user.userInformation && user.userInformation.id) {
             let chatMessage = {
                 senderName: user.username,
-                message: message,
-                status: 'MESSAGE'
+                message: messageContent,
+                status: 'MESSAGE',
+                userId: user.userInformation.id
             };
             stompClient.send('/app/message', {}, JSON.stringify(chatMessage));
         }
     };
 
-    // WebSocket 연결 해제 함수
     const handleUserLeave = () => {
         console.log('User leaving');
         if (stompClient && stompClient.connected) {
             let chatMessage = {
                 senderName: user.username,
                 status: 'LEAVE',
+                userId: user.userInformation?.id // Using optional chaining to avoid errors
             };
-            stompClient.send(`/app/message`, {}, JSON.stringify(chatMessage));
+            stompClient.send('/app/message', {}, JSON.stringify(chatMessage));
             stompClient.disconnect(() => console.log('Disconnected from WebSocket'));
-            setConnected(false); // 연결 상태를 false로 설정
+            setConnected(false);
         }
     };
 
@@ -91,7 +101,6 @@ export const ChatLogicProvider = ({ children }) => {
     );
 };
 
-// Hook to use the Chat context
 export const useChat = () => {
     return useContext(ChatContext);
 };
