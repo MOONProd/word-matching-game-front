@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { over } from 'stompjs';
 import SockJS from 'sockjs-client';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { userAtom } from '../recoil/userAtom';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import '../Chat.css';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import { userPresenceAtom } from '../recoil/userPresenseAtom.jsx';
 import { stompClientAtom } from '../recoil/stompclientAtom.jsx';
 
@@ -19,10 +20,16 @@ export const WaitingPage = () => {
         connected: false,
         message: '',
     });
+
+    const [timeProgress, setTimeProgress] = useState(0);
+    const [isTimerActive, setIsTimerActive] = useState(false)
+
     const [roomStatus, setRoomStatus] = useState({
         hostReady: false,
         visitorReady: false,
     });
+    
+    const timerRef = useRef(null); // 타이머 참조 변수
 
     const user = useRecoilValue(userAtom);
     const [userPresence, setUserPresence] = useRecoilState(userPresenceAtom);
@@ -74,6 +81,26 @@ export const WaitingPage = () => {
             window.removeEventListener('popstate', handlePopState);
         };
     }, [user, navigate, roomId]);
+
+    // 타이머 관리
+    useEffect(() => {
+        if (isTimerActive) {
+            timerRef.current = setInterval(() => {
+                setTimeProgress((prev) => {
+                    if (prev < 100) {
+                        return prev + 2; // 5초 동안 0에서 100까지 증가
+                    } else {
+                        clearInterval(timerRef.current);
+                        alert('시간 종료!');
+                        setIsTimerActive(false);
+                        return 0;
+                    }
+                });
+            }, 100);
+
+            return () => clearInterval(timerRef.current);
+        }
+    }, [isTimerActive]);
 
     // Handle WebSocket connection
     const registerUser = (username) => {
@@ -178,7 +205,14 @@ export const WaitingPage = () => {
             };
             stompClient.send(`/app/room/${roomId}/message`, {}, JSON.stringify(chatMessage));
             setUserData((prevData) => ({ ...prevData, message: '' }));
+            resetTimer(); // 타이머 초기화
         }
+    };
+
+    // 타이머 초기화
+    const resetTimer = () => {
+        setTimeProgress(0);
+        setIsTimerActive(true); // 타이머 시작
     };
 
     const sendPrivateMessage = () => {
@@ -237,6 +271,11 @@ export const WaitingPage = () => {
                     throw new Error('Failed to update ready status');
                 }
                 console.log('Ready status updated successfully');
+                // 상태 업데이트 로직 추가 가능
+                setRoomStatus((prevStatus) => ({
+                    ...prevStatus,
+                    visitorReady: true, // 방문자 준비 상태로 설정 (호스트일 경우에도 이 부분 조정 필요)
+                }));
             })
             .catch((error) => {
                 console.error('Error updating ready status:', error);
@@ -244,109 +283,58 @@ export const WaitingPage = () => {
     };
 
     return (
-        <div className="container">
-            {userData.connected ? (
-                <div className="chat-box">
-                    <div className="member-list">
-                        <ul>
-                            <li
-                                onClick={() => setTab('CHATROOM')}
-                                className={`member ${tab === 'CHATROOM' ? 'active' : ''}`}
-                            >
-                                Chatroom
-                            </li>
-                            {[...privateChats.keys()].map((name, index) => (
-                                <li
-                                    onClick={() => setTab(name)}
-                                    className={`member ${tab === name ? 'active' : ''}`}
-                                    key={index}
-                                >
-                                    {name}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    {tab === 'CHATROOM' ? (
-                        <div className="chat-content">
-                            <ul className="chat-message">
-                                {publicChats.map((chat, index) => (
-                                    <li className="member" key={index}>
-                                        {chat.senderName !== user.username && (
-                                            <div className="avatar">{chat.senderName}</div>
-                                        )}
-                                        <div className="message-data">{chat.message}</div>
-                                        {chat.senderName === user.username && (
-                                            <div className="avatar self">{chat.senderName}</div>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
-                            <div className="send-message">
-                                <input
-                                    type="text"
-                                    className="input-message"
-                                    name="message"
-                                    placeholder="Enter public message"
-                                    value={userData.message}
-                                    onChange={handleMessageChange}
-                                />
-                                <button
-                                    type="button"
-                                    className="send-button"
-                                    onClick={sendPublicMessage}
-                                >
-                                    Send
-                                </button>
+        <div className="flex flex-col h-screen bg-blue-50">
+            <img src="../src/assets/images/cheerGagul.png" 
+                 className="w-1/12 max-w-xs h-auto" 
+                 alt="cheer image"/>
+            <h2 className="text-center text-xl font-bold mt-4">채팅방에 오신 것을 환영합니다!</h2>
+
+            <div className="flex-grow p-5 overflow-y-auto w-1/2 mx-auto">
+                <ul className="list-none p-0">
+                    {publicChats.map((item, index) => (
+                        <li 
+                            key={index} 
+                            className={`flex ${item.senderName === user.username ? 'justify-end' : 'justify-start'} mb-2`}
+                        >
+                            <div className={`px-4 py-2 rounded-xl ${item.senderName === user.username ? 'bg-green-100' : 'bg-gray-200'} max-w-lg break-words`}>
+                                {item.senderName !== user.username ? (
+                                    <strong>{item.senderName}:</strong>
+                                ) : (
+                                    <strong>나:</strong>
+                                )} {item.message}
                             </div>
-                        </div>
-                    ) : (
-                        <div className="chat-content">
-                            <ul className="chat-message">
-                                {privateChats.get(tab) &&
-                                    privateChats.get(tab).map((chat, index) => (
-                                        <li className="member" key={index}>
-                                            {chat.senderName !== user.username && (
-                                                <div className="avatar">{chat.senderName}</div>
-                                            )}
-                                            <div className="message-data">{chat.message}</div>
-                                            {chat.senderName === user.username && (
-                                                <div className="avatar self">{chat.senderName}</div>
-                                            )}
-                                        </li>
-                                    ))}
-                            </ul>
-                            <div className="send-message">
-                                <input
-                                    type="text"
-                                    className="input-message"
-                                    name="message"
-                                    placeholder={`Enter private message for ${tab}`}
-                                    value={userData.message}
-                                    onChange={handleMessageChange}
-                                />
-                                <button
-                                    type="button"
-                                    className="send-button"
-                                    onClick={sendPrivateMessage}
-                                >
-                                    Send
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                    <div className="ready-button">
-                        <button onClick={handleReadyStatus}>
-                            {roomStatus.hostReady && roomStatus.visitorReady
-                                ? 'Both Ready'
-                                : 'Click to Ready'}
-                        </button>
-                    </div>
-                </div>
-            ) : (
-                <div className="register">
-                    <div>Connecting to chat...</div>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            {/* 타이머 바 영역 */}
+            {isTimerActive && (            
+                <div className="w-full bg-gray-300 h-1 relative">
+                    <div 
+                        className="bg-blue-500 h-1 absolute left-0 top-0 transition-all duration-100" 
+                        style={{ width: `${timeProgress}%` }}
+                    />
                 </div>
             )}
+
+            {/* 채팅 입력 및 준비 버튼 영역 */}
+            <div className="flex justify-center p-4 space-x-2">
+                <TextField 
+                    id="outlined-basic" 
+                    label="메시지를 입력하세요" 
+                    variant="outlined"
+                    value={userData.message}
+                    onChange={handleMessageChange}
+                    className="mr-4"
+                />
+                <Button variant="contained" color="primary" onClick={sendPublicMessage}>
+                    전송
+                </Button>
+                <Button variant="contained" color="secondary" onClick={handleReadyStatus}>
+                    {roomStatus.hostReady && roomStatus.visitorReady ? 'Both Ready' : 'Click to Ready'}
+                </Button>
+            </div>
         </div>
     );
 };
