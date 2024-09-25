@@ -6,6 +6,7 @@ import { FaUserFriends } from 'react-icons/fa';
 import RuleModal from '../modal/RuleModal';
 import RankModal from '../modal/RankModal';
 import LogoutModal from '../modal/LogoutModal';
+import UserListModal from '../modal/UserListModal';
 
 
 function MainPage() {
@@ -45,8 +46,7 @@ function MainPage() {
     const toggleState = (event) => {
         const target = event.currentTarget.getAttribute('data-target');
         let isOpen, setIsOpen, setIsAnimating;
-    
-        // target에 따라 상태를 변경할 상태와 그 함수를 설정합니다.
+
         switch (target) {
             case 'modal':
                 isOpen = isModalOpen;
@@ -61,15 +61,15 @@ function MainPage() {
             case 'logout':
                 isOpen = isLogoutModal;
                 setIsOpen = setIsLogoutModal;
+                setIsOpen(!isOpen);
                 break;
+            case 'userlist': // 접속자 목록 모달 추가
+                isOpen = isUserListOpen;
+                setIsOpen = setIsUserListOpen;
+                setIsOpen(!isOpen); // 즉시 열리고 닫히도록 설정 (애니메이션 없음)
+                return;
             default:
                 return;
-        }
-    
-        // 로그아웃 모달의 경우 애니메이션 없이 열기/닫기 설정
-        if (target === 'logout') {
-            setIsOpen(!isOpen);
-            return; // 로그아웃 모달에서 애니메이션 로직을 건너뜁니다.
         }
     
         // 다른 모달들의 애니메이션 로직
@@ -84,10 +84,6 @@ function MainPage() {
                 setIsAnimating(true);
             }, 10);
         }
-    };
-    
-    const toggleUserList = () => {
-        setIsUserListOpen(!isUserListOpen);
     };
 
     const handleMouseEnter = (direction) => {
@@ -245,7 +241,9 @@ function MainPage() {
                 <div className="flex justify-between items-center">
                     <h3>전체채팅</h3>
                     {/* 접속자 목록 아이콘 */}
-                    <button onClick={toggleUserList} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'white' }}>
+                    <button onClick={toggleState} 
+                            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'white' }}
+                            data-target="userlist">
                         <FaUserFriends size={24} />
                     </button>
                 </div>
@@ -287,31 +285,6 @@ function MainPage() {
                 </div>
             </div>
 
-            {/* 접속자 목록 모달 */}
-            {isUserListOpen && (
-                <div style={{
-                    position: 'absolute',
-                    bottom: '215px', // 채팅창 위로 배치되도록 설정, 채팅창 높이 + 약간의 간격
-                    left: '310px', // 채팅창의 왼쪽 위치와 동일하게 설정
-                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                    borderRadius: '5px',
-                    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
-                    padding: '10px',
-                    width: '200px',
-                    zIndex: 1000,
-                    color: 'white'
-                }}>
-                    <h4>접속자 목록</h4>
-                    <ul style={{ listStyleType: 'none', padding: 0 }}>
-                        {connectedUsers.map((username, index) => (
-                            <li key={index} style={{ padding: '5px 0' }}>
-                                {username}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-
 
             {/* 게임 방법 모달 */}
             <RuleModal isOpen={isModalOpen} isAnimating={isModalAnimating} onClose={() => setIsModalOpen(false)}/>
@@ -322,6 +295,8 @@ function MainPage() {
             {/* 로그아웃 모달 */}
             <LogoutModal isOpen={isLogoutModal} onLogout={handleLogout} onClose={() => setIsLogoutModal(false)} />
 
+            {/* 접속자 목록 모달 */}
+            <UserListModal isOpen={isUserListOpen} onClose={() => setIsUserListOpen(false)} connectedUsers={connectedUsers} />
 
         </div>
     );
