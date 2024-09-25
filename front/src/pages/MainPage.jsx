@@ -165,7 +165,7 @@ function MainPage() {
             onClick={handleSignClick}
             onMouseEnter={() => handleMouseEnter('left')}
             onMouseLeave={handleMouseLeave}
-        />
+            />
 
             {/* 오른쪽 사인 이미지 */}
             <img 
@@ -222,29 +222,38 @@ function MainPage() {
                 </div>
             </div>
 
-        {/* 메인페이지 내 전체 채팅방 */}
-        <div style={{
-                position: 'absolute',
-                bottom: '10px',
-                left: '10px',
-                width: '500px',
-                height: '200px',
-                backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                borderRadius: '10px',
-                padding: '10px',
-                display: 'flex',
-                flexDirection: 'column',
-                color: 'white'
-            }}>
+            {/* 메인페이지 내 전체 채팅방 */}
+            <div style={{
+                    position: 'absolute',
+                    bottom: '10px',
+                    left: '10px',
+                    width: '500px',
+                    height: '200px',
+                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                    borderRadius: '10px',
+                    padding: '10px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    color: 'white'
+                }}>
                 <h3>전체채팅</h3>
                 <div style={{ flexGrow: 1, overflowY: 'auto', marginBottom: '10px' }}>
                     <ul style={{ listStyleType: 'none', padding: 0 }}>
                         {messages.map((msg, index) => (
                             <li key={index} style={{ padding: '5px 0' }}>
-                                <strong>{msg.senderName}:</strong> {msg.message}
+                                {msg.status === 'JOIN' || msg.status === 'LEAVE' ? (
+                                    // 상태 메시지일 경우
+                                    <strong>{`${msg.senderName}님이 ${msg.status === 'JOIN' ? '들어왔습니다.' : '나갔습니다.'}`}</strong>
+                                ) : (
+                                    // 일반 메시지일 경우
+                                    <>
+                                        <strong>{msg.senderName}:</strong> {msg.message}
+                                    </>
+                                )}
                             </li>
                         ))}
                     </ul>
+
                 </div>
                 <div style={{ display: 'flex' }}>
                     <input
@@ -253,6 +262,11 @@ function MainPage() {
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder="메시지를 입력하세요."
                         style={{ flexGrow: 1, marginRight: '10px', padding: '5px', color:'black' }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                handleSendMessage(); // 엔터 키를 누르면 메시지 전송
+                            }
+                        }}
                     />
                     <button onClick={handleSendMessage} style={{ padding: '5px 10px' }}>
                         Send
@@ -260,14 +274,15 @@ function MainPage() {
                 </div>
             </div>
 
-        {/* 게임 방법 모달 */}
-        <RuleModal isOpen={isModalOpen} isAnimating={isModalAnimating} onClose={() => setIsModalOpen(false)} />
 
-        {/* 이웃 순위 모달 */}
-        <RankModal isOpen={isRankOpen} isAnimating={isRankAnimating} onClose={() => setIsRankOpen(false)} userData={sortedUserData} />
+            {/* 게임 방법 모달 */}
+            <RuleModal isOpen={isModalOpen} isAnimating={isModalAnimating} onClose={() => setIsModalOpen(false)} />
 
-        {/* 로그아웃 모달 */}
-        <LogoutModal isOpen={isLogoutModal} onLogout={handleLogout} onClose={() => setIsLogoutModal(false)} />
+            {/* 이웃 순위 모달 */}
+            <RankModal isOpen={isRankOpen} isAnimating={isRankAnimating} onClose={() => setIsRankOpen(false)} userData={sortedUserData} />
+
+            {/* 로그아웃 모달 */}
+            <LogoutModal isOpen={isLogoutModal} onLogout={handleLogout} onClose={() => setIsLogoutModal(false)} />
 
 
         </div>
