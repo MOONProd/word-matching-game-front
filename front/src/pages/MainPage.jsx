@@ -272,8 +272,8 @@ function MainPage() {
                         placeholder="메시지를 입력하세요."
                         style={{flexGrow: 1, marginRight: '10px', padding: '5px', color: 'black'}}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                handleSendMessage(); // 엔터 키를 누르면 메시지 전송
+                            if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                                handleSendMessage(); // 입력 구성이 완료된 후에만 메시지 전송
                             }
                         }}
                     />
