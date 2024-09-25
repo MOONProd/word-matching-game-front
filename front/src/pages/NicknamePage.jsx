@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import { TextField, Button, Container, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { TextField, Button, Container, Typography, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 function NicknamePage() {
     const [nickname, setNickname] = useState('');
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true); // 로딩 상태 추가
     const navigate = useNavigate();
 
     const handleNicknameChange = (event) => {
@@ -45,6 +46,7 @@ function NicknamePage() {
                     if (data.status === 'noexist') {
                         console.log('User does not exist, redirecting to set nickname.');
                         // User does not have a nickname, stay on the nickname setting page
+                        setLoading(false); // 로딩 완료
                     } else if (data.status === 'exist') {
                         console.log('User exists, redirecting to main page.');
                         navigate('/main'); // Redirect to main page if user already exists
@@ -53,6 +55,7 @@ function NicknamePage() {
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
+                setLoading(false); // 로딩 완료
             });
     }, [navigate]);
 
@@ -100,7 +103,19 @@ function NicknamePage() {
         };
     }, []);
 
+    // 로딩 중일 때 표시할 컴포넌트
+    if (loading) {
+        return (
+            <Container maxWidth="sm" style={{ marginTop: '50px', textAlign: 'center' }}>
+                <Typography variant="h4" gutterBottom>
+                    로딩 중...
+                </Typography>
+                <CircularProgress /> {/* 로딩 스피너 추가 */}
+            </Container>
+        );
+    }
 
+    // 로딩이 끝나고 나면 닉네임 설정 페이지 표시
     return (
         <Container maxWidth="sm" style={{ marginTop: '50px', textAlign: 'center' }}>
             <Typography variant="h4" gutterBottom>
