@@ -4,6 +4,7 @@ import { useRecoilValue } from "recoil";
 import { SeoulAtom } from "../recoil/SeoulAtom";
 import { useNavigate } from "react-router-dom";
 import { userAtom } from '../recoil/userAtom';
+import { AiFillHome } from "react-icons/ai";
 import Loading from "../assets/loading";
 
 
@@ -176,11 +177,7 @@ export const SecondPlayMap = () => {
                     fontSize: '16px'
                 }}
             >
-            <img 
-                    src="../src/assets/svg/home.svg" 
-                    className="w-5 max-w-xs md:max-w-sm lg:max-w-md" 
-                    alt="Home Icon" 
-                />
+                <AiFillHome size={24} color="#000" />
 
             </button>
 
