@@ -3,7 +3,6 @@ import { over } from 'stompjs';
 import SockJS from 'sockjs-client';
 import { useRecoilValue } from 'recoil';
 import { userAtom } from '../recoil/userAtom';
-import { useLocation } from 'react-router-dom';
 
 let stompClient = null;
 
@@ -34,26 +33,37 @@ export const ChatLogicProvider = ({ children }) => {
     };
 
     const onConnected = (username) => {
-        
         setConnected(true);
         stompClient.subscribe('/chatroom/public', onMessageReceived);
         console.log("Websocket subscribe!");
+    
+        // 사용자 입장 시 'JOIN' 메시지를 보냄
         let chatMessage = {
             senderName: username,
             status: 'JOIN'
         };
         stompClient.send('/app/message', {}, JSON.stringify(chatMessage));
     };
+    
 
     const onMessageReceived = (payload) => {
         try {
             let payloadData = JSON.parse(payload.body);
-            console.log('Received message:', payloadData); // 수신된 메시지 로그
+            console.log('Received message:', payloadData);
+    
+            // 메시지의 상태를 체크하여 출력 메시지 설정
+            if (payloadData.status === 'JOIN') {
+                payloadData.message = `${payloadData.senderName}님이 들어왔습니다.`; // JOIN 상태일 때 출력 메시지 설정
+            } else if (payloadData.status === 'LEAVE') {
+                payloadData.message = `${payloadData.senderName}님이 나갔습니다.`; // LEAVE 상태일 때 출력 메시지 설정
+            }
+    
             setMessages((prevMessages) => [...prevMessages, payloadData]);
         } catch (error) {
             console.error("Message Parsing Error: ", error, payload.body);
         }
     };
+    
 
     const sendMessage = (message) => {
         if (stompClient && user) {
