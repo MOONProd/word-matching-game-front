@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../assets/fonts/font.css';
 import { useChat } from './ChatLogic';
+import { FaUserFriends } from 'react-icons/fa';
 import RuleModal from '../modal/RuleModal';
 import RankModal from '../modal/RankModal';
 import LogoutModal from '../modal/LogoutModal';
+
 
 function MainPage() {
     const userData = [
@@ -25,6 +27,7 @@ function MainPage() {
     // 개별 애니메이션 상태 관리
     const [isModalAnimating, setIsModalAnimating] = useState(false);
     const [isRankAnimating, setIsRankAnimating] = useState(false);
+    const [isUserListOpen, setIsUserListOpen] = useState(false);
 
     const [hovered, setHovered] = useState(null);
     const navigate = useNavigate();
@@ -83,6 +86,9 @@ function MainPage() {
         }
     };
     
+    const toggleUserList = () => {
+        setIsUserListOpen(!isUserListOpen);
+    };
 
     const handleMouseEnter = (direction) => {
         setHovered(direction);
@@ -236,14 +242,12 @@ function MainPage() {
                 flexDirection: 'column',
                 color: 'white'
             }}>
-                <h3>전체채팅</h3>
-                <h3>접속자 목록</h3>
-                <div>
-                    <ul>
-                        {connectedUsers.map((username, index) => (
-                            <li key={index}>{username}</li>
-                        ))}
-                    </ul>
+                <div className="flex justify-between items-center">
+                    <h3>전체채팅</h3>
+                    {/* 접속자 목록 아이콘 */}
+                    <button onClick={toggleUserList} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'white' }}>
+                        <FaUserFriends size={24} />
+                    </button>
                 </div>
 
                 <div style={{flexGrow: 1, overflowY: 'auto', marginBottom: '10px'}}>
@@ -282,6 +286,31 @@ function MainPage() {
                     </button>
                 </div>
             </div>
+
+            {/* 접속자 목록 모달 */}
+            {isUserListOpen && (
+                <div style={{
+                    position: 'absolute',
+                    bottom: '215px', // 채팅창 위로 배치되도록 설정, 채팅창 높이 + 약간의 간격
+                    left: '310px', // 채팅창의 왼쪽 위치와 동일하게 설정
+                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                    borderRadius: '5px',
+                    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
+                    padding: '10px',
+                    width: '200px',
+                    zIndex: 1000,
+                    color: 'white'
+                }}>
+                    <h4>접속자 목록</h4>
+                    <ul style={{ listStyleType: 'none', padding: 0 }}>
+                        {connectedUsers.map((username, index) => (
+                            <li key={index} style={{ padding: '5px 0' }}>
+                                {username}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
 
 
             {/* 게임 방법 모달 */}
