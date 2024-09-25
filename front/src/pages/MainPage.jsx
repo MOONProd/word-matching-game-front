@@ -29,7 +29,7 @@ function MainPage() {
     const [hovered, setHovered] = useState(null);
     const navigate = useNavigate();
 
-    const { messages, sendMessage, connected } = useChat(); // Chat Logic의 상태와 함수 가져오기
+    const { messages, sendMessage, connectedUsers } = useChat();
     const [message, setMessage] = useState('');
 
     const handleSendMessage = () => {
@@ -224,23 +224,32 @@ function MainPage() {
 
             {/* 메인페이지 내 전체 채팅방 */}
             <div style={{
-                    position: 'absolute',
-                    bottom: '10px',
-                    left: '10px',
-                    width: '500px',
-                    height: '200px',
-                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                    borderRadius: '10px',
-                    padding: '10px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    color: 'white'
-                }}>
+                position: 'absolute',
+                bottom: '10px',
+                left: '10px',
+                width: '500px',
+                height: '200px',
+                backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                borderRadius: '10px',
+                padding: '10px',
+                display: 'flex',
+                flexDirection: 'column',
+                color: 'white'
+            }}>
                 <h3>전체채팅</h3>
-                <div style={{ flexGrow: 1, overflowY: 'auto', marginBottom: '10px' }}>
-                    <ul style={{ listStyleType: 'none', padding: 0 }}>
+                <h3>접속자 목록</h3>
+                <div>
+                    <ul>
+                        {connectedUsers.map((username, index) => (
+                            <li key={index}>{username}</li>
+                        ))}
+                    </ul>
+                </div>
+
+                <div style={{flexGrow: 1, overflowY: 'auto', marginBottom: '10px'}}>
+                    <ul style={{listStyleType: 'none', padding: 0}}>
                         {messages.map((msg, index) => (
-                            <li key={index} style={{ padding: '5px 0' }}>
+                            <li key={index} style={{padding: '5px 0'}}>
                                 {msg.status === 'JOIN' || msg.status === 'LEAVE' ? (
                                     // 상태 메시지일 경우
                                     <strong>{`${msg.senderName}님이 ${msg.status === 'JOIN' ? '들어왔습니다.' : '나갔습니다.'}`}</strong>
@@ -255,20 +264,20 @@ function MainPage() {
                     </ul>
 
                 </div>
-                <div style={{ display: 'flex' }}>
+                <div style={{display: 'flex'}}>
                     <input
                         type="text"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder="메시지를 입력하세요."
-                        style={{ flexGrow: 1, marginRight: '10px', padding: '5px', color:'black' }}
+                        style={{flexGrow: 1, marginRight: '10px', padding: '5px', color: 'black'}}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                                 handleSendMessage(); // 엔터 키를 누르면 메시지 전송
                             }
                         }}
                     />
-                    <button onClick={handleSendMessage} style={{ padding: '5px 10px' }}>
+                    <button onClick={handleSendMessage} style={{padding: '5px 10px'}}>
                         Send
                     </button>
                 </div>
@@ -276,7 +285,7 @@ function MainPage() {
 
 
             {/* 게임 방법 모달 */}
-            <RuleModal isOpen={isModalOpen} isAnimating={isModalAnimating} onClose={() => setIsModalOpen(false)} />
+            <RuleModal isOpen={isModalOpen} isAnimating={isModalAnimating} onClose={() => setIsModalOpen(false)}/>
 
             {/* 이웃 순위 모달 */}
             <RankModal isOpen={isRankOpen} isAnimating={isRankAnimating} onClose={() => setIsRankOpen(false)} userData={sortedUserData} />

@@ -1,3 +1,5 @@
+// src/components/ChatLogic.js
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { over } from 'stompjs';
 import SockJS from 'sockjs-client';
@@ -11,6 +13,7 @@ const ChatContext = createContext(undefined);
 export const ChatLogicProvider = ({ children }) => {
     const user = useRecoilValue(userAtom);
     const [messages, setMessages] = useState([]);
+    const [connectedUsers, setConnectedUsers] = useState([]);
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
@@ -30,11 +33,7 @@ export const ChatLogicProvider = ({ children }) => {
         let Sock = new SockJS('/ws');
         stompClient = over(Sock);
 
-        console.log("User data from atom: ", user);
-
-        // Adjust the headers to match the structure of your user data
         const headers = {
-            userId: userId.toString(),
             username: username
         };
 
@@ -53,26 +52,26 @@ export const ChatLogicProvider = ({ children }) => {
         };
         stompClient.send('/app/message', {}, JSON.stringify(chatMessage));
     };
-    
+
 
     const onMessageReceived = (payload) => {
         try {
             let payloadData = JSON.parse(payload.body);
             console.log('Received message:', payloadData);
-    
-            // 메시지의 상태를 체크하여 출력 메시지 설정
-            if (payloadData.status === 'JOIN') {
-                payloadData.message = `${payloadData.senderName}님이 들어왔습니다.`; // JOIN 상태일 때 출력 메시지 설정
-            } else if (payloadData.status === 'LEAVE') {
-                payloadData.message = `${payloadData.senderName}님이 나갔습니다.`; // LEAVE 상태일 때 출력 메시지 설정
+
+            if (payloadData.status === 'USER_LIST') {
+                // Update the list of connected users
+                setConnectedUsers(Array.from(payloadData.userList));
+            } else {
+                // Handle other message types
+                setMessages((prevMessages) => [...prevMessages, payloadData]);
             }
-    
-            console.log('Received message:', payloadData);
-            setMessages((prevMessages) => [...prevMessages, payloadData]);
         } catch (error) {
             console.error("Message Parsing Error: ", error, payload.body);
         }
     };
+
+
     const sendMessage = (messageContent) => {
         if (stompClient && user && user.userInformation && user.userInformation.id) {
             let chatMessage = {
@@ -91,7 +90,7 @@ export const ChatLogicProvider = ({ children }) => {
             let chatMessage = {
                 senderName: user.username,
                 status: 'LEAVE',
-                userId: user.userInformation?.id // Using optional chaining to avoid errors
+                userId: user.userInformation?.id
             };
             stompClient.send('/app/message', {}, JSON.stringify(chatMessage));
             stompClient.disconnect(() => console.log('Disconnected from WebSocket'));
@@ -104,7 +103,7 @@ export const ChatLogicProvider = ({ children }) => {
     };
 
     return (
-        <ChatContext.Provider value={{ messages, sendMessage, connected }}>
+        <ChatContext.Provider value={{ messages, sendMessage, connected, connectedUsers }}>
             {children}
         </ChatContext.Provider>
     );
