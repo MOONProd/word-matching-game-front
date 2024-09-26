@@ -1,13 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
-import { APIProvider, Map, AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
+import React, { useEffect, useState } from "react";
+import { APIProvider, Map, AdvancedMarker, Pin, useMap } from "@vis.gl/react-google-maps";
 // import { useRecoilValue } from "recoil";
 // import { mapAtom } from "../recoil/testAtom";
 import { useNavigate } from "react-router-dom";
 import { AiFillHome } from "react-icons/ai";
 import { FaSyncAlt } from "react-icons/fa"; // react-icons에서 아이콘 가져오기
 import Loading from "../assets/loading";
-import {userPresenceAtom} from "../recoil/userPresenseAtom.jsx";
-import {useSetRecoilState} from "recoil";
+import { userPresenceAtom } from "../recoil/userPresenseAtom.jsx";
+import { useSetRecoilState } from "recoil";
+
+import gaguliImage from "../assets/images/gaguli.png";
 
 function FirstPlayMap(props) {
     const googleMapApi = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
@@ -21,7 +23,6 @@ function FirstPlayMap(props) {
     const [isLoading, setIsLoading] = useState(true);  // Set initial loading state to true
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState(null); // New state for selected room
-    const mapRef = useRef(null);
 
     const pinColors = ["#FFBB00", "#FF5733", "#33FF57", "#3357FF", "#FF33A6"];
 
@@ -69,27 +70,67 @@ function FirstPlayMap(props) {
             });
     }, []);
 
-    useEffect(() => {
-        if (mapRef.current) {
-            const mapInstance = mapRef.current;
 
-            // Google Maps tilesloaded event listener
-            mapInstance.addListener('tilesloaded', () => {
-                console.log('Tiles have been loaded');
-                setIsLoading(false);  // Tiles are loaded
-            });
-        }
-    }, [mapRef.current]);
+    function MapContent() {
+    // useMap 훅을 사용하여 지도 인스턴스에 접근
+        const map = useMap();
+
+        useEffect(() => {
+            if (map && roomData.length > 0) {
+                // LatLngBounds 객체 생성
+                const bounds = new window.google.maps.LatLngBounds();
+
+                roomData.forEach((room) => {
+                bounds.extend(
+                    new window.google.maps.LatLng(
+                    room.roomLocationLatitude,
+                    room.roomLocationLongitude
+                    ));
+                });
+
+                // 지도에 경계 설정
+                map.fitBounds(bounds);
+            }
+        }, [map, roomData]);
+
+        return (
+        <>
+            {roomData.map((room, index) => {
+                const color = getRandomColor();
+                return (
+                <AdvancedMarker
+                    key={index}
+                    position={{
+                        lat: room.roomLocationLatitude,
+                        lng: room.roomLocationLongitude,
+                    }}
+                    onClick={() => handlePinClick(room)}
+                >
+                    <Pin scale={3} background={color} borderColor={color}>
+                        <img
+                        src={gaguliImage}
+                        width="50"
+                        height="50"
+                        alt="Pin Icon"
+                        />
+                    </Pin>
+                </AdvancedMarker>
+                );
+            })}
+        </>
+        );
+    }
+
 
     const handleJoinRoom = () => {
         if (selectedRoom) {
             // Verify the room's location before proceeding
             fetch(`/api/room/${selectedRoom.id}/verify-location?latitude=${selectedRoom.roomLocationLatitude}&longitude=${selectedRoom.roomLocationLongitude}`)
-                .then(response => response.json())
-                .then(data => {
+                .then((response) => response.json())
+                .then((data) => {
                     if (data.roomExists) {
                         // If room exists, store the roomId in userPresenceAtom
-                        setUserPresence(prev => ({
+                        setUserPresence((prev) => ({
                             ...prev,
                             roomId: selectedRoom.id, // Set the room ID
                         }));
@@ -119,38 +160,12 @@ function FirstPlayMap(props) {
             ) : (
                 <APIProvider apiKey={googleMapApi}>
                     <div style={{ height: '100%', width: '100%' }}>
-                        {roomData && roomData.length > 0 && (
-                            <Map
-                                ref={mapRef}
-                                key={mapKey}
-                                defaultZoom={10}
-                                defaultCenter={{ lat: 37.5665, lng: 126.9780 }}
-                                mapId={googleMapId}
-                                disableDefaultUI = {true}
-                            >
-                                {roomData.map((room, index) => {
-                                    const color = getRandomColor();
-                                    return (
-                                        <AdvancedMarker
-                                            key={index}
-                                            position={{
-                                                lat: room.roomLocationLatitude,
-                                                lng: room.roomLocationLongitude,
-                                            }}
-                                            onClick={() => handlePinClick(room)}
-                                        >
-                                            <Pin
-                                                scale={3}
-                                                background={color}
-                                                borderColor={color}
-                                            >
-                                                <img src="../src/assets/images/gaguli.png" width="50" height="50" alt="Pin Icon" />
-                                            </Pin>
-                                        </AdvancedMarker>
-                                    );
-                                })}
-                            </Map>
-                        )}
+                        <Map
+                            mapId={googleMapId}
+                            disableDefaultUI={true}
+                        >
+                            <MapContent />
+                        </Map>
                     </div>
                 </APIProvider>
             )}
