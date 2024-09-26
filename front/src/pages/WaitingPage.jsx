@@ -1,3 +1,5 @@
+// src/pages/WaitingPage.jsx
+
 import React, { useEffect, useState, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
 import { userAtom } from '../recoil/userAtom';
@@ -16,26 +18,35 @@ export const WaitingPage = () => {
     const [connectedUsers, setConnectedUsers] = useState([]);
     const [connected, setConnected] = useState(false);
     const [messageContent, setMessageContent] = useState('');
-    const [isReady, setIsReady] = useState(false);
+    const [isReady, setIsReady] = useState(false); // Local user's readiness
+    const [otherUserIsReady, setOtherUserIsReady] = useState(false); // Other user's readiness
     const stompClientRef = useRef(null);
+    const roomIdRef = useRef(roomId);
 
     useEffect(() => {
-        if (user && user.username && roomId) {
+        roomIdRef.current = roomId;
+    }, [roomId]);
+
+    useEffect(() => {
+        if (user && user.username && roomId && !stompClientRef.current) {
             connectWebSocket(user.username, user.userInformation.id, roomId);
+            console.log("WebSocket connection initiated.");
             updateEnteredPlayerId(user.userInformation.id, roomId); // Update room status on enter
         }
-
-        // Cleanup on component unmount
-        return () => {
-            handleUserLeave(roomId);
-        };
     }, [user, roomId]);
+
+    useEffect(() => {
+        // Handle component unmount
+        return () => {
+            handleUserLeave(roomIdRef.current);
+        };
+    }, []);
 
     useEffect(() => {
         // Handle browser refresh or closing the tab
         const handleBeforeUnload = (e) => {
             e.preventDefault();
-            handleUserLeave(roomId);
+            handleUserLeave(roomIdRef.current);
             e.returnValue = ''; // For Chrome to show alert
         };
 
@@ -44,7 +55,7 @@ export const WaitingPage = () => {
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
-    }, [roomId]);
+    }, []);
 
     const connectWebSocket = (username, userId, roomId) => {
         let Sock = new SockJS('/ws');
@@ -66,12 +77,12 @@ export const WaitingPage = () => {
         stompClientRef.current.subscribe(`/room/${roomId}/public`, onMessageReceived);
 
         // Send JOIN message to the room
-        let chatMessage = {
+        let joinMessage = {
             senderName: username,
             status: 'JOIN',
             userId: userId,
         };
-        stompClientRef.current.send(`/app/room/${roomId}/message`, {}, JSON.stringify(chatMessage));
+        stompClientRef.current.send(`/app/room/${roomId}/message`, {}, JSON.stringify(joinMessage));
     };
 
     const onMessageReceived = (payload) => {
@@ -80,12 +91,37 @@ export const WaitingPage = () => {
             console.log('Received message:', payloadData);
 
             if (payloadData.status === 'USER_LIST') {
-                // Update the list of connected users
-                setConnectedUsers(Array.from(payloadData.userList));
-            } else if (payloadData.status === 'READY') {
-                // Both users are ready, navigate to the game page or start the game
-                console.log('Both users are ready. Starting the game...');
-                navigate(`/game/${roomId}`);
+                // Ensure uniqueness of connected users
+                const uniqueUsers = Array.from(new Set(payloadData.userList));
+                setConnectedUsers(uniqueUsers);
+            } else if (payloadData.status === 'READY' || payloadData.status === 'NOT_READY') {
+                const senderUserId = payloadData.userId;
+                const isSenderReady = payloadData.status === 'READY';
+
+                if (senderUserId !== user.userInformation.id) {
+                    // Message is from the other user
+                    setOtherUserIsReady(isSenderReady);
+                } else {
+                    // Message is from the local user, already handled in handleReadyClick
+                }
+
+                // No longer disabling the button when both are ready
+                // So we can remove `bothUsersReady` logic if not needed
+            } else if (payloadData.status === 'JOIN') {
+                // User joined
+                setMessages((prevMessages) => [...prevMessages, payloadData]);
+            } else if (payloadData.status === 'LEAVE') {
+                // User left
+                setMessages((prevMessages) => [...prevMessages, payloadData]);
+                // Reset other user's readiness
+                setOtherUserIsReady(false);
+
+                // If the other user left, reset local user's readiness
+                if (payloadData.senderName !== user.username) {
+                    setIsReady(false); // Reset local user's readiness
+                    // Update the server about the readiness status
+                    updateReadyStatusOnServer(false);
+                }
             } else {
                 // Handle other message types
                 setMessages((prevMessages) => [...prevMessages, payloadData]);
@@ -116,16 +152,15 @@ export const WaitingPage = () => {
         console.log('User leaving room:', roomId);
 
         // Update room status on leave
-        updateEnteredPlayerId(0, roomId); // Set enteredPlayerId to 0 or -1 to indicate leaving
+        updateEnteredPlayerId(0, roomId);
+
+        // Reset local readiness and update server
+        setIsReady(false);
+        updateReadyStatusOnServer(false);
 
         if (stompClientRef.current && stompClientRef.current.connected) {
-            let chatMessage = {
-                senderName: user.username,
-                status: 'LEAVE',
-                userId: user.userInformation?.id,
-            };
-            stompClientRef.current.send(`/app/room/${roomId}/message`, {}, JSON.stringify(chatMessage));
             stompClientRef.current.disconnect(() => console.log('Disconnected from WebSocket'));
+            stompClientRef.current = null; // Reset the client ref
             setConnected(false);
         }
     };
@@ -137,6 +172,7 @@ export const WaitingPage = () => {
     // Function to update enteredPlayerId
     const updateEnteredPlayerId = async (enteredPlayerId, roomId) => {
         try {
+            console.log("Updating enteredPlayerId to:", enteredPlayerId);
             // Send GET request to the server using Fetch
             const response = await fetch(`/api/room/${roomId}/enter?enteredPlayerId=${enteredPlayerId}`);
 
@@ -151,32 +187,84 @@ export const WaitingPage = () => {
         }
     };
 
-    // Function to handle Ready button click
-    const handleReadyClick = async () => {
+    // Function to update readiness status on the server
+    const updateReadyStatusOnServer = async (readyStatus) => {
         try {
-            // Toggle ready status locally
-            const newReadyStatus = !isReady;
-            setIsReady(newReadyStatus);
-
-            // Determine the hostId and userId
             const hostId = parseInt(roomId); // Assuming roomId is the hostId
             const userId = user.userInformation.id;
 
-            // Send PUT request to the server using Fetch
+            console.log('Updating ready status on server for userId:', userId);
+
+            const requestBody = {
+                userId: userId,
+                forceReadyStatus: readyStatus,
+            };
+
             const response = await fetch(`/api/room/${hostId}/ready`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userId: userId }),
+                body: JSON.stringify(requestBody),
+            });
+
+            if (response.ok) {
+                const data = await response.text();
+                console.log('Host readiness status updated successfully:', data);
+                // Notify other users about the readiness status
+                let readyMessage = {
+                    senderName: user.username,
+                    status: readyStatus ? 'READY' : 'NOT_READY',
+                    userId: userId,
+                };
+                stompClientRef.current.send(`/app/room/${roomId}/message`, {}, JSON.stringify(readyMessage));
+            } else {
+                console.error('Error updating host readiness status:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error updating host readiness status:', error);
+        }
+    };
+
+    // Function to handle Ready button click
+    const handleReadyClick = async () => {
+        try {
+            const newReadyStatus = !isReady;
+            setIsReady(newReadyStatus);
+
+            const hostId = parseInt(roomId); // Assuming roomId is the hostId
+            const userId = user.userInformation.id;
+
+            console.log('Handle ready click for userId:', userId);
+
+            const requestBody = {
+                userId: userId,
+            };
+
+            const response = await fetch(`/api/room/${hostId}/ready`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
             });
 
             if (response.ok) {
                 const data = await response.text();
                 console.log('Ready status updated successfully:', data);
+                // Notify other users about ready status
+                let readyMessage = {
+                    senderName: user.username,
+                    status: newReadyStatus ? 'READY' : 'NOT_READY',
+                    userId: userId,
+                };
+                stompClientRef.current.send(`/app/room/${roomId}/message`, {}, JSON.stringify(readyMessage));
             } else {
                 console.error('Error updating ready status:', response.statusText);
             }
+
+            // The button disabling is handled based on the number of connected users
+            // Remove the bothUsersReady logic if not needed
         } catch (error) {
             console.error('Error updating ready status:', error);
         }
@@ -191,6 +279,15 @@ export const WaitingPage = () => {
                     {connectedUsers.map((username, index) => (
                         <li key={index}>{username}</li>
                     ))}
+                </ul>
+            </div>
+
+            {/* Display Readiness Statuses */}
+            <div className="p-4">
+                <h3 className="text-lg font-bold">플레이어 준비 상태</h3>
+                <ul>
+                    <li>{`당신은 ${isReady ? '준비 완료' : '준비 안됨'}`}</li>
+                    <li>{`상대방은 ${otherUserIsReady ? '준비 완료' : '준비 안됨'}`}</li>
                 </ul>
             </div>
 
@@ -209,12 +306,16 @@ export const WaitingPage = () => {
                                     item.senderName === user.username ? 'bg-green-100' : 'bg-gray-200'
                                 } max-w-lg break-words`}
                             >
-                                {item.senderName !== user.username ? (
-                                    <strong>{item.senderName}:</strong>
+                                {item.status === 'JOIN' || item.status === 'LEAVE' ? (
+                                    <strong>{`${item.senderName}님이 ${
+                                        item.status === 'JOIN' ? '들어왔습니다.' : '나갔습니다.'
+                                    }`}</strong>
                                 ) : (
-                                    <strong>나:</strong>
-                                )}{' '}
-                                {item.message}
+                                    <>
+                                        <strong>{item.senderName === user.username ? '나' : item.senderName}:</strong>{' '}
+                                        {item.message}
+                                    </>
+                                )}
                             </div>
                         </li>
                     ))}
@@ -238,6 +339,7 @@ export const WaitingPage = () => {
                     variant="contained"
                     color={isReady ? 'secondary' : 'primary'}
                     onClick={handleReadyClick}
+                    disabled={connectedUsers.length < 2} // Disable the button when only one user is in the room
                 >
                     {isReady ? '준비 취소' : '준비'}
                 </Button>

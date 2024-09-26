@@ -63,20 +63,22 @@ const UserInfo = ({ children }) => {
     const userInfoResult = results[1];
 
     useEffect(() => {
-        if (!user && usernameResult.isSuccess && userInfoResult.isSuccess) {
-            const username = usernameResult.data;
-            const userInfoData = userInfoResult.data;
+        if (usernameResult.isSuccess && userInfoResult.isSuccess) {
+            if (!user || Object.keys(user).length === 0) {
+                const username = usernameResult.data;
+                const userInfoData = userInfoResult.data;
 
-            console.log('Fetched username:', username);
-            console.log('Fetched user info:', userInfoData);
+                console.log('Fetched username:', username);
+                console.log('Fetched user info:', userInfoData);
 
-            setUser({
-                username: username,
-                userInformation: userInfoData,
-            });
+                setUser({
+                    username: username,
+                    userInformation: userInfoData,
+                });
+            }
         }
+        // Only run this effect when the data from the queries changes
     }, [
-        user,
         usernameResult.isSuccess,
         userInfoResult.isSuccess,
         usernameResult.data,
@@ -118,5 +120,3 @@ const UserInfo = ({ children }) => {
 };
 
 export default UserInfo;
-
-

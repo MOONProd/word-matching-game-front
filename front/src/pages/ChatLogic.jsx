@@ -14,11 +14,13 @@ export const ChatLogicProvider = ({ children }) => {
     const [messages, setMessages] = useState([]);
     const [connectedUsers, setConnectedUsers] = useState([]);
     const [connected, setConnected] = useState(false);
-    const stompClientRef = useRef(null); // Use useRef instead of useState
+    const stompClientRef = useRef(null); // Use useRef to persist the client across renders
 
     useEffect(() => {
         if (user && user.username && user.userInformation && user.userInformation.id) {
-            connectWebSocket(user.username, user.userInformation.id);
+            if (!stompClientRef.current) { // Check if the client is already connected
+                connectWebSocket(user.username, user.userInformation.id);
+            }
         }
 
         // Cleanup on component unmount
@@ -57,7 +59,6 @@ export const ChatLogicProvider = ({ children }) => {
     const onConnected = (username, userId) => {
         setConnected(true);
 
-        // Use the stompClientRef.current instead of stompClient
         stompClientRef.current.subscribe('/chatroom/public', onMessageReceived);
 
         let chatMessage = {
@@ -75,7 +76,8 @@ export const ChatLogicProvider = ({ children }) => {
 
             if (payloadData.status === 'USER_LIST') {
                 // Update the list of connected users
-                setConnectedUsers(Array.from(payloadData.userList));
+                const uniqueUsers = Array.from(new Set(payloadData.userList));
+                setConnectedUsers(uniqueUsers);
             } else {
                 // Handle other message types
                 setMessages((prevMessages) => [...prevMessages, payloadData]);
@@ -106,7 +108,11 @@ export const ChatLogicProvider = ({ children }) => {
                 userId: user.userInformation?.id,
             };
             stompClientRef.current.send('/app/message', {}, JSON.stringify(chatMessage));
-            stompClientRef.current.disconnect(() => console.log('Disconnected from WebSocket'));
+
+            stompClientRef.current.disconnect(() => {
+                console.log('Disconnected from WebSocket');
+            });
+            stompClientRef.current = null; // Reset the client ref
             setConnected(false);
         }
     };
