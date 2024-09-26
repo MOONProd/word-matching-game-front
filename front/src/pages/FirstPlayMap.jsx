@@ -3,6 +3,8 @@ import { APIProvider, Map, AdvancedMarker, Pin } from "@vis.gl/react-google-maps
 // import { useRecoilValue } from "recoil";
 // import { mapAtom } from "../recoil/testAtom";
 import { useNavigate } from "react-router-dom";
+import { AiFillHome } from "react-icons/ai";
+import { FaSyncAlt } from "react-icons/fa"; // react-icons에서 아이콘 가져오기
 import Loading from "../assets/loading";
 import {userPresenceAtom} from "../recoil/userPresenseAtom.jsx";
 import {useSetRecoilState} from "recoil";
@@ -169,11 +171,7 @@ function FirstPlayMap(props) {
                     fontSize: '16px'
                 }}
             >
-                <img
-                    src="../src/assets/svg/home.svg"
-                    className="w-5 max-w-xs md:max-w-sm lg:max-w-md"
-                    alt="Home Icon"
-                />
+                <AiFillHome size={24} color="#000" />
             </button>
             <button
                 style={{
@@ -189,11 +187,7 @@ function FirstPlayMap(props) {
                 }}
                 onClick={() => window.location.reload()}
             >
-                <img 
-                    src="../src/assets/svg/refresh.svg"
-                    className="w-5 max-w-xs md:max-w-sm lg:max-w-md"
-                    alt="Refresh Icon"
-                />
+                <FaSyncAlt size={24} color="#000" /> 
             </button>
 
             {/* Modal Window */}
