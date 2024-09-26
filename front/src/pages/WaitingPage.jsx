@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import { useNavigate, useParams } from "react-router-dom";
 import SockJS from 'sockjs-client';
 import { over } from 'stompjs';
+import ChatModal from './ChatModal'; // Import ChatModal
 
 export const WaitingPage = () => {
     const user = useRecoilValue(userAtom);
@@ -22,6 +23,9 @@ export const WaitingPage = () => {
     const [otherUserIsReady, setOtherUserIsReady] = useState(false); // Other user's readiness
     const stompClientRef = useRef(null);
     const roomIdRef = useRef(roomId);
+
+    // State for ChatModal
+    const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
     useEffect(() => {
         roomIdRef.current = roomId;
@@ -291,7 +295,7 @@ export const WaitingPage = () => {
                 </ul>
             </div>
 
-            {/* Chat Messages */}
+            {/* Room-Specific Chat Messages */}
             <div className="flex-grow p-5 overflow-y-auto w-1/2 mx-auto">
                 <ul className="list-none p-0">
                     {messages.map((item, index) => (
@@ -343,8 +347,21 @@ export const WaitingPage = () => {
                 >
                     {isReady ? '준비 취소' : '준비'}
                 </Button>
-                {/* ... Other buttons ... */}
+                {/* Button to open the main chat modal */}
+                <Button
+                    variant="contained"
+                    color="info"
+                    onClick={() => setIsChatModalOpen(true)}
+                >
+                    전체채팅 열기
+                </Button>
             </div>
+
+            {/* ChatModal Component */}
+            <ChatModal
+                isOpen={isChatModalOpen}
+                onClose={() => setIsChatModalOpen(false)}
+            />
         </div>
     );
 };
