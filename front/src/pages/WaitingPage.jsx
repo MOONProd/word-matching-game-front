@@ -37,6 +37,7 @@ export const WaitingPage = () => {
             console.log("WebSocket connection initiated.");
             updateEnteredPlayerId(user.userInformation.id, roomId); // Update room status on enter
         }
+        console.log("this is entered id" + user.userInformation.id);
     }, [user, roomId]);
 
     useEffect(() => {
@@ -108,9 +109,6 @@ export const WaitingPage = () => {
                 } else {
                     // Message is from the local user, already handled in handleReadyClick
                 }
-
-                // No longer disabling the button when both are ready
-                // So we can remove `bothUsersReady` logic if not needed
             } else if (payloadData.status === 'JOIN') {
                 // User joined
                 setMessages((prevMessages) => [...prevMessages, payloadData]);
@@ -335,8 +333,14 @@ export const WaitingPage = () => {
                     value={messageContent}
                     onChange={handleMessageChange}
                     className="mr-4"
+                    disabled={!isReady || !otherUserIsReady} // Disable until both are ready
                 />
-                <Button variant="contained" color="primary" onClick={sendMessage}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={sendMessage}
+                    disabled={!isReady || !otherUserIsReady} // Disable until both are ready
+                >
                     전송
                 </Button>
                 <Button
@@ -356,6 +360,13 @@ export const WaitingPage = () => {
                     전체채팅 열기
                 </Button>
             </div>
+
+            {/* Warning Message */}
+            {(!isReady || !otherUserIsReady) && (
+                <p className="text-red-500 text-center mt-2">
+                    채팅을 사용하려면 두 플레이어가 모두 준비되어야 합니다.
+                </p>
+            )}
 
             {/* ChatModal Component */}
             <ChatModal
