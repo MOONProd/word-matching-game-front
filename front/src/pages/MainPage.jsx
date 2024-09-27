@@ -255,31 +255,33 @@ function MainPage() {
                 >
                     {/* 모달 클릭 시 이벤트 전파 중지 */}
                     <div 
-                        className="bg-white text-center p-6 rounded-lg max-w-xs w-full mt-20 mr-10"
-                        style={{ fontFamily: 'MyCustomFont, sans-serif' }}
+                        className="bg-white text-center p-4 rounded-lg max-w-xs w-full mt-16 mr-10"
+                        style={{ fontFamily: 'MyCustomFont, sans-serif', width: '150px' }} // 모달 너비 줄이기
                         onClick={(e) => e.stopPropagation()}
                     >
                         <img
                             src="https://via.placeholder.com/150"
                             alt="Profile"
-                            className="rounded-full w-32 h-32 mx-auto"
+                            className="rounded-full w-16 h-16 mx-auto" // 프로필 사진 크기 50*50 (w-16, h-16)
                         />
                         <hr className="my-4 border-gray-300" />
                         <button
-                            className="block text-blue-500 mb-4"
+                            className="block text-black mb-4 mx-auto" // 중앙 정렬을 위해 mx-auto 추가
                             onClick={() => alert("정보 확인 페이지로 이동합니다.")}
                         >
                             정보 확인
                         </button>
                         <button
-                            className="block text-red-500"
-                            onClick={handleLogout}
+                            className="block text-red-500 mx-auto" // 중앙 정렬을 위해 mx-auto 추가
+                            onClick={toggleState}
+                            data-target='logout'
                         >
                             로그아웃
                         </button>
                     </div>
                 </div>
             )}
+
 
             {/* 메인페이지 내 전체 채팅방 */}
             <div style={{
