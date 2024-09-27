@@ -32,6 +32,8 @@ export const WaitingPage = () => {
     // State for ChatModal
     // const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
+    const [label, setLabel] = useState('메시지를 입력하세요');
+
     useEffect(() => {
         roomIdRef.current = roomId;
     }, [roomId]);
@@ -82,6 +84,7 @@ export const WaitingPage = () => {
             roomChatEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages]);
+    
 
     const connectWebSocket = (username, userId, roomId) => {
         let Sock = new SockJS('/ws');
@@ -173,6 +176,14 @@ export const WaitingPage = () => {
 
     const handleChatContentChange = (event) => {
         setChatContent(event.target.value);
+    };
+
+    const handleFocus = () => {
+        setLabel('메시지를 입력중...');
+    };
+
+    const handleBlur = () => {
+        setLabel(chatContent === '' ? '메시지를 입력하세요' : '메시지가 입력되었습니다.');
     };
 
     const handleUserLeave = (roomId) => {
@@ -338,7 +349,7 @@ export const WaitingPage = () => {
                             style={{ fontFamily: 'MyCustomFont, sans-serif' }}>전체 채팅</h3>
                         <div className='bg-blue-400 bg-opacity-60 
                                         text-white rounded-lg p-2'>
-                            <div className="overflow-y-auto max-h-40 mb-4">
+                            <div className="overflow-y-auto h-40 mb-4">
                                     <ul className="list-none p-0">
                                         {chatMessages.map((item, index) => (
                                             <li key={index} className="mb-2">
@@ -355,10 +366,31 @@ export const WaitingPage = () => {
                                     </ul>
                             </div>
                             <div className="flex">
-                                <TextField
+                            <TextField
+                                id="standard-chat"
+                                label={label}
+                                variant="standard"
+                                color='white'
+                                value={chatContent}
+                                onFocus={handleFocus} // 포커스를 받을 때 호출
+                                onBlur={handleBlur}   // 포커스를 잃을 때 호출
+                                onChange={(e) => setChatContent(e.target.value)}
+                                className="flex-grow text-white"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                                        e.preventDefault();
+                                        // 여기서 전송 로직 호출
+                                        console.log('Message sent:', chatContent);
+                                        sendChatMessage(chatContent);
+                                        setChatContent('');
+                                    }
+                                }}
+                            />
+                            {/* <TextField
                                     id="standard-chat"
                                     label="메시지를 입력하세요"
                                     variant="standard"
+                                    color='white'
                                     value={chatContent}
                                     onChange={handleChatContentChange}
                                     className="flex-grow text-white"
@@ -369,7 +401,7 @@ export const WaitingPage = () => {
                                             setChatContent('');
                                         }
                                     }}
-                                />
+                                /> */}
                                 <button
                                         onClick={() => {
                                         sendChatMessage(chatContent);
@@ -417,7 +449,7 @@ export const WaitingPage = () => {
                     <div className="flex items-center">
                         <TextField
                             id="standard-basic"
-                            label={isReady && otherUserIsReady ? "메시지를 입력하세요" : "채팅은 준비 완료 후 가능합니다."}
+                            label={isReady && otherUserIsReady ? "메시지를 입력하세요" : "게임 챗은 준비 완료 후 가능합니다."}
                             variant="standard"
                             value={messageContent}
                             onChange={handleMessageChange}
@@ -430,14 +462,21 @@ export const WaitingPage = () => {
                                 }
                             }}
                         />
-                        <Button
+                        {/* <Button
                             variant="contained"
                             color="primary"
                             onClick={sendMessage}
                             disabled={!isReady || !otherUserIsReady}
                         >
                             전송
-                        </Button>
+                        </Button> */}
+                        <button
+                            onClick={sendMessage} 
+                            style={{ padding: '5px 10px' }}
+                            disabled={!isReady || !otherUserIsReady}
+                        >
+                            Send
+                        </button>
                     </div>
                 </div>
             </div>
@@ -455,7 +494,7 @@ export const WaitingPage = () => {
                 </Button> */}
                 <button
                     className='border-solid border-2 border-white rounded-full text-white
-                    bg-violet-600 px-5 py-3 text-lg font-bold hover:bg-violet-400 transition duration-150'
+                    bg-blue-500 px-5 py-3 text-lg font-bold hover:bg-blue-400 transition duration-150'
                     onClick={handleReadyClick}
                 >
                     {isReady ? '준비 취소' : '준비!!!!'}
