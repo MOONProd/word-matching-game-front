@@ -9,23 +9,27 @@ import { useNavigate, useParams } from "react-router-dom";
 import SockJS from 'sockjs-client';
 import { over } from 'stompjs';
 import ChatModal from './ChatModal'; // Import ChatModal
+import { useChat } from './ChatLogic';
 
 export const WaitingPage = () => {
     const user = useRecoilValue(userAtom);
     const { roomId } = useParams();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
+
+    const { messages: chatMessages, sendMessage: sendChatMessage, connectedUsers } = useChat(); // 전체 채팅 관련 useChat 훅 사용
 
     const [messages, setMessages] = useState([]);
-    const [connectedUsers, setConnectedUsers] = useState([]);
     const [connected, setConnected] = useState(false);
     const [messageContent, setMessageContent] = useState('');
+    const [chatContent, setChatContent] = useState(''); // For global chat
     const [isReady, setIsReady] = useState(false); // Local user's readiness
     const [otherUserIsReady, setOtherUserIsReady] = useState(false); // Other user's readiness
     const stompClientRef = useRef(null);
     const roomIdRef = useRef(roomId);
+    const chatEndRef = useRef(null); // 전체 채팅 스크롤을 위한 ref 추가
 
     // State for ChatModal
-    const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+    // const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
     useEffect(() => {
         roomIdRef.current = roomId;
@@ -61,6 +65,14 @@ export const WaitingPage = () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
     }, []);
+
+
+    useEffect(() => {
+        // 전체 채팅 메시지가 업데이트될 때마다 스크롤을 최신 메시지로 이동
+        if (chatEndRef.current) {
+            chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [chatMessages]);
 
     const connectWebSocket = (username, userId, roomId) => {
         let Sock = new SockJS('/ws');
@@ -148,6 +160,10 @@ export const WaitingPage = () => {
 
     const handleMessageChange = (event) => {
         setMessageContent(event.target.value);
+    };
+
+    const handleChatContentChange = (event) => {
+        setChatContent(event.target.value);
     };
 
     const handleUserLeave = (roomId) => {
@@ -274,79 +290,127 @@ export const WaitingPage = () => {
 
     return (
         <div className="flex flex-col h-screen bg-blue-50">
-            {/* Display Connected Users */}
-            <div className="p-4">
-                <h3 className="text-lg font-bold">접속자 목록</h3>
-                <ul>
-                    {connectedUsers.map((username, index) => (
-                        <li key={index}>{username}</li>
-                    ))}
-                </ul>
+            {/* Header Area */}
+            <div className="flex justify-between items-center p-4 bg-blue-200 shadow">
+                <h2 className="text-xl font-bold">플레이어 준비 상태</h2>
+                <div className="flex space-x-4">
+                    <span>{`당신은 ${isReady ? '준비 완료' : '준비 안됨'}`}</span>
+                    <span>{`상대방은 ${otherUserIsReady ? '준비 완료' : '준비 안됨'}`}</span>
+                </div>
             </div>
 
-            {/* Display Readiness Statuses */}
-            <div className="p-4">
-                <h3 className="text-lg font-bold">플레이어 준비 상태</h3>
-                <ul>
-                    <li>{`당신은 ${isReady ? '준비 완료' : '준비 안됨'}`}</li>
-                    <li>{`상대방은 ${otherUserIsReady ? '준비 완료' : '준비 안됨'}`}</li>
-                </ul>
-            </div>
-
-            {/* Room-Specific Chat Messages */}
-            <div className="flex-grow p-5 overflow-y-auto w-1/2 mx-auto">
-                <ul className="list-none p-0">
-                    {messages.map((item, index) => (
-                        <li
-                            key={index}
-                            className={`flex ${
-                                item.senderName === user.username ? 'justify-end' : 'justify-start'
-                            } mb-2`}
-                        >
-                            <div
-                                className={`px-4 py-2 rounded-xl ${
-                                    item.senderName === user.username ? 'bg-green-100' : 'bg-gray-200'
-                                } max-w-lg break-words`}
+            {/* Main Content */}
+            <div className="flex flex-grow">
+                {/* Left Side: Connected Users & Global Chat */}
+                <div className="w-1/4 bg-white p-4 border-r border-gray-200">
+                    <h3 className="text-lg font-bold mb-4">접속자 목록</h3>
+                    <ul>
+                        {connectedUsers.map((username, index) => (
+                            <li key={index} className="mb-2">{username}</li>
+                        ))}
+                    </ul>
+                    <div className="mt-8">
+                        <h3 className="text-lg font-bold mb-4">전체 채팅</h3>
+                        <div className="overflow-y-auto max-h-40 mb-4">
+                            <ul className="list-none p-0">
+                                {chatMessages.map((item, index) => (
+                                    <li key={index} className="mb-2">
+                                        {item.status === 'JOIN' || item.status === 'LEAVE' ? (
+                                            <strong>{`${item.senderName}님이 ${item.status === 'JOIN' ? '들어왔습니다.' : '나갔습니다.'}`}</strong>
+                                        ) : (
+                                            <>
+                                              <strong>{item.senderName}:</strong> {item.message}
+                                            </>
+                                        ) }
+                                    </li>
+                                ))}
+                                <div ref={chatEndRef} /> {/* 자동 스크롤을 위한 Ref */}
+                            </ul>
+                        </div>
+                        <div className="flex">
+                            <TextField
+                                id="outlined-chat"
+                                label="메시지를 입력하세요"
+                                variant="outlined"
+                                value={chatContent}
+                                onChange={handleChatContentChange}
+                                className="flex-grow"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                                        e.preventDefault();
+                                        sendChatMessage(chatContent);
+                                        setChatContent('');
+                                    }
+                                }}
+                            />
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => {
+                                    sendChatMessage(chatContent);
+                                    setChatContent('');
+                                }}
                             >
-                                {item.status === 'JOIN' || item.status === 'LEAVE' ? (
-                                    <strong>{`${item.senderName}님이 ${
-                                        item.status === 'JOIN' ? '들어왔습니다.' : '나갔습니다.'
-                                    }`}</strong>
-                                ) : (
-                                    <>
-                                        <strong>{item.senderName === user.username ? '나' : item.senderName}:</strong>{' '}
-                                        {item.message}
-                                    </>
-                                )}
-                            </div>
-                        </li>
-                    ))}
-                </ul>
+                                전송
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Side: Room-specific chat */}
+                <div className="flex-grow p-5 overflow-y-auto">
+                    <ul className="list-none p-0">
+                        {messages.map((item, index) => (
+                            <li
+                                key={index}
+                                className={`flex ${
+                                    item.senderName === user.username ? 'justify-end' : 'justify-start'
+                                } mb-2`}
+                            >
+                                <div
+                                    className={`px-4 py-2 rounded-xl ${
+                                        item.senderName === user.username ? 'bg-green-100' : 'bg-gray-200'
+                                    } max-w-lg break-words`}
+                                >
+                                    {item.status === 'JOIN' || item.status === 'LEAVE' ? (
+                                        <strong>{`${item.senderName}님이 ${
+                                            item.status === 'JOIN' ? '들어왔습니다.' : '나갔습니다.'
+                                        }`}</strong>
+                                    ) : (
+                                        <>
+                                            <strong>{item.senderName === user.username ? '나' : item.senderName}:</strong>{' '}
+                                            {item.message}
+                                        </>
+                                    )}
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
 
             {/* Chat input and buttons */}
-            <div className="flex justify-center p-4 space-x-2">
-            <TextField
-                id="outlined-basic"
-                label="메시지를 입력하세요"
-                variant="outlined"
-                value={messageContent}
-                onChange={handleMessageChange}
-                className="mr-4"
-                disabled={!isReady || !otherUserIsReady} // Disable until both are ready
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.nativeEvent.isComposing) { // Enter 키가 눌렸을 때 메시지 전송
-                        e.preventDefault(); // 줄 바꿈 방지 (엔터 입력 시 새 줄이 생기지 않게 하기 위해)
-                        sendMessage(); // 메시지 전송 함수 호출
-                    }
-                }}
-            />
-
+            <div className="flex justify-center p-4 space-x-2 border-t bg-gray-100">
+                <TextField
+                    id="outlined-basic"
+                    label={isReady && otherUserIsReady ? "메시지를 입력하세요" : "채팅은 준비 완료 후 가능합니다."}
+                    variant="outlined"
+                    value={messageContent}
+                    onChange={handleMessageChange}
+                    className="flex-grow"
+                    disabled={!isReady || !otherUserIsReady}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                            e.preventDefault();
+                            sendMessage();
+                        }
+                    }}
+                />
                 <Button
                     variant="contained"
                     color="primary"
                     onClick={sendMessage}
-                    disabled={!isReady || !otherUserIsReady} // Disable until both are ready
+                    disabled={!isReady || !otherUserIsReady}
                 >
                     전송
                 </Button>
@@ -354,32 +418,11 @@ export const WaitingPage = () => {
                     variant="contained"
                     color={isReady ? 'secondary' : 'primary'}
                     onClick={handleReadyClick}
-                    disabled={connectedUsers.length < 2} // Disable the button when only one user is in the room
+                    disabled={connectedUsers.length < 2}
                 >
                     {isReady ? '준비 취소' : '준비'}
                 </Button>
-                {/* Button to open the main chat modal */}
-                <Button
-                    variant="contained"
-                    color="info"
-                    onClick={() => setIsChatModalOpen(true)}
-                >
-                    전체채팅 열기
-                </Button>
             </div>
-
-            {/* Warning Message */}
-            {(!isReady || !otherUserIsReady) && (
-                <p className="text-red-500 text-center mt-2">
-                    채팅을 사용하려면 두 플레이어가 모두 준비되어야 합니다.
-                </p>
-            )}
-
-            {/* ChatModal Component */}
-            <ChatModal
-                isOpen={isChatModalOpen}
-                onClose={() => setIsChatModalOpen(false)}
-            />
         </div>
     );
 };
