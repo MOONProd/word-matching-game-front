@@ -76,49 +76,69 @@ function FirstPlayMap(props) {
 
 
     function MapContent() {
-    // useMap 훅을 사용하여 지도 인스턴스에 접근
         const map = useMap();
-
+        const maxZoom = 17; // 최대 줌 레벨
+        const minZoom = 7;  // 최소 줌 레벨
+    
         useEffect(() => {
             if (map && roomData.length > 0) {
-                // LatLngBounds 객체 생성
                 const bounds = new window.google.maps.LatLngBounds();
-
+    
                 roomData.forEach(({ room: { roomLocationLatitude, roomLocationLongitude } }) => {
                     bounds.extend(new window.google.maps.LatLng(roomLocationLatitude, roomLocationLongitude));
                 });
-
+    
+                // 지도에 경계 설정
                 map.fitBounds(bounds);
+    
+                // fitBounds가 끝난 후 줌 레벨을 조정하기 위한 idle 이벤트 리스너
+                const handleIdle = () => {
+                    const currentZoom = map.getZoom();
+    
+                    if (currentZoom > maxZoom) {
+                        map.setZoom(maxZoom);
+                    } else if (currentZoom < minZoom) {
+                        map.setZoom(minZoom);
+                    }
+    
+                    // idle 이벤트 리스너 제거
+                    window.google.maps.event.removeListener(idleListener);
+                };
+    
+                // idle 이벤트 리스너 추가
+                const idleListener = window.google.maps.event.addListener(map, 'idle', handleIdle);
             }
         }, [map, roomData]);
-
+    
         return (
-        <>
-            {roomData.map(({room}, index) => {
-                const color = getRandomColor();
-                return (
-                <AdvancedMarker
-                    key={index}
-                    position={{
-                        lat: room.roomLocationLatitude,
-                        lng: room.roomLocationLongitude,
-                    }}
-                    onClick={() => handlePinClick(room)}
-                >
-                    <Pin scale={3} background={color} borderColor={color}>
-                        <img
-                        src={gaguliImage}
-                        width="50"
-                        height="50"
-                        alt="Pin Icon"
-                        />
-                    </Pin>
-                </AdvancedMarker>
-                );
-            })}
-        </>
+            <>
+                {roomData.map(({room}, index) => {
+                    const color = getRandomColor();
+                    return (
+                        <AdvancedMarker
+                            key={index}
+                            position={{
+                                lat: room.roomLocationLatitude,
+                                lng: room.roomLocationLongitude,
+                            }}
+                            onClick={() => handlePinClick(room)}
+                        >
+                            <Pin scale={3} background={color} borderColor={color}>
+                                <img
+                                    src={gaguliImage}
+                                    width="50"
+                                    height="50"
+                                    alt="Pin Icon"
+                                />
+                            </Pin>
+                        </AdvancedMarker>
+                    );
+                })}
+            </>
         );
     }
+    
+    
 
 
     const handleJoinRoom = () => {
