@@ -27,6 +27,7 @@ export const WaitingPage = () => {
     const stompClientRef = useRef(null);
     const roomIdRef = useRef(roomId);
     const chatEndRef = useRef(null); // 전체 채팅 스크롤을 위한 ref 추가
+    const roomChatEndRef = useRef(null); // 방 채팅 스크롤을 위한 ref 추가
 
     // State for ChatModal
     // const [isChatModalOpen, setIsChatModalOpen] = useState(false);
@@ -74,6 +75,13 @@ export const WaitingPage = () => {
             chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [chatMessages]);
+
+    useEffect(() => {
+        // 방 채팅 메시지가 업데이트될 때마다 스크롤을 최신 메시지로 이동
+        if (roomChatEndRef.current) {
+            roomChatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
 
     const connectWebSocket = (username, userId, roomId) => {
         let Sock = new SockJS('/ws');
@@ -359,34 +367,37 @@ export const WaitingPage = () => {
                 </div>
 
                 {/* Right Side: Room-specific chat */}
-                <div className="flex-grow p-5 overflow-y-auto">
-                    <ul className="list-none p-0">
-                        {messages.map((item, index) => (
-                            <li
-                                key={index}
-                                className={`flex ${
-                                    item.senderName === user.username ? 'justify-end' : 'justify-start'
-                                } mb-2`}
-                            >
-                                <div
-                                    className={`px-4 py-2 rounded-xl ${
-                                        item.senderName === user.username ? 'bg-green-100' : 'bg-gray-200'
-                                    } max-w-lg break-words`}
+                <div className="w-3/4 p-4 bg-blue-50 flex flex-col">
+                    <div className="flex-grow mb-4 bg-blue-50 p-4 rounded-lg shadow-inner">
+                        <ul className="overflow-y-auto list-none p-0">
+                            {messages.map((item, index) => (
+                                <li
+                                    key={index}
+                                    className={`flex ${
+                                        item.senderName === user.username ? 'justify-end' : 'justify-start'
+                                    } mb-2`}
                                 >
-                                    {item.status === 'JOIN' || item.status === 'LEAVE' ? (
-                                        <strong>{`${item.senderName}님이 ${
-                                            item.status === 'JOIN' ? '들어왔습니다.' : '나갔습니다.'
-                                        }`}</strong>
-                                    ) : (
-                                        <>
-                                            <strong>{item.senderName === user.username ? '나' : item.senderName}:</strong>{' '}
-                                            {item.message}
-                                        </>
-                                    )}
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
+                                    <div
+                                        className={`px-4 py-2 rounded-xl ${
+                                            item.senderName === user.username ? 'bg-green-100' : 'bg-gray-200'
+                                        } max-w-lg break-words`}
+                                    >
+                                        {item.status === 'JOIN' || item.status === 'LEAVE' ? (
+                                            <strong>{`${item.senderName}님이 ${
+                                                item.status === 'JOIN' ? '들어왔습니다.' : '나갔습니다.'
+                                            }`}</strong>
+                                        ) : (
+                                            <>
+                                                <strong>{item.senderName === user.username ? '나' : item.senderName}:</strong>{' '}
+                                                {item.message}
+                                            </>
+                                        )}
+                                    </div>
+                                </li>
+                            ))}
+                            <div ref={roomChatEndRef} /> {/* 방 채팅 자동 스크롤을 위한 Ref */}
+                        </ul>
+                    </div>
                 </div>
             </div>
 
