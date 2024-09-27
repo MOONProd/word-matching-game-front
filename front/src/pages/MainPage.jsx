@@ -28,6 +28,9 @@ function MainPage() {
     const [isUserListOpen, setIsUserListOpen] = useState(false);
 
     // Animation states for modals
+    const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+    
+    // 개별 애니메이션 상태 관리
     const [isModalAnimating, setIsModalAnimating] = useState(false);
     const [isRankAnimating, setIsRankAnimating] = useState(false);
 
@@ -52,6 +55,11 @@ function MainPage() {
             sendMessage(message);
             setMessage('');
         }
+    };
+
+    const handleInfoClick = (e) => {
+        e.stopPropagation(); // 클릭 이벤트가 부모 요소로 전파되지 않도록 함
+        setIsInfoModalOpen(!isInfoModalOpen); // '내 정보' 모달 열기/닫기
     };
 
     const toggleState = (event) => {
@@ -137,6 +145,10 @@ function MainPage() {
                 // Handle error appropriately (e.g., show a message)
             });
     };
+        // 오버레이 클릭 시 모달 닫기
+        const handleOverlayClick = () => {
+            setIsInfoModalOpen(false);
+        };
 
     return (
         <div className="flex flex-col items-center justify-center relative h-screen"
@@ -222,18 +234,87 @@ function MainPage() {
                 </div>
             </div>
 
-            <div className="absolute top-2 right-8 flex flex-col mb-4"
+            <div className="absolute top-2 right-20 flex flex-col mb-4"
                  style={{ fontFamily: 'MyCustomFont, sans-serif' }}>
                 <div>
                     <button
                         className="border-solid border-2 border-black rounded-full 
                         bg-white px-4 py-1 text-sm font-bold hover:bg-gray-200 transition duration-150"
-                        data-target="logout"
-                        onClick={toggleState}>
-                        로그아웃
+                        onClick={handleInfoClick}>
+                        내 정보
                     </button>
                 </div>
             </div>
+
+            {/* '내 정보' 모달 */}
+            {isInfoModalOpen && (
+                <div 
+                    className="fixed inset-0 flex items-start justify-end bg-black bg-opacity-50"
+                    onClick={handleOverlayClick} // 오버레이 클릭 시 모달 닫기
+                >
+                    {/* 모달 클릭 시 이벤트 전파 중지 */}
+                    <div 
+                        className="bg-white text-center p-4 rounded-lg max-w-xs w-full mt-16 mr-10"
+                        style={{ fontFamily: 'MyCustomFont, sans-serif', width: '150px' }} // 모달 너비 줄이기
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <img
+                            src="https://via.placeholder.com/150"
+                            alt="Profile"
+                            className="rounded-full w-16 h-16 mx-auto" // 프로필 사진 크기 50*50 (w-16, h-16)
+                        />
+                        <hr className="my-4 border-gray-300" />
+                        <button
+                            className="block text-black mb-4 mx-auto" // 중앙 정렬을 위해 mx-auto 추가
+                            onClick={() => alert("정보 확인 페이지로 이동합니다.")}
+                        >
+                            정보 확인
+                        </button>
+                        <button
+                            className="block text-red-500 mx-auto" // 중앙 정렬을 위해 mx-auto 추가
+                            onClick={toggleState}
+                            data-target='logout'
+                        >
+                            로그아웃
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* '내 정보' 모달 */}
+            {isInfoModalOpen && (
+                <div 
+                    className="fixed inset-0 flex items-start justify-end bg-black bg-opacity-50"
+                    onClick={handleOverlayClick} // 오버레이 클릭 시 모달 닫기
+                >
+                    {/* 모달 클릭 시 이벤트 전파 중지 */}
+                    <div 
+                        className="bg-white text-center p-4 rounded-lg max-w-xs w-full mt-16 mr-10"
+                        style={{ fontFamily: 'MyCustomFont, sans-serif', width: '150px' }} // 모달 너비 줄이기
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <img
+                            src="https://via.placeholder.com/150"
+                            alt="Profile"
+                            className="rounded-full w-16 h-16 mx-auto" // 프로필 사진 크기 50*50 (w-16, h-16)
+                        />
+                        <hr className="my-4 border-gray-300" />
+                        <button
+                            className="block text-black mb-4 mx-auto" // 중앙 정렬을 위해 mx-auto 추가
+                            onClick={() => alert("정보 확인 페이지로 이동합니다.")}
+                        >
+                            정보 확인
+                        </button>
+                        <button
+                            className="block text-red-500 mx-auto" // 중앙 정렬을 위해 mx-auto 추가
+                            onClick={toggleState}
+                            data-target='logout'
+                        >
+                            로그아웃
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Main Page Chat */}
             <div style={{
