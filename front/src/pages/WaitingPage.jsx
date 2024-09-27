@@ -5,6 +5,7 @@ import { useRecoilValue } from 'recoil';
 import { userAtom } from '../recoil/userAtom';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import { SiRiotgames } from 'react-icons/si';
 import { useNavigate, useParams } from "react-router-dom";
 import SockJS from 'sockjs-client';
 import { over } from 'stompjs';
@@ -23,7 +24,13 @@ export const WaitingPage = () => {
     const [messageContent, setMessageContent] = useState('');
     const [chatContent, setChatContent] = useState(''); // For global chat
     const [isReady, setIsReady] = useState(false); // Local user's readiness
+    const [isGameStarted, setIsGameStarted] = useState(false); // 게임 시작 상태
     const [otherUserIsReady, setOtherUserIsReady] = useState(false); // Other user's readiness
+    const [showLeftSidebar, setShowLeftSidebar] = useState(true);
+    const [showFooter, setShowFooter] = useState(true);
+    const [showHeader, setShowHeader] = useState(true);
+    const [showCentralChat, setShowCentralChat] = useState(false);
+    const [showStartIcon, setShowStartIcon] = useState(false);
     const stompClientRef = useRef(null);
     const roomIdRef = useRef(roomId);
     const chatEndRef = useRef(null); // 전체 채팅 스크롤을 위한 ref 추가
@@ -84,6 +91,29 @@ export const WaitingPage = () => {
             roomChatEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages]);
+
+    useEffect(() => {
+        if (isReady && otherUserIsReady) {
+            setTimeout(() => {
+                setShowLeftSidebar(false); // 왼쪽 영역 사라짐
+            }, 1000);
+
+            setTimeout(() => {
+                setShowFooter(false); // 푸터 사라짐
+            }, 2000);
+
+            setTimeout(() => {
+                setShowHeader(false); // 헤더 사라짐
+            }, 3000);
+
+            setTimeout(() => {
+                setShowCentralChat(true); // 개인 채팅방 중앙에 고정
+                setIsGameStarted(true); // 게임 시작 상태 설정
+                setShowStartIcon(true); // 게임 시작 아이콘 표시
+                setTimeout(() => setShowStartIcon(false), 1000); // 1초 후 게임 시작 아이콘 숨김
+            }, 4000);
+        }
+    }, [isReady, otherUserIsReady]);
     
 
     const connectWebSocket = (username, userId, roomId) => {
@@ -309,10 +339,10 @@ export const WaitingPage = () => {
     };
 
     return (
-        <div className="flex flex-col h-screen">
+        <div className={`flex flex-col h-screen transition-all duration-1000 ${isGameStarted ? 'bg-blue-900' : ''}`}>
             {/* Header Area */}
-            <div className="flex justify-between items-center p-4 bg-blue-200 shadow" 
-                 style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%' }}
+            <div className={`flex justify-between items-center p-4 bg-blue-200 shadow transition-all duration-1000 ${showHeader ? '' : '-translate-y-full opacity-0'}`} 
+                 style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%', transition: 'all 1s ease-in-out' }}
             >
                 <h2 className="text-xl font-bold">플레이어 준비 상태</h2>
                 <div className="flex space-x-4">
@@ -332,7 +362,7 @@ export const WaitingPage = () => {
             </div>
 
             {/* Scrollable Content Area */}
-            <div className="flex flex-grow overflow-hidden bg-blue-50 shadow">
+            <div className={`flex flex-grow overflow-hidden bg-blue-50 shadow transition-all duration-1000 ${showLeftSidebar ? '' : '-translate-x-full opacity-0'}`}>
                 {/* Left Side: Connected Users & Global Chat */}
                 <div className="w-1/4 bg-white p-4 border-r border-gray-200 flex flex-col justify-between">
                     <div>
@@ -370,43 +400,24 @@ export const WaitingPage = () => {
                                 id="standard-chat"
                                 label={label}
                                 variant="standard"
-                                color='white'
                                 value={chatContent}
-                                onFocus={handleFocus} // 포커스를 받을 때 호출
-                                onBlur={handleBlur}   // 포커스를 잃을 때 호출
+                                onFocus={handleFocus} 
+                                onBlur={handleBlur}   
                                 onChange={(e) => setChatContent(e.target.value)}
                                 className="flex-grow text-white"
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
                                         e.preventDefault();
-                                        // 여기서 전송 로직 호출
-                                        console.log('Message sent:', chatContent);
                                         sendChatMessage(chatContent);
                                         setChatContent('');
                                     }
                                 }}
                             />
-                            {/* <TextField
-                                    id="standard-chat"
-                                    label="메시지를 입력하세요"
-                                    variant="standard"
-                                    color='white'
-                                    value={chatContent}
-                                    onChange={handleChatContentChange}
-                                    className="flex-grow text-white"
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
-                                            e.preventDefault();
-                                            sendChatMessage(chatContent);
-                                            setChatContent('');
-                                        }
-                                    }}
-                                /> */}
                                 <button
-                                        onClick={() => {
+                                    onClick={() => {
                                         sendChatMessage(chatContent);
                                         setChatContent('');
-                                    }} style={{ padding: '5px 10px' }}>
+                                    }} className="px-4 py-2 border-l-2 border-white">
                                     Send
                                 </button>
                             </div>
@@ -415,7 +426,7 @@ export const WaitingPage = () => {
                 </div>
 
                 {/* Right Side: Room-specific chat */}
-                <div className="flex flex-col flex-grow overflow-hidden p-5">
+                <div className={`flex flex-col flex-grow overflow-hidden p-5 transition-all duration-1000 ${showCentralChat ? 'fixed inset-0 justify-center items-center' : ''}`}>
                     <div className="flex-grow overflow-y-auto mb-2">
                         <ul className="list-none p-0">
                             {messages.map((item, index) => (
@@ -462,17 +473,9 @@ export const WaitingPage = () => {
                                 }
                             }}
                         />
-                        {/* <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={sendMessage}
-                            disabled={!isReady || !otherUserIsReady}
-                        >
-                            전송
-                        </Button> */}
                         <button
                             onClick={sendMessage} 
-                            style={{ padding: '5px 10px' }}
+                            className="px-4 py-2 border-l-2 border-white"
                             disabled={!isReady || !otherUserIsReady}
                         >
                             Send
@@ -482,16 +485,8 @@ export const WaitingPage = () => {
             </div>
 
             {/* Footer Area */}
-            <div className="flex justify-center items-center p-4 bg-blue-100 border-t" 
+            <div className={`flex justify-center items-center p-4 bg-blue-100 border-t transition-all duration-1000 ${showFooter ? '' : '-translate-y-full opacity-0'}`} 
                  style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%' }}>
-                {/* <Button
-                    variant="contained"
-                    color={isReady ? 'secondary' : 'primary'}
-                    onClick={handleReadyClick}
-                    disabled={connectedUsers.length < 2}
-                >
-                    {isReady ? '준비 취소' : '준비'}
-                </Button> */}
                 <button
                     className='border-solid border-2 border-white rounded-full text-white
                     bg-blue-500 px-5 py-3 text-lg font-bold hover:bg-blue-400 transition duration-150'
@@ -500,6 +495,27 @@ export const WaitingPage = () => {
                     {isReady ? '준비 취소' : '준비!!!!'}
                 </button>
             </div>
+
+            {/* 게임 시작 아이콘 */}
+            {showStartIcon && (
+                <div className="fixed inset-0 flex justify-center items-center z-50">
+                    <div className="bg-white text-black p-4 rounded-lg text-4xl font-bold">
+                        게임 시작!
+                    </div>
+                </div>
+            )}
+
+            {/* 양쪽에서 이미지가 들어오는 애니메이션 */}
+            {isGameStarted && (
+                <>
+                    <img src="../src/assets/images/cheerGagul.png"
+                        className="absolute left-0 bottom-1/2 transform translate-y-1/2 animate-slide-in-left"
+                        style={{ width: '150px', height: 'auto' }} />
+                    <img src="../src/assets/images/cheerGagul.png"
+                        className="absolute right-0 bottom-1/2 transform translate-y-1/2 animate-slide-in-right"
+                        style={{ width: '150px', height: 'auto' }} />
+                </>
+            )}
         </div>
     );
 };
