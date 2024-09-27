@@ -326,15 +326,22 @@ export const WaitingPage = () => {
 
             {/* Chat input and buttons */}
             <div className="flex justify-center p-4 space-x-2">
-                <TextField
-                    id="outlined-basic"
-                    label="메시지를 입력하세요"
-                    variant="outlined"
-                    value={messageContent}
-                    onChange={handleMessageChange}
-                    className="mr-4"
-                    disabled={!isReady || !otherUserIsReady} // Disable until both are ready
-                />
+            <TextField
+                id="outlined-basic"
+                label="메시지를 입력하세요"
+                variant="outlined"
+                value={messageContent}
+                onChange={handleMessageChange}
+                className="mr-4"
+                disabled={!isReady || !otherUserIsReady} // Disable until both are ready
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.nativeEvent.isComposing) { // Enter 키가 눌렸을 때 메시지 전송
+                        e.preventDefault(); // 줄 바꿈 방지 (엔터 입력 시 새 줄이 생기지 않게 하기 위해)
+                        sendMessage(); // 메시지 전송 함수 호출
+                    }
+                }}
+            />
+
                 <Button
                     variant="contained"
                     color="primary"
