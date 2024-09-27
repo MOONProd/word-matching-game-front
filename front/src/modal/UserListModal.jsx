@@ -30,7 +30,6 @@ const UserListModal = ({ isOpen, onClose, connectedUsers }) => {
                     </li>
                 ))}
             </ul>
-            <button onClick={onClose} style={{ marginTop: '10px' }}>Close</button>
         </div>
     );
 };
