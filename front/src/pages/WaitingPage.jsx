@@ -321,17 +321,19 @@ export const WaitingPage = () => {
             </div>
 
             {/* Scrollable Content Area */}
-            <div className="flex flex-grow overflow-auto bg-blue-50 shadow" style={{ height: '80%' }}>
+            <div className="flex flex-grow overflow-hidden bg-blue-50 shadow">
                 {/* Left Side: Connected Users & Global Chat */}
-                <div className="w-1/4 bg-white p-4 border-r border-gray-200">
-                    <h3 className="text-lg font-bold mb-4"
-                        style={{ fontFamily: 'MyCustomFont, sans-serif' }}>접속자 목록</h3>
-                    <ul>
-                        {connectedUsers.map((username, index) => (
-                            <li key={index} className="mb-2">{username}</li>
-                        ))}
-                    </ul>
-                    <div className="mt-8">
+                <div className="w-1/4 bg-white p-4 border-r border-gray-200 flex flex-col justify-between">
+                    <div>
+                        <h3 className="text-lg font-bold mb-4"
+                            style={{ fontFamily: 'MyCustomFont, sans-serif' }}>접속자 목록</h3>
+                        <ul>
+                            {connectedUsers.map((username, index) => (
+                                <li key={index} className="mb-2">{username}</li>
+                            ))}
+                        </ul>
+                    </div>
+                    <div>
                         <h3 className="text-lg font-bold mb-4"
                             style={{ fontFamily: 'MyCustomFont, sans-serif' }}>전체 채팅</h3>
                         <div className="overflow-y-auto max-h-40 mb-4">
@@ -381,63 +383,67 @@ export const WaitingPage = () => {
                 </div>
 
                 {/* Right Side: Room-specific chat */}
-                <div className="flex-grow overflow-y-auto p-5">
-                    <ul className="list-none p-0">
-                        {messages.map((item, index) => (
-                            <li
-                                key={index}
-                                className={`flex ${
-                                    item.senderName === user.username ? 'justify-end' : 'justify-start'
-                                } mb-2`}
-                            >
-                                <div
-                                    className={`px-4 py-2 rounded-xl ${
-                                        item.senderName === user.username ? 'bg-green-100' : 'bg-gray-200'
-                                    } max-w-lg break-words`}
+                <div className="flex flex-col flex-grow overflow-hidden p-5">
+                    <div className="flex-grow overflow-y-auto mb-2">
+                        <ul className="list-none p-0">
+                            {messages.map((item, index) => (
+                                <li
+                                    key={index}
+                                    className={`flex ${
+                                        item.senderName === user.username ? 'justify-end' : 'justify-start'
+                                    } mb-2`}
                                 >
-                                    {item.status === 'JOIN' || item.status === 'LEAVE' ? (
-                                        <strong>{`${item.senderName}님이 ${
-                                            item.status === 'JOIN' ? '들어왔습니다.' : '나갔습니다.'
-                                        }`}</strong>
-                                    ) : (
-                                        <>
-                                            <strong>{item.senderName === user.username ? '나' : item.senderName}:</strong>{' '}
-                                            {item.message}
-                                        </>
-                                    )}
-                                </div>
-                            </li>
-                        ))}
-                        <div ref={roomChatEndRef} /> {/* 자동 스크롤을 위한 Ref */}
-                    </ul>
+                                    <div
+                                        className={`px-4 py-2 rounded-xl ${
+                                            item.senderName === user.username ? 'bg-green-100' : 'bg-gray-200'
+                                        } max-w-lg break-words`}
+                                    >
+                                        {item.status === 'JOIN' || item.status === 'LEAVE' ? (
+                                            <strong>{`${item.senderName}님이 ${
+                                                item.status === 'JOIN' ? '들어왔습니다.' : '나갔습니다.'
+                                            }`}</strong>
+                                        ) : (
+                                            <>
+                                                <strong>{item.senderName === user.username ? '나' : item.senderName}:</strong>{' '}
+                                                {item.message}
+                                            </>
+                                        )}
+                                    </div>
+                                </li>
+                            ))}
+                            <div ref={roomChatEndRef} /> {/* 자동 스크롤을 위한 Ref */}
+                        </ul>
+                    </div>
+                    <div className="flex items-center">
+                        <TextField
+                            id="outlined-basic"
+                            label={isReady && otherUserIsReady ? "메시지를 입력하세요" : "채팅은 준비 완료 후 가능합니다."}
+                            variant="outlined"
+                            value={messageContent}
+                            onChange={handleMessageChange}
+                            className="flex-grow mx-4"
+                            disabled={!isReady || !otherUserIsReady}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                                    e.preventDefault();
+                                    sendMessage();
+                                }
+                            }}
+                        />
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={sendMessage}
+                            disabled={!isReady || !otherUserIsReady}
+                        >
+                            전송
+                        </Button>
+                    </div>
                 </div>
             </div>
 
             {/* Footer Area */}
             <div className="flex justify-center items-center p-4 bg-gray-100 border-t" style={{ height: '10%' }}>
-                <TextField
-                    id="outlined-basic"
-                    label={isReady && otherUserIsReady ? "메시지를 입력하세요" : "채팅은 준비 완료 후 가능합니다."}
-                    variant="outlined"
-                    value={messageContent}
-                    onChange={handleMessageChange}
-                    className="flex-grow mx-4"
-                    disabled={!isReady || !otherUserIsReady}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
-                            e.preventDefault();
-                            sendMessage();
-                        }
-                    }}
-                />
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={sendMessage}
-                    disabled={!isReady || !otherUserIsReady}
-                >
-                    전송
-                </Button>
                 <Button
                     variant="contained"
                     color={isReady ? 'secondary' : 'primary'}
