@@ -32,10 +32,11 @@ export const WaitingPage = () => {
     }, [roomId]);
 
     useEffect(() => {
-        if (user && user.username && roomId && !stompClientRef.current) {
+        if (user && user.username && roomId && !stompClientRef.current && user.userInformation.id != null) {
             connectWebSocket(user.username, user.userInformation.id, roomId);
             console.log("WebSocket connection initiated.");
             updateEnteredPlayerId(user.userInformation.id, roomId); // Update room status on enter
+            console.log("hahahahahahahahahah: ", user.userInformation.id);
         }
         console.log("this is entered id" + user.userInformation.id);
     }, [user, roomId]);

@@ -7,13 +7,16 @@ import { AiFillHome } from "react-icons/ai";
 import { FaSyncAlt } from "react-icons/fa"; // react-icons에서 아이콘 가져오기
 import Loading from "../assets/loading";
 import {userPresenceAtom} from "../recoil/userPresenseAtom.jsx";
-import {useSetRecoilState} from "recoil";
+import {useRecoilValue, useSetRecoilState} from "recoil";
+import {userAtom} from "../recoil/userAtom.jsx";
 
 function FirstPlayMap(props) {
     const googleMapApi = import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY;
     const googleMapId = import.meta.env.VITE_APP_GOOGLE_MAPS_ID;
     const navigate = useNavigate();
     const setUserPresence = useSetRecoilState(userPresenceAtom);
+    // const getUserValue = useRecoilValue(userAtom);
+    // console.log(getUserValue)
 
     // const mapData = useRecoilValue(mapAtom);
     const [roomData, setRoomData] = useState([]);
