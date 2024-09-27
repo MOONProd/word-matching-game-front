@@ -6,8 +6,9 @@ import { useNavigate } from "react-router-dom";
 import { AiFillHome } from "react-icons/ai";
 import { FaSyncAlt } from "react-icons/fa"; // react-icons에서 아이콘 가져오기
 import Loading from "../assets/loading";
-import { userPresenceAtom } from "../recoil/userPresenseAtom.jsx";
-import { useSetRecoilState } from "recoil";
+import {userPresenceAtom} from "../recoil/userPresenseAtom.jsx";
+import {useRecoilValue, useSetRecoilState} from "recoil";
+import {userAtom} from "../recoil/userAtom.jsx";
 
 import gaguliImage from "../assets/images/gaguli.png";
 
@@ -23,6 +24,7 @@ function FirstPlayMap(props) {
     const [isLoading, setIsLoading] = useState(true);  // Set initial loading state to true
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState(null); // New state for selected room
+    const mapRef = useRef(null);
 
     const pinColors = ["#FFBB00", "#FF5733", "#33FF57", "#3357FF", "#FF33A6"];
 
