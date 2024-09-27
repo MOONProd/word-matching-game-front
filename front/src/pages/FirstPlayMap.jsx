@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { APIProvider, Map, AdvancedMarker, Pin, useMap } from "@vis.gl/react-google-maps";
 // import { useRecoilValue } from "recoil";
 // import { mapAtom } from "../recoil/testAtom";
@@ -24,7 +24,7 @@ function FirstPlayMap(props) {
     const [isLoading, setIsLoading] = useState(true);  // Set initial loading state to true
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState(null); // New state for selected room
-    const mapRef = useRef(null);
+    // const mapRef = useRef(null);
 
     const pinColors = ["#FFBB00", "#FF5733", "#33FF57", "#3357FF", "#FF33A6"];
 
@@ -71,6 +71,8 @@ function FirstPlayMap(props) {
                 setIsLoading(false); // Stop loading even if there's an error
             });
     }, []);
+
+    console.log("these are the data", roomData);
 
 
     function MapContent() {
@@ -204,7 +206,7 @@ function FirstPlayMap(props) {
                 }}
                 onClick={() => window.location.reload()}
             >
-                <FaSyncAlt size={24} color="#000" /> 
+                <FaSyncAlt size={24} color="#000" />
             </button>
 
             {/* Modal Window */}
