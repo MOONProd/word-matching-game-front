@@ -336,48 +336,48 @@ export const WaitingPage = () => {
                     <div>
                         <h3 className="text-lg font-bold mb-4"
                             style={{ fontFamily: 'MyCustomFont, sans-serif' }}>전체 채팅</h3>
-                        <div className="overflow-y-auto max-h-40 mb-4">
-                            <ul className="list-none p-0">
-                                {chatMessages.map((item, index) => (
-                                    <li key={index} className="mb-2">
-                                        {item.status === 'JOIN' || item.status === 'LEAVE' ? (
-                                            <strong>{`${item.senderName}님이 ${item.status === 'JOIN' ? '들어왔습니다.' : '나갔습니다.'}`}</strong>
-                                        ) : (
-                                            <>
-                                                <strong>{item.senderName}:</strong> {item.message}
-                                            </>
-                                        ) }
-                                    </li>
-                                ))}
-                                <div ref={chatEndRef} /> {/* 자동 스크롤을 위한 Ref */}
-                            </ul>
-                        </div>
-                        <div className="flex">
-                            <TextField
-                                id="outlined-chat"
-                                label="메시지를 입력하세요"
-                                variant="outlined"
-                                value={chatContent}
-                                onChange={handleChatContentChange}
-                                className="flex-grow"
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
-                                        e.preventDefault();
+                        <div className='bg-blue-400 bg-opacity-60 
+                                        text-white rounded-lg p-2'>
+                            <div className="overflow-y-auto max-h-40 mb-4">
+                                    <ul className="list-none p-0">
+                                        {chatMessages.map((item, index) => (
+                                            <li key={index} className="mb-2">
+                                                {item.status === 'JOIN' || item.status === 'LEAVE' ? (
+                                                    <strong>{`${item.senderName}님이 ${item.status === 'JOIN' ? '들어왔습니다.' : '나갔습니다.'}`}</strong>
+                                                ) : (
+                                                    <>
+                                                        <strong>{item.senderName}:</strong> {item.message}
+                                                    </>
+                                                ) }
+                                            </li>
+                                        ))}
+                                        <div ref={chatEndRef} /> {/* 자동 스크롤을 위한 Ref */}
+                                    </ul>
+                            </div>
+                            <div className="flex">
+                                <TextField
+                                    id="standard-chat"
+                                    label="메시지를 입력하세요"
+                                    variant="standard"
+                                    value={chatContent}
+                                    onChange={handleChatContentChange}
+                                    className="flex-grow text-white"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                                            e.preventDefault();
+                                            sendChatMessage(chatContent);
+                                            setChatContent('');
+                                        }
+                                    }}
+                                />
+                                <button
+                                        onClick={() => {
                                         sendChatMessage(chatContent);
                                         setChatContent('');
-                                    }
-                                }}
-                            />
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={() => {
-                                    sendChatMessage(chatContent);
-                                    setChatContent('');
-                                }}
-                            >
-                                전송
-                            </Button>
+                                    }} style={{ padding: '5px 10px' }}>
+                                    Send
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -416,9 +416,9 @@ export const WaitingPage = () => {
                     </div>
                     <div className="flex items-center">
                         <TextField
-                            id="outlined-basic"
+                            id="standard-basic"
                             label={isReady && otherUserIsReady ? "메시지를 입력하세요" : "채팅은 준비 완료 후 가능합니다."}
-                            variant="outlined"
+                            variant="standard"
                             value={messageContent}
                             onChange={handleMessageChange}
                             className="flex-grow mx-4"
@@ -443,15 +443,23 @@ export const WaitingPage = () => {
             </div>
 
             {/* Footer Area */}
-            <div className="flex justify-center items-center p-4 bg-gray-100 border-t" style={{ height: '10%' }}>
-                <Button
+            <div className="flex justify-center items-center p-4 bg-blue-100 border-t" 
+                 style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%' }}>
+                {/* <Button
                     variant="contained"
                     color={isReady ? 'secondary' : 'primary'}
                     onClick={handleReadyClick}
                     disabled={connectedUsers.length < 2}
                 >
                     {isReady ? '준비 취소' : '준비'}
-                </Button>
+                </Button> */}
+                <button
+                    className='border-solid border-2 border-white rounded-full text-white
+                    bg-violet-600 px-5 py-3 text-lg font-bold hover:bg-violet-400 transition duration-150'
+                    onClick={handleReadyClick}
+                >
+                    {isReady ? '준비 취소' : '준비!!!!'}
+                </button>
             </div>
         </div>
     );
