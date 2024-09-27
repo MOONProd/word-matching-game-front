@@ -1,12 +1,12 @@
 // src/components/ChatModal.jsx
 
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useChat } from './ChatLogic'; // Ensure correct path
 import { FaTimes } from 'react-icons/fa';
 
 const ChatModal = ({ isOpen, onClose }) => {
     const { messages, sendMessage, connectedUsers } = useChat();
-    const [message, setMessage] = React.useState('');
+    const [message, setMessage] = useState('');
     const messagesEndRef = useRef(null);
 
     // Scroll to bottom when messages change
@@ -27,7 +27,8 @@ const ChatModal = ({ isOpen, onClose }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white rounded-lg w-3/4 max-w-lg p-4 relative">
+            {/* 고정된 크기 및 모달 창 설정 */}
+            <div className="bg-white rounded-lg w-3/4 max-w-lg p-4 relative flex flex-col" style={{ height: '500px' }}>
                 <button
                     className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
                     onClick={onClose}
@@ -38,7 +39,9 @@ const ChatModal = ({ isOpen, onClose }) => {
                 <div className="flex justify-between items-center mb-2">
                     <span>Connected Users: {connectedUsers.length}</span>
                 </div>
-                <div className="flex-grow overflow-y-auto mb-4" style={{ maxHeight: '300px' }}>
+                
+                {/* 대화 내용 영역 */}
+                <div className="flex-grow overflow-y-auto mb-4 border border-gray-300 p-2 rounded" style={{ height: '300px' }}>
                     <ul className="list-none p-0">
                         {messages.map((msg, index) => (
                             <li key={index} className="mb-2">
@@ -54,6 +57,8 @@ const ChatModal = ({ isOpen, onClose }) => {
                         <div ref={messagesEndRef} />
                     </ul>
                 </div>
+                
+                {/* 입력 및 전송 버튼 */}
                 <div className="flex">
                     <input
                         type="text"
