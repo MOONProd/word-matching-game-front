@@ -84,22 +84,17 @@ function FirstPlayMap(props) {
                 // LatLngBounds 객체 생성
                 const bounds = new window.google.maps.LatLngBounds();
 
-                roomData.forEach((room) => {
-                bounds.extend(
-                    new window.google.maps.LatLng(
-                    room.roomLocationLatitude,
-                    room.roomLocationLongitude
-                    ));
+                roomData.forEach(({ room: { roomLocationLatitude, roomLocationLongitude } }) => {
+                    bounds.extend(new window.google.maps.LatLng(roomLocationLatitude, roomLocationLongitude));
                 });
 
-                // 지도에 경계 설정
                 map.fitBounds(bounds);
             }
         }, [map, roomData]);
 
         return (
         <>
-            {roomData.map((room, index) => {
+            {roomData.map(({room}, index) => {
                 const color = getRandomColor();
                 return (
                 <AdvancedMarker
