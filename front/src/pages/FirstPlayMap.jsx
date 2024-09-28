@@ -5,7 +5,7 @@ import { APIProvider, Map, AdvancedMarker, Pin, useMap } from "@vis.gl/react-goo
 import { useNavigate } from "react-router-dom";
 import { AiFillHome } from "react-icons/ai";
 import { FaSyncAlt } from "react-icons/fa"; // react-icons에서 아이콘 가져오기
-import Loading from "../assets/loading";
+import Loading from "./Loading.jsx";
 import {userPresenceAtom} from "../recoil/userPresenseAtom.jsx";
 import {useRecoilValue, useSetRecoilState} from "recoil";
 import {userAtom} from "../recoil/userAtom.jsx";
@@ -174,7 +174,6 @@ function FirstPlayMap(props) {
         <div style={{ maxWidth: '100vw', height: '100vh', margin: 'auto' }}>
             {isLoading ? (
                 <div className="flex items-center justify-center h-full">
-                    <h2>로딩중...</h2>
                     <Loading />
                 </div>
             ) : (

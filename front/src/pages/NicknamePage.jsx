@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { TextField, Button, Container, Typography, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import Loading from './Loading';
 
 function NicknamePage() {
     const [nickname, setNickname] = useState('');
@@ -106,12 +107,11 @@ function NicknamePage() {
     // 로딩 중일 때 표시할 컴포넌트
     if (loading) {
         return (
-            <Container maxWidth="sm" style={{ marginTop: '50px', textAlign: 'center' }}>
-                <Typography variant="h4" gutterBottom>
-                    로딩 중...
-                </Typography>
-                <CircularProgress /> {/* 로딩 스피너 추가 */}
-            </Container>
+            <div style={{ maxWidth: '100vw', height: '100vh', margin: 'auto' }}>
+                <div className="flex items-center justify-center h-full">
+                    <Loading />
+                </div>
+            </div>
         );
     }
 

@@ -5,7 +5,6 @@ import { SeoulAtom } from "../recoil/SeoulAtom";
 import { useNavigate } from "react-router-dom";
 import { userAtom } from '../recoil/userAtom';
 import { AiFillHome } from "react-icons/ai";
-import Loading from "../assets/loading";
 
 
 export const SecondPlayMap = () => {
