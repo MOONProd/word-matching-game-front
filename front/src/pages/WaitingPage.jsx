@@ -335,9 +335,9 @@ export const WaitingPage = () => {
     };
 
     return (
-        <div className={`flex flex-col h-screen transition-all duration-1000 ${isGameStarted ? 'bg-blue-300' : ''}`}>
+        <div className={`bg-blue-50 flex flex-col h-screen transition-all duration-1000 ${isGameStarted ? 'bg-blue-300' : ''}`}>
             {/* Header Area */}
-            <div className={`flex justify-between items-center p-4 bg-blue-200 shadow transition-all duration-1000 ${showHeader ? '' : '-translate-y-full opacity-0'}`} 
+            <div className={`flex justify-between items-center p-4 bg-blue-200 transition-all duration-1000 ${showHeader ? '' : '-translate-y-full opacity-0'}`} 
                  style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%', transition: 'all 1s ease-in-out',
                           display: showCentralChat ? 'none' : '',
                   }}
@@ -489,7 +489,7 @@ export const WaitingPage = () => {
             </div>
 
             {/* Footer Area */}
-            <div className={`flex justify-center items-center p-4 bg-blue-100 border-t transition-all duration-1000 ${showFooter ? '' : 'translate-y-full opacity-0'}`} 
+            <div className={`flex justify-center items-center p-4 bg-blue-100 transition-all duration-1000 ${showFooter ? '' : 'translate-y-full opacity-0'}`} 
                  style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%',
                           display: showCentralChat ? 'none' : '',
                   }}>
