@@ -73,6 +73,7 @@ function FirstPlayMap(props) {
     }, []);
 
     console.log("these are the data", roomData);
+    // console.log("roomData.username", roomData[0].username);
 
 
     function MapContent() {
@@ -230,7 +231,8 @@ function FirstPlayMap(props) {
                     <div className="bg-white text-center p-8 rounded-lg max-w-lg w-full"
                          style={{ fontFamily: 'MyCustomFont, sans-serif' }}>
                         <h1 className="text-2xl font-bold mb-4">게임신청</h1>
-                        <h3>사용자님에게 게임을 신청하시겠습니까?</h3>
+                        {/* username을 포함한 메시지 */}
+                        <h3>'{roomData[0].username}'님에게 게임을 신청하시겠습니까?</h3> 
                         <button
                             className="mt-4 px-4 py-2 bg-green-500 text-white rounded-full"
                             onClick={handleJoinRoom} // Modified here
