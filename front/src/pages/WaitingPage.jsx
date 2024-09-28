@@ -513,12 +513,16 @@ export const WaitingPage = () => {
             {/* 양쪽에서 이미지가 들어오는 애니메이션 */}
             {isGameStarted && (
                 <>
-                    <img src="/cheerGagul.png"
-                        className="absolute left-10 bottom-1/3 transform translate-y-1/2 animate-slideInLeft"
-                        style={{ width: '250px', height: 'auto' }} />
-                    <img src="/cheerGagul.png"
-                        className="absolute right-10 bottom-1/3 transform translate-y-1/2 animate-slideInRight"
-                        style={{ width: '250px', height: 'auto' }} />
+                    <div className='absolute left-10 bottom-1/3 transform translate-y-1/2 animate-slideInLeft'>
+                        <img src="/cheerGagul.png"
+                            className="animate-rotate-wiper-left"
+                            style={{ width: '250px', height: 'auto' }} />
+                    </div>
+                    <div className='absolute right-10 bottom-1/3 transform translate-y-1/2 animate-slideInRight'>
+                        <img src="/cheerGagul.png"
+                            className="animate-rotate-wiper-right"
+                            style={{ width: '250px', height: 'auto' }} />
+                    </div>
                 </>
             )}
         </div>
