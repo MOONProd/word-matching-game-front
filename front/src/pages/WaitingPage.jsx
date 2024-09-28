@@ -4,18 +4,14 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
 import { userAtom } from '../recoil/userAtom';
 import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import { SiRiotgames } from 'react-icons/si';
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import SockJS from 'sockjs-client';
 import { over } from 'stompjs';
-import ChatModal from './ChatModal'; // Import ChatModal
 import { useChat } from './ChatLogic';
 
 export const WaitingPage = () => {
     const user = useRecoilValue(userAtom);
     const { roomId } = useParams();
-    // const navigate = useNavigate();
 
     const { messages: chatMessages, sendMessage: sendChatMessage, connectedUsers } = useChat(); // 전체 채팅 관련 useChat 훅 사용
 
@@ -204,9 +200,9 @@ export const WaitingPage = () => {
         setMessageContent(event.target.value);
     };
 
-    const handleChatContentChange = (event) => {
-        setChatContent(event.target.value);
-    };
+    // const handleChatContentChange = (event) => {
+    //     setChatContent(event.target.value);
+    // };
 
     const handleFocus = () => {
         setLabel('메시지를 입력중...');
@@ -465,15 +461,15 @@ export const WaitingPage = () => {
                             <div ref={roomChatEndRef} /> {/* 자동 스크롤을 위한 Ref */}
                         </ul>
                     </div>
-                    <div className="flex items-center w-full max-w-full">
+                    <div className="flex items-center w-full max-w-full"
+                         style={{display: showCentralChat ? '' : 'none'}}>
                         <TextField
                             id="standard-basic"
-                            label={isReady && otherUserIsReady ? "메시지를 입력하세요" : "게임 챗은 준비 완료 후 가능합니다."}
                             variant="standard"
                             value={messageContent}
                             onChange={handleMessageChange}
                             className="flex-grow mx-4"
-                            disabled={!isReady || !otherUserIsReady}
+                            // disabled={!isReady || !otherUserIsReady}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
                                     e.preventDefault();
@@ -484,7 +480,7 @@ export const WaitingPage = () => {
                         <button
                             onClick={sendMessage} 
                             className="px-4 py-2 border-l-2 border-white"
-                            disabled={!isReady || !otherUserIsReady}
+                            // disabled={!isReady || !otherUserIsReady}
                         >
                             Send
                         </button>
