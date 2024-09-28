@@ -4,7 +4,7 @@ import Grow from '@mui/material/Grow';
 import Typography from '@mui/material/Typography';
 
 const Loading = () => {
-  const [visibleChars, setVisibleChars] = useState(0); // 현재 보여줄 글자의 수를 관리
+  const [visibleChars, setVisibleChars] = useState(9); // 현재 보여줄 글자의 수를 관리
   const loadingText = '로딩중...'; // 표시할 로딩 텍스트
   const [reset, setReset] = useState(false); // 글자가 모두 나타나고 초기화할지 여부
 
