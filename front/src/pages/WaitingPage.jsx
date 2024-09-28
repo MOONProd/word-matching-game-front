@@ -339,10 +339,12 @@ export const WaitingPage = () => {
     };
 
     return (
-        <div className={`flex flex-col h-screen transition-all duration-1000 ${isGameStarted ? 'bg-blue-900' : ''}`}>
+        <div className={`flex flex-col h-screen transition-all duration-1000 ${isGameStarted ? 'bg-blue-300' : ''}`}>
             {/* Header Area */}
             <div className={`flex justify-between items-center p-4 bg-blue-200 shadow transition-all duration-1000 ${showHeader ? '' : '-translate-y-full opacity-0'}`} 
-                 style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%', transition: 'all 1s ease-in-out' }}
+                 style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%', transition: 'all 1s ease-in-out',
+                          display: showCentralChat ? 'none' : '',
+                  }}
             >
                 <h2 className="text-xl font-bold">플레이어 준비 상태</h2>
                 <div className="flex space-x-4">
@@ -362,9 +364,9 @@ export const WaitingPage = () => {
             </div>
 
             {/* Scrollable Content Area */}
-            <div className={`flex flex-grow overflow-hidden bg-blue-50 shadow transition-all duration-1000 ${showLeftSidebar ? '' : '-translate-x-full opacity-0'}`}>
+            <div className={`flex flex-grow overflow-hidden bg-blue-50 shadow`}>
                 {/* Left Side: Connected Users & Global Chat */}
-                <div className="w-1/4 bg-white p-4 border-r border-gray-200 flex flex-col justify-between">
+                <div className={`w-1/4 bg-white p-4 border-r border-gray-200 flex flex-col justify-between transition-all duration-1000 ${showLeftSidebar ? '' : '-translate-x-full opacity-0'}`}>
                     <div>
                         <h3 className="text-lg font-bold mb-4"
                             style={{ fontFamily: 'MyCustomFont, sans-serif' }}>접속자 목록</h3>
@@ -426,7 +428,13 @@ export const WaitingPage = () => {
                 </div>
 
                 {/* Right Side: Room-specific chat */}
-                <div className={`flex flex-col flex-grow overflow-hidden p-5 transition-all duration-1000 ${showCentralChat ? 'fixed inset-0 justify-center items-center' : ''}`}>
+                <div className={`flex flex-col flex-grow overflow-hidden p-5 transition-all duration-1000 ${showCentralChat ? 'fixed inset-0 justify-center' : ''}`}
+                     style={showCentralChat ? { 
+                        marginLeft: '300px', // 왼쪽 이미지 공간 확보
+                        marginRight: '300px', // 오른쪽 이미지 공간 확보
+                        maxHeight: 'calc(100vh - 20px)' // 전체 화면 높이에서 여유를 두고 최대 높이 설정
+                    } : { maxHeight: 'calc(100vh - 20px)' }} // 기본 상태에서도 최대 높이 설정
+                >
                     <div className="flex-grow overflow-y-auto mb-2">
                         <ul className="list-none p-0">
                             {messages.map((item, index) => (
@@ -457,7 +465,7 @@ export const WaitingPage = () => {
                             <div ref={roomChatEndRef} /> {/* 자동 스크롤을 위한 Ref */}
                         </ul>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center w-full max-w-full">
                         <TextField
                             id="standard-basic"
                             label={isReady && otherUserIsReady ? "메시지를 입력하세요" : "게임 챗은 준비 완료 후 가능합니다."}
@@ -485,8 +493,10 @@ export const WaitingPage = () => {
             </div>
 
             {/* Footer Area */}
-            <div className={`flex justify-center items-center p-4 bg-blue-100 border-t transition-all duration-1000 ${showFooter ? '' : '-translate-y-full opacity-0'}`} 
-                 style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%' }}>
+            <div className={`flex justify-center items-center p-4 bg-blue-100 border-t transition-all duration-1000 ${showFooter ? '' : 'translate-y-full opacity-0'}`} 
+                 style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%',
+                          display: showCentralChat ? 'none' : '',
+                  }}>
                 <button
                     className='border-solid border-2 border-white rounded-full text-white
                     bg-blue-500 px-5 py-3 text-lg font-bold hover:bg-blue-400 transition duration-150'
@@ -499,21 +509,20 @@ export const WaitingPage = () => {
             {/* 게임 시작 아이콘 */}
             {showStartIcon && (
                 <div className="fixed inset-0 flex justify-center items-center z-50">
-                    <div className="bg-white text-black p-4 rounded-lg text-4xl font-bold">
-                        게임 시작!
-                    </div>
+                    <img src="/gameStart.png"
+                         style={{ width: '350px', height: 'auto' }}/>
                 </div>
             )}
 
             {/* 양쪽에서 이미지가 들어오는 애니메이션 */}
             {isGameStarted && (
                 <>
-                    <img src="../src/assets/images/cheerGagul.png"
-                        className="absolute left-0 bottom-1/2 transform translate-y-1/2 animate-slide-in-left"
-                        style={{ width: '150px', height: 'auto' }} />
-                    <img src="../src/assets/images/cheerGagul.png"
-                        className="absolute right-0 bottom-1/2 transform translate-y-1/2 animate-slide-in-right"
-                        style={{ width: '150px', height: 'auto' }} />
+                    <img src="/cheerGagul.png"
+                        className="absolute left-10 bottom-1/3 transform translate-y-1/2 animate-slideInLeft"
+                        style={{ width: '250px', height: 'auto' }} />
+                    <img src="/cheerGagul.png"
+                        className="absolute right-10 bottom-1/3 transform translate-y-1/2 animate-slideInRight"
+                        style={{ width: '250px', height: 'auto' }} />
                 </>
             )}
         </div>
