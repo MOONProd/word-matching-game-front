@@ -1,14 +1,12 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { APIProvider, Map, AdvancedMarker, Pin, useMap } from "@vis.gl/react-google-maps";
-// import { useRecoilValue } from "recoil";
-// import { mapAtom } from "../recoil/testAtom";
 import { useNavigate } from "react-router-dom";
 import { AiFillHome } from "react-icons/ai";
-import { FaSyncAlt } from "react-icons/fa"; // react-icons에서 아이콘 가져오기
+import { FaSyncAlt } from "react-icons/fa";
 import Loading from "./Loading.jsx";
-import {userPresenceAtom} from "../recoil/userPresenseAtom.jsx";
-import {useRecoilValue, useSetRecoilState} from "recoil";
-import {userAtom} from "../recoil/userAtom.jsx";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { userPresenceAtom } from "../recoil/userPresenseAtom.jsx";
+import { userAtom } from "../recoil/userAtom.jsx";
 
 import gaguliImage from "../assets/images/gaguli.png";
 
@@ -18,15 +16,16 @@ function FirstPlayMap(props) {
     const navigate = useNavigate();
     const setUserPresence = useSetRecoilState(userPresenceAtom);
 
-    // const mapData = useRecoilValue(mapAtom);
     const [roomData, setRoomData] = useState([]);
     const [mapKey, setMapKey] = useState(0);
     const [isLoading, setIsLoading] = useState(true);  // Set initial loading state to true
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedRoom, setSelectedRoom] = useState(null); // New state for selected room
-    // const mapRef = useRef(null);
+    const [selectedRoom, setSelectedRoom] = useState(null);
+    const [showDefaultMap, setShowDefaultMap] = useState(false); // Default map view 상태
 
     const pinColors = ["#FFBB00", "#FF5733", "#33FF57", "#3357FF", "#FF33A6"];
+    const defaultCenter = { lat: 37.5665, lng: 126.9780 }; // 서울시청 좌표
+    const defaultZoom = 17; // 기본 줌 레벨
 
     const getRandomColor = () => {
         return pinColors[Math.floor(Math.random() * pinColors.length)];
@@ -37,9 +36,13 @@ function FirstPlayMap(props) {
     };
 
     const handlePinClick = (room) => {
-        console.log('Pin clicked for room:', room);
-        setSelectedRoom(room); // Store the selected room
+        setSelectedRoom(room);
         setIsModalOpen(true);
+    };
+
+    const handleDefaultMap = () => {
+        setShowDefaultMap(true);  // 상태 업데이트 후
+        setMapKey(prevKey => prevKey + 1);  // Map을 다시 렌더링하기 위해 mapKey를 변경
     };
 
     useEffect(() => {
@@ -72,48 +75,62 @@ function FirstPlayMap(props) {
             });
     }, []);
 
-    console.log("these are the data", roomData);
-    // console.log("roomData.username", roomData[0].username);
-
-
     function MapContent() {
         const map = useMap();
         const maxZoom = 17; // 최대 줌 레벨
         const minZoom = 7;  // 최소 줌 레벨
-    
+
         useEffect(() => {
             if (map && roomData.length > 0) {
                 const bounds = new window.google.maps.LatLngBounds();
-    
+
                 roomData.forEach(({ room: { roomLocationLatitude, roomLocationLongitude } }) => {
                     bounds.extend(new window.google.maps.LatLng(roomLocationLatitude, roomLocationLongitude));
                 });
-    
+
                 // 지도에 경계 설정
                 map.fitBounds(bounds);
-    
+
                 // fitBounds가 끝난 후 줌 레벨을 조정하기 위한 idle 이벤트 리스너
                 const handleIdle = () => {
                     const currentZoom = map.getZoom();
-    
+
                     if (currentZoom > maxZoom) {
                         map.setZoom(maxZoom);
                     } else if (currentZoom < minZoom) {
                         map.setZoom(minZoom);
                     }
-    
-                    // idle 이벤트 리스너 제거
+
                     window.google.maps.event.removeListener(idleListener);
                 };
-    
+
                 // idle 이벤트 리스너 추가
                 const idleListener = window.google.maps.event.addListener(map, 'idle', handleIdle);
             }
         }, [map, roomData]);
-    
+
+        // 핀이 없을 경우 메시지와 확인 버튼 표시
+        if (roomData.length === 0 && !showDefaultMap) {
+            return (
+                <div
+                    className="absolute inset-0 flex items-center justify-center flex-col bg-blue-50"
+                    style={{ fontFamily: 'MyCustomFont, sans-serif' }} // 배경색과 투명도 설정
+                >
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">현재 방 정보 없다개굴.</h2>
+                    <button
+                        onClick={handleDefaultMap}
+                        className="px-6 py-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition"
+                    >
+                        확인
+                    </button>
+                </div>
+            );
+        }
+
+
         return (
             <>
-                {roomData.map(({room}, index) => {
+                {roomData.map(({ room }, index) => {
                     const color = getRandomColor();
                     return (
                         <AdvancedMarker
@@ -138,9 +155,6 @@ function FirstPlayMap(props) {
             </>
         );
     }
-    
-    
-
 
     const handleJoinRoom = () => {
         if (selectedRoom) {
@@ -180,6 +194,9 @@ function FirstPlayMap(props) {
                 <APIProvider apiKey={googleMapApi}>
                     <div style={{ height: '100%', width: '100%' }}>
                         <Map
+                            key={mapKey}
+                            defaultCenter={showDefaultMap ? defaultCenter : undefined}
+                            defaultZoom={showDefaultMap ? defaultZoom : undefined}
                             mapId={googleMapId}
                             disableDefaultUI={true}
                         >
@@ -240,8 +257,7 @@ function FirstPlayMap(props) {
                         </button>
                         <button
                             className="mt-4 px-4 py-2 text-green-500 rounded-full"
-                            onClick={()=>{navigate('/main/firstPlay'); setIsModalOpen(false)}}
-
+                            onClick={() => { navigate('/main/firstPlay'); setIsModalOpen(false); }}
                         >
                             아니요
                         </button>
