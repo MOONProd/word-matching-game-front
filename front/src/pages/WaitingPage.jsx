@@ -4,7 +4,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
 import { userAtom } from '../recoil/userAtom';
 import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
 import { useParams, useNavigate } from "react-router-dom";
 import SockJS from 'sockjs-client';
 import { over } from 'stompjs';
@@ -12,6 +11,7 @@ import { useChat } from './ChatLogic';
 
 export const WaitingPage = () => {
     const user = useRecoilValue(userAtom);
+
     const { roomId } = useParams();
 
     const { messages: chatMessages, sendMessage: sendChatMessage, connectedUsers } = useChat(); // 전체 채팅 관련 useChat 훅 사용
@@ -118,7 +118,33 @@ export const WaitingPage = () => {
             }, 4000);
         }
     }, [isReady, otherUserIsReady]);
-    
+
+    // 게임 종료 시 navigate로 이동
+    useEffect(() => {
+        const handleGameOver = async () => {
+            if (gameOver && gameResult) { // gameResult가 빈 값이 아닌 경우에만 navigate 호출
+                try {
+                    if (gameResult === 'You won') {
+                        await updateWinnerScore(); // 비동기적으로 승자 점수 업데이트
+                    }
+                } catch (error) {
+                    console.error('Error updating score:', error);
+                }
+
+                // 게임 결과와 사용자 정보를 result 페이지로 전달
+                navigate('/result', {
+                    state: {
+                        gameResult: gameResult, // 'You won' or 'You lose'
+                        userId: userId,
+                        opponentId: otherUserId, // 상대방 ID
+                    }
+                });
+            }
+        };
+
+        handleGameOver();
+    }, [gameOver, gameResult, userId, otherUserId, navigate]);
+ 
 
     const connectWebSocket = (username, userId, roomId) => {
         let Sock = new SockJS('/ws');
@@ -203,6 +229,7 @@ export const WaitingPage = () => {
                 if (Number(payloadData.userId) === userId) {
                     // alert(payloadData.message);
                     setGameResult(payloadData.message); // Set game result
+                    console.log('your result....',payloadData.message);
                     if (payloadData.message === 'You won') {
                         // Call API to update score
                         updateWinnerScore();
@@ -212,6 +239,7 @@ export const WaitingPage = () => {
                 setCurrentTurn(null);
                 setGameOver(true); // Set gameOver to true
                 setMessages((prevMessages) => [...prevMessages, payloadData]);
+
             } else if (payloadData.status === 'ERROR') {
                 if (Number(payloadData.userId) === userId) {
                     // alert(payloadData.message);
@@ -384,30 +412,6 @@ export const WaitingPage = () => {
     };
 
     const isInputDisabled = currentTurn !== userId;
-
-    // // If the game is over, display the game over message and button
-    // if (gameOver) {
-    //     return (
-    //         <div className="flex flex-col h-screen items-center justify-center bg-blue-50">
-    //             <h1 className="text-4xl font-bold mb-4">Game is over</h1>
-    //             <p className="text-2xl mb-4">{gameResult}</p>
-    //             <Button variant="contained" color="primary" onClick={() => navigate('/main')}>
-    //                 Go back to main
-    //             </Button>
-    //         </div>
-    //     );
-    // }
-
-    if (gameOver) {
-        navigate('/wordgame/result', {
-            state: {
-                gameResult,
-                userId,
-                opponentId: otherUserId,
-            }
-        });
-        return null;
-    }
 
     return (
         <div className={`bg-blue-50 flex flex-col h-screen transition-all duration-1000 ${isGameStarted ? 'bg-blue-300' : ''}`}>

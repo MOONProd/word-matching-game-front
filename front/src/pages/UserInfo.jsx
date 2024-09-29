@@ -75,6 +75,7 @@ const UserInfo = ({ children }) => {
                     username: username,
                     profileImage: userInfoData.profileImage,
                     userInformation: userInfoData.otherInfo,
+                    userScore: userInfoData.score ? userInfoData.score.userScore : 0,
                 });
             }
         }

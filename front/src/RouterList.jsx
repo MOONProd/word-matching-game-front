@@ -107,6 +107,10 @@ export const RouterList = () => [
 
         ],
     },
+    {
+        path: '/result',
+        element: <ResultPage />,
+    },
 ];
 
 export const RouterObject = createBrowserRouter(RouterList());
