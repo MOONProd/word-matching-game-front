@@ -73,6 +73,7 @@ const UserInfo = ({ children }) => {
 
                 setUser({
                     username: username,
+                    profileImage: userInfoData.profileImage,
                     userInformation: userInfoData.otherInfo,
                 });
             }

@@ -10,6 +10,9 @@ import RankModal from '../modal/RankModal';
 import LogoutModal from '../modal/LogoutModal';
 import UserListModal from '../modal/UserListModal';
 
+import { useRecoilValue } from 'recoil';
+import { userAtom } from '../recoil/userAtom';
+
 function MainPage() {
     const userData = [
         { id: 1, username: 'Neighbor1', score: 100, profilePic: 'https://via.placeholder.com/150' },
@@ -18,6 +21,7 @@ function MainPage() {
         { id: 4, username: 'Neighbor4', score: 80, profilePic: 'https://via.placeholder.com/150' },
         { id: 5, username: 'Neighbor5', score: 75, profilePic: 'https://via.placeholder.com/150' },
     ];
+    const user = useRecoilValue(userAtom);
 
     // Sort user data based on score in descending order
     const sortedUserData = userData.sort((a, b) => b.score - a.score);
@@ -260,7 +264,7 @@ function MainPage() {
                         onClick={(e) => e.stopPropagation()}
                     >
                         <img
-                            src="https://via.placeholder.com/150"
+                            src={user.profileImage}
                             alt="Profile"
                             className="rounded-full w-16 h-16 mx-auto" // 프로필 사진 크기 50*50 (w-16, h-16)
                         />
