@@ -1,10 +1,11 @@
-// src/pages/WaitingPage.jsx
+// src/components/WaitingPage.js
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
 import { userAtom } from '../recoil/userAtom';
 import TextField from '@mui/material/TextField';
-import { useParams } from "react-router-dom";
+import Button from '@mui/material/Button';
+import { useParams, useNavigate } from "react-router-dom";
 import SockJS from 'sockjs-client';
 import { over } from 'stompjs';
 import { useChat } from './ChatLogic';
@@ -14,14 +15,19 @@ export const WaitingPage = () => {
     const { roomId } = useParams();
 
     const { messages: chatMessages, sendMessage: sendChatMessage, connectedUsers } = useChat(); // 전체 채팅 관련 useChat 훅 사용
+    const navigate = useNavigate(); // Hook for navigation
 
     const [messages, setMessages] = useState([]);
     const [connected, setConnected] = useState(false);
     const [messageContent, setMessageContent] = useState('');
-    const [chatContent, setChatContent] = useState(''); // For global chat
-    const [isReady, setIsReady] = useState(false); // Local user's readiness
-    const [isGameStarted, setIsGameStarted] = useState(false); // 게임 시작 상태
-    const [otherUserIsReady, setOtherUserIsReady] = useState(false); // Other user's readiness
+    const [isReady, setIsReady] = useState(false);
+    const [otherUserIsReady, setOtherUserIsReady] = useState(false);
+    const [gameStarted, setGameStarted] = useState(false);
+    const [currentTurn, setCurrentTurn] = useState(null); // Will hold userId of the current turn
+    const [otherUserId, setOtherUserId] = useState(null);
+    const [gameOver, setGameOver] = useState(false); // New state variable
+    const [gameResult, setGameResult] = useState(''); // To store 'You won' or 'You lose'
+
     const [showLeftSidebar, setShowLeftSidebar] = useState(true);
     const [showFooter, setShowFooter] = useState(true);
     const [showHeader, setShowHeader] = useState(true);
@@ -29,6 +35,12 @@ export const WaitingPage = () => {
     const [showStartIcon, setShowStartIcon] = useState(false);
     const stompClientRef = useRef(null);
     const roomIdRef = useRef(roomId);
+
+    // Ensure user IDs are numbers
+    const userId = Number(user.userInformation.id);
+    const roomHostId = Number(roomId);
+
+    const isHost = userId === roomHostId;
     const chatEndRef = useRef(null); // 전체 채팅 스크롤을 위한 ref 추가
     const roomChatEndRef = useRef(null); // 방 채팅 스크롤을 위한 ref 추가
 
@@ -42,28 +54,23 @@ export const WaitingPage = () => {
     }, [roomId]);
 
     useEffect(() => {
-        if (user && user.username && roomId && !stompClientRef.current && user.userInformation.id != null) {
-            connectWebSocket(user.username, user.userInformation.id, roomId);
-            console.log("WebSocket connection initiated.");
-            updateEnteredPlayerId(user.userInformation.id, roomId); // Update room status on enter
-            console.log("hahahahahahahahahah: ", user.userInformation.id);
+        if (user && user.username && roomId && !stompClientRef.current && userId != null) {
+            connectWebSocket(user.username, userId, roomId);
+            updateEnteredPlayerId(userId, roomId);
         }
-        console.log("this is entered id" + user.userInformation.id);
-    }, [user, roomId]);
+    }, [user, roomId, userId]);
 
     useEffect(() => {
-        // Handle component unmount
         return () => {
             handleUserLeave(roomIdRef.current);
         };
     }, []);
 
     useEffect(() => {
-        // Handle browser refresh or closing the tab
         const handleBeforeUnload = (e) => {
             e.preventDefault();
             handleUserLeave(roomIdRef.current);
-            e.returnValue = ''; // For Chrome to show alert
+            e.returnValue = '';
         };
 
         window.addEventListener('beforeunload', handleBeforeUnload);
@@ -73,9 +80,7 @@ export const WaitingPage = () => {
         };
     }, []);
 
-
     useEffect(() => {
-        // 전체 채팅 메시지가 업데이트될 때마다 스크롤을 최신 메시지로 이동
         if (chatEndRef.current) {
             chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
@@ -115,7 +120,7 @@ export const WaitingPage = () => {
     const connectWebSocket = (username, userId, roomId) => {
         let Sock = new SockJS('/ws');
         const client = over(Sock);
-        stompClientRef.current = client; // Assign client to ref
+        stompClientRef.current = client;
 
         const headers = {
             username: username,
@@ -128,10 +133,8 @@ export const WaitingPage = () => {
     const onConnected = (username, userId, roomId) => {
         setConnected(true);
 
-        // Subscribe to private room
         stompClientRef.current.subscribe(`/room/${roomId}/public`, onMessageReceived);
 
-        // Send JOIN message to the room
         let joinMessage = {
             senderName: username,
             status: 'JOIN',
@@ -146,38 +149,80 @@ export const WaitingPage = () => {
             console.log('Received message:', payloadData);
 
             if (payloadData.status === 'USER_LIST') {
-                // Ensure uniqueness of connected users
                 const uniqueUsers = Array.from(new Set(payloadData.userList));
                 setConnectedUsers(uniqueUsers);
             } else if (payloadData.status === 'READY' || payloadData.status === 'NOT_READY') {
-                const senderUserId = payloadData.userId;
+                const senderUserId = Number(payloadData.userId);
                 const isSenderReady = payloadData.status === 'READY';
 
-                if (senderUserId !== user.userInformation.id) {
-                    // Message is from the other user
+                if (senderUserId !== userId) {
                     setOtherUserIsReady(isSenderReady);
+                    setOtherUserId(senderUserId);
+                    console.log('Set otherUserIsReady:', isSenderReady);
                 } else {
-                    // Message is from the local user, already handled in handleReadyClick
+                    setIsReady(isSenderReady);
+                    console.log('Set isReady:', isSenderReady);
                 }
             } else if (payloadData.status === 'JOIN') {
-                // User joined
                 setMessages((prevMessages) => [...prevMessages, payloadData]);
+                const joinedUserId = Number(payloadData.userId);
+                if (joinedUserId !== userId) {
+                    setOtherUserId(joinedUserId);
+                    console.log('Set otherUserId (JOIN):', joinedUserId);
+                }
             } else if (payloadData.status === 'LEAVE') {
-                // User left
                 setMessages((prevMessages) => [...prevMessages, payloadData]);
-                // Reset other user's readiness
-                setOtherUserIsReady(false);
+                if (payloadData.userId !== userId) {
+                    setOtherUserIsReady(false);
+                    setOtherUserId(null);
+                }
+                if (payloadData.userId === userId) {
+                    setIsReady(false);
+                }
+            } else if (payloadData.status === 'GAME_IS_ON') {
+                setMessages((prevMessages) => [...prevMessages, payloadData]);
 
-                // If the other user left, reset local user's readiness
-                if (payloadData.senderName !== user.username) {
-                    setIsReady(false); // Reset local user's readiness
-                    // Update the server about the readiness status
-                    updateReadyStatusOnServer(false);
+                if (!gameStarted) {
+                    // Game starts
+                    setGameStarted(true);
+
+                    // Set the initial turn based on the userId provided in the message
+                    const startingUserId = Number(payloadData.userId);
+                    setCurrentTurn(startingUserId);
+                    console.log('Game started. Current turn set to userId:', startingUserId);
+                }
+            } else if (payloadData.status === 'TURN_CHANGE') {
+                // Update the current turn based on the TURN_CHANGE message from the server
+                setCurrentTurn(payloadData.userId);
+                console.log('Turn changed. Current turn set to userId:', payloadData.userId);
+            } else if (payloadData.status === 'GAME_IS_OFF') {
+                // Handle game over
+                if (Number(payloadData.userId) === userId) {
+                    alert(payloadData.message);
+                    setGameResult(payloadData.message); // Set game result
+                    if (payloadData.message === 'You won') {
+                        // Call API to update score
+                        updateWinnerScore();
+                    }
+                }
+                setGameStarted(false); // Reset game
+                setCurrentTurn(null);
+                setGameOver(true); // Set gameOver to true
+                setMessages((prevMessages) => [...prevMessages, payloadData]);
+            } else if (payloadData.status === 'ERROR') {
+                if (Number(payloadData.userId) === userId) {
+                    alert(payloadData.message);
                 }
             } else {
-                // Handle other message types
+                // Regular messages
                 setMessages((prevMessages) => [...prevMessages, payloadData]);
             }
+
+            // Ensure otherUserId is set whenever we receive a message from the other user
+            if (payloadData.userId && Number(payloadData.userId) !== userId && Number(payloadData.userId) !== otherUserId) {
+                setOtherUserId(Number(payloadData.userId));
+            }
+
         } catch (error) {
             console.error('Message Parsing Error: ', error, payload.body);
         }
@@ -188,8 +233,8 @@ export const WaitingPage = () => {
             let chatMessage = {
                 senderName: user.username,
                 message: messageContent,
-                status: 'MESSAGE',
-                userId: user.userInformation.id,
+                status: 'GAME_IS_ON',
+                userId: userId,
             };
             stompClientRef.current.send(`/app/room/${roomId}/message`, {}, JSON.stringify(chatMessage));
             setMessageContent('');
@@ -224,7 +269,7 @@ export const WaitingPage = () => {
 
         if (stompClientRef.current && stompClientRef.current.connected) {
             stompClientRef.current.disconnect(() => console.log('Disconnected from WebSocket'));
-            stompClientRef.current = null; // Reset the client ref
+            stompClientRef.current = null;
             setConnected(false);
         }
     };
@@ -233,12 +278,11 @@ export const WaitingPage = () => {
         console.error('WebSocket Error:', error);
     };
 
-    // Function to update enteredPlayerId
     const updateEnteredPlayerId = async (enteredPlayerId, roomId) => {
         try {
-            console.log("Updating enteredPlayerId to:", enteredPlayerId);
-            // Send GET request to the server using Fetch
-            const response = await fetch(`/api/room/${roomId}/enter?enteredPlayerId=${enteredPlayerId}`);
+            const response = await fetch(`/api/room/${roomId}/enter?enteredPlayerId=${enteredPlayerId}`, {
+                method: 'GET',
+            });
 
             if (response.ok) {
                 const data = await response.text();
@@ -251,14 +295,9 @@ export const WaitingPage = () => {
         }
     };
 
-    // Function to update readiness status on the server
     const updateReadyStatusOnServer = async (readyStatus) => {
         try {
-            const hostId = parseInt(roomId); // Assuming roomId is the hostId
-            const userId = user.userInformation.id;
-
-            console.log('Updating ready status on server for userId:', userId);
-
+            const hostId = roomHostId;
             const requestBody = {
                 userId: userId,
                 forceReadyStatus: readyStatus,
@@ -274,33 +313,19 @@ export const WaitingPage = () => {
 
             if (response.ok) {
                 const data = await response.text();
-                console.log('Host readiness status updated successfully:', data);
-                // Notify other users about the readiness status
-                let readyMessage = {
-                    senderName: user.username,
-                    status: readyStatus ? 'READY' : 'NOT_READY',
-                    userId: userId,
-                };
-                stompClientRef.current.send(`/app/room/${roomId}/message`, {}, JSON.stringify(readyMessage));
+                console.log('Ready status updated successfully:', data);
+                // The server will broadcast the readiness status
             } else {
-                console.error('Error updating host readiness status:', response.statusText);
+                console.error('Error updating ready status:', response.statusText);
             }
         } catch (error) {
-            console.error('Error updating host readiness status:', error);
+            console.error('Error updating ready status:', error);
         }
     };
 
-    // Function to handle Ready button click
     const handleReadyClick = async () => {
         try {
-            const newReadyStatus = !isReady;
-            setIsReady(newReadyStatus);
-
-            const hostId = parseInt(roomId); // Assuming roomId is the hostId
-            const userId = user.userInformation.id;
-
-            console.log('Handle ready click for userId:', userId);
-
+            const hostId = roomHostId;
             const requestBody = {
                 userId: userId,
             };
@@ -316,23 +341,49 @@ export const WaitingPage = () => {
             if (response.ok) {
                 const data = await response.text();
                 console.log('Ready status updated successfully:', data);
-                // Notify other users about ready status
-                let readyMessage = {
-                    senderName: user.username,
-                    status: newReadyStatus ? 'READY' : 'NOT_READY',
-                    userId: userId,
-                };
-                stompClientRef.current.send(`/app/room/${roomId}/message`, {}, JSON.stringify(readyMessage));
+                // The server will broadcast the readiness status
             } else {
                 console.error('Error updating ready status:', response.statusText);
             }
-
-            // The button disabling is handled based on the number of connected users
-            // Remove the bothUsersReady logic if not needed
         } catch (error) {
             console.error('Error updating ready status:', error);
         }
     };
+
+    const updateWinnerScore = async () => {
+        try {
+            const response = await fetch('/api/score/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: userId }),
+            });
+
+            if (response.ok) {
+                console.log('Score updated successfully');
+            } else {
+                console.error('Error updating score:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error updating score:', error);
+        }
+    };
+
+    const isInputDisabled = currentTurn !== userId;
+
+    // If the game is over, display the game over message and button
+    if (gameOver) {
+        return (
+            <div className="flex flex-col h-screen items-center justify-center bg-blue-50">
+                <h1 className="text-4xl font-bold mb-4">Game is over</h1>
+                <p className="text-2xl mb-4">{gameResult}</p>
+                <Button variant="contained" color="primary" onClick={() => navigate('/main')}>
+                    Go back to main
+                </Button>
+            </div>
+        );
+    }
 
     return (
         <div className={`bg-blue-50 flex flex-col h-screen transition-all duration-1000 ${isGameStarted ? 'bg-blue-300' : ''}`}>
@@ -526,5 +577,5 @@ export const WaitingPage = () => {
                 </>
             )}
         </div>
-    );
+    )
 };
