@@ -125,7 +125,7 @@ export const WaitingPage = () => {
             if (gameOver && gameResult) { // gameResult가 빈 값이 아닌 경우에만 navigate 호출
                 try {
                     if (gameResult === 'You won') {
-                        await updateWinnerScore(); // 비동기적으로 승자 점수 업데이트
+                        console.log('Score Updat 완');
                     }
                 } catch (error) {
                     console.error('Error updating score:', error);
