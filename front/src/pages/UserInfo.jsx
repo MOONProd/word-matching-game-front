@@ -73,7 +73,7 @@ const UserInfo = ({ children }) => {
 
                 setUser({
                     username: username,
-                    userInformation: userInfoData,
+                    userInformation: userInfoData.otherInfo,
                 });
             }
         }
@@ -85,6 +85,8 @@ const UserInfo = ({ children }) => {
         userInfoResult.data,
         setUser,
     ]);
+
+    // console.log(userInfoResult.data.otherInfo);
 
     if (usernameResult.isLoading || userInfoResult.isLoading) {
         return <div>Loading user information...</div>;
