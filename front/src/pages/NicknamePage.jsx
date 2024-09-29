@@ -117,24 +117,45 @@ function NicknamePage() {
 
     // 로딩이 끝나고 나면 닉네임 설정 페이지 표시
     return (
-        <Container maxWidth="sm" style={{ marginTop: '50px', textAlign: 'center' }}>
-            <Typography variant="h4" gutterBottom>
-                닉네임 설정
-            </Typography>
+        // <Container maxWidth="sm" style={{ marginTop: '50px', textAlign: 'center' }}>
+        //     <Typography variant="h4" gutterBottom>
+        //         닉네임 설정
+        //     </Typography>
+        //     <TextField
+        //         label="닉네임"
+        //         variant="outlined"
+        //         fullWidth
+        //         value={nickname}
+        //         onChange={handleNicknameChange}
+        //         error={Boolean(error)}
+        //         helperText={error}
+        //         style={{ marginBottom: '20px' }}
+        //     />
+        //     <Button variant="contained" color="primary" onClick={handleSubmit}>
+        //         닉네임 저장
+        //     </Button>
+        // </Container>
+
+        <div className="flex flex-col items-center justify-center h-screen p-4 bg-blue-200"
+            style={{ fontFamily: 'MyCustomFont, sans-serif' }}>
+            <h2 className="text-2xl mb-6 font-bold">닉네임 설정</h2>
             <TextField
                 label="닉네임"
                 variant="outlined"
-                fullWidth
                 value={nickname}
                 onChange={handleNicknameChange}
                 error={Boolean(error)}
                 helperText={error}
-                style={{ marginBottom: '20px' }}
+                className='inputRounded w-64 mb-4' // Add some margin to the bottom
             />
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
+            <button className='border-solid border-2 border-white rounded-full text-white mt-9
+                    bg-blue-500 px-5 py-3 text-lg font-bold hover:bg-blue-400 transition duration-150'
+                    onClick={handleSubmit}
+            >
                 닉네임 저장
-            </Button>
-        </Container>
+            </button>
+        </div>
+
     );
 }
 
