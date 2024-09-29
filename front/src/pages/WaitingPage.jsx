@@ -30,6 +30,7 @@ export const WaitingPage = () => {
     const [gameResult, setGameResult] = useState(''); // To store 'You won' or 'You lose'
 
     const [chatContent,setChatContent] = useState('');
+    const [systemMessageDisplayed, setSystemMessageDisplayed] = useState(false);
 
     const [showLeftSidebar, setShowLeftSidebar] = useState(true);
     const [showFooter, setShowFooter] = useState(true);
@@ -178,9 +179,9 @@ export const WaitingPage = () => {
             console.log('Received message:', payloadData);
 
             if (payloadData.status === 'USER_LIST') {
-                // const uniqueUsers = Array.from(new Set(payloadData.userList));
-                // setConnectedUsers(uniqueUsers);
+                // 접속자 목록 처리 로직 (필요 시 사용)
             } else if (payloadData.status === 'READY' || payloadData.status === 'NOT_READY') {
+                // READY/NOT_READY 상태 처리
                 const senderUserId = Number(payloadData.userId);
                 const isSenderReady = payloadData.status === 'READY';
 
@@ -209,10 +210,20 @@ export const WaitingPage = () => {
                     setIsReady(false);
                 }
             } else if (payloadData.status === 'GAME_IS_ON') {
-                setMessages((prevMessages) => [...prevMessages, payloadData]);
+                // 시스템 메시지인 경우 4초 뒤에 표시, 나머지 메시지는 즉시 처리
+                if (payloadData.senderName === 'System' && !systemMessageDisplayed) {
+                    // 4초 후 시스템 메시지 표시
+                    setTimeout(() => {
+                        setMessages((prevMessages) => [...prevMessages, payloadData]);
+                        setSystemMessageDisplayed(true); // 한 번만 표시
+                    }, 4000);
+                } else {
+                    // 시스템 메시지가 아닌 경우(사용자 메시지)는 즉시 처리
+                    setMessages((prevMessages) => [...prevMessages, payloadData]);
+                }
 
                 if (!gameStarted) {
-                    // Game starts
+                    // 게임 시작 처리
                     setGameStarted(true);
 
                     // Set the initial turn based on the userId provided in the message
@@ -221,31 +232,30 @@ export const WaitingPage = () => {
                     console.log('Game started. Current turn set to userId:', startingUserId);
                 }
             } else if (payloadData.status === 'TURN_CHANGE') {
-                // Update the current turn based on the TURN_CHANGE message from the server
+                // 턴 변경 처리
                 setCurrentTurn(payloadData.userId);
                 console.log('Turn changed. Current turn set to userId:', payloadData.userId);
             } else if (payloadData.status === 'GAME_IS_OFF') {
-                // Handle game over
+                // 게임 종료 처리
                 if (Number(payloadData.userId) === userId) {
-                    // alert(payloadData.message);
                     setGameResult(payloadData.message); // Set game result
-                    console.log('your result....',payloadData.message);
+                    console.log('your result....', payloadData.message);
                     if (payloadData.message === 'You won') {
-                        // Call API to update score
+                        // 승자 점수 업데이트
                         updateWinnerScore();
                     }
                 }
-                setGameStarted(false); // Reset game
+                setGameStarted(false); // 게임 상태 초기화
                 setCurrentTurn(null);
-                setGameOver(true); // Set gameOver to true
+                setGameOver(true); // 게임 종료 상태 설정
                 setMessages((prevMessages) => [...prevMessages, payloadData]);
-
             } else if (payloadData.status === 'ERROR') {
+                // 에러 처리
                 if (Number(payloadData.userId) === userId) {
-                    // alert(payloadData.message);
+                    // 에러 메시지 처리
                 }
             } else {
-                // Regular messages
+                // 일반 메시지 처리
                 setMessages((prevMessages) => [...prevMessages, payloadData]);
             }
 
@@ -258,6 +268,7 @@ export const WaitingPage = () => {
             console.error('Message Parsing Error: ', error, payload.body);
         }
     };
+
 
     const sendMessage = () => {
         if (stompClientRef.current && connected) {
