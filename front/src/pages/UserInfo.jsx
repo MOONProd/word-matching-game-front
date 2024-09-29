@@ -74,6 +74,7 @@ const UserInfo = ({ children }) => {
                 setUser({
                     username: username,
                     profileImage: userInfoData.profileImage,
+                    email: userInfoData.email,
                     userInformation: userInfoData.otherInfo,
                     userScore: userInfoData.score ? userInfoData.score.userScore : 0,
                 });

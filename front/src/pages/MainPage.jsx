@@ -165,6 +165,8 @@ function MainPage() {
                  backgroundRepeat: 'no-repeat',
              }}
         >
+            {/* <img src='../src/assets/images/bg.png'
+                 style={{width: '100%', height: '100vh', zIndex: -1}}/> */}
             <img
                 src="../src/assets/images/title.png"
                 className="mt-5 w-1/2 max-w-ms h-auto"
@@ -271,7 +273,7 @@ function MainPage() {
                         <hr className="my-4 border-gray-300" />
                         <button
                             className="block text-black mb-4 mx-auto" // 중앙 정렬을 위해 mx-auto 추가
-                            onClick={() => alert("정보 확인 페이지로 이동합니다.")}
+                            onClick={() => navigate('/main/info')}
                         >
                             정보 확인
                         </button>
