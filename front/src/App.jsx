@@ -5,7 +5,7 @@ import { RecoilRoot } from 'recoil';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import QueryClient and QueryClientProvider
 import { RouterObject } from './RouterList';
 import './App.css';
-import { ChatLogicProvider } from './pages/ChatLogic.jsx';
+import {ChatLogicProvider} from './pages/ChatLogic.jsx';
 
 // Create an instance of QueryClient
 const queryClient = new QueryClient();
