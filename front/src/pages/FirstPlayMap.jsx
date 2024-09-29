@@ -163,6 +163,7 @@ function FirstPlayMap(props) {
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.roomExists) {
+                        console.log("kakakakakak: ",data.roomExists)
                         // If room exists, store the roomId in userPresenceAtom
                         setUserPresence((prev) => ({
                             ...prev,
