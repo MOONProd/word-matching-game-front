@@ -4,22 +4,42 @@ import { useNavigate } from 'react-router-dom';
 function NewLoginPage() {
     const navigate = useNavigate();
 
-    // Google 로그인 함수
+    // Google 로그인 함수 (팝업 창 열기)
     const googleLogin = () => {
-        window.location.href = 'http://localhost:8080/oauth2/authorization/google';
-    };
+        // 팝업 창 열기
+        const popup = window.open(
+            'http://localhost:8080/oauth2/authorization/google',
+            'googleLoginPopup',
+            'width=500,height=600'
+        );
 
-    // 콜백 처리: URL에서 토큰 확인 후 상태 업데이트
-    useEffect(() => {
-        const queryParams = new URLSearchParams(window.location.search);
-        const token = queryParams.get('token');
+        if (popup) {
+            // 팝업 창이 열렸을 때 메시지 수신 대기
+            const messageListener = (event) => {
+                // 팝업 창에서 보낸 메시지 수신
+                if (event.origin === 'http://localhost:8080') { // 백엔드 주소와 동일하게 설정
+                    const { token } = event.data; // 팝업에서 전달된 토큰
 
-        if (token) {
-            // 토큰이 있는 경우: 로컬 스토리지에 저장하고 상태 업데이트
-            localStorage.setItem('accessToken', token);
-            navigate('/main'); // 메인 페이지로 이동
+                    if (token) {
+                        // 토큰을 로컬 스토리지에 저장
+                        localStorage.setItem('accessToken', token);
+                        navigate('/main'); // 메인 페이지로 이동
+                    }
+                }
+            };
+
+            // 메시지 이벤트 리스너 등록
+            window.addEventListener('message', messageListener);
+
+            // 팝업 창이 닫혔을 때 메시지 리스너 제거
+            const popupInterval = setInterval(() => {
+                if (popup.closed) {
+                    clearInterval(popupInterval);
+                    window.removeEventListener('message', messageListener);
+                }
+            }, 500);
         }
-    }, [navigate]);
+    };
 
     return (
         <div
@@ -28,7 +48,7 @@ function NewLoginPage() {
                 width: '100%',
                 height: '100vh',
                 backgroundImage: 'url(../src/assets/images/login_bg.png)',
-                backgroundSize: '100% auto', // 가로를 100%로 맞추고, 세로는 비율에 맞게 조정
+                backgroundSize: '100% auto',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
             }}
