@@ -152,8 +152,8 @@ export const WaitingPage = () => {
             console.log('Received message:', payloadData);
 
             if (payloadData.status === 'USER_LIST') {
-                const uniqueUsers = Array.from(new Set(payloadData.userList));
-                setConnectedUsers(uniqueUsers);
+                // const uniqueUsers = Array.from(new Set(payloadData.userList));
+                // setConnectedUsers(uniqueUsers);
             } else if (payloadData.status === 'READY' || payloadData.status === 'NOT_READY') {
                 const senderUserId = Number(payloadData.userId);
                 const isSenderReady = payloadData.status === 'READY';
@@ -523,7 +523,12 @@ export const WaitingPage = () => {
                             value={messageContent}
                             onChange={handleMessageChange}
                             className="flex-grow mx-4"
-                            // disabled={!isReady || !otherUserIsReady}
+                            label={
+                                isInputDisabled
+                                    ? '상대방의 차례입니다.'
+                                    : '메시지를 입력하세요'
+                            }
+                            disabled={isInputDisabled}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
                                     e.preventDefault();
@@ -534,7 +539,7 @@ export const WaitingPage = () => {
                         <button
                             onClick={sendMessage} 
                             className="px-4 py-2 border-l-2 border-white"
-                            // disabled={!isReady || !otherUserIsReady}
+                            disabled={isInputDisabled}
                         >
                             Send
                         </button>
