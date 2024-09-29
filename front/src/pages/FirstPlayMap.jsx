@@ -20,6 +20,7 @@ function FirstPlayMap(props) {
     const [mapKey, setMapKey] = useState(0);
     const [isLoading, setIsLoading] = useState(true);  // Set initial loading state to true
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState(null);
     const [showDefaultMap, setShowDefaultMap] = useState(false); // Default map view 상태
 
@@ -158,32 +159,39 @@ function FirstPlayMap(props) {
 
     const handleJoinRoom = () => {
         if (selectedRoom) {
-            // Verify the room's location before proceeding
+            // 방 위치를 확인하는 API 호출
             fetch(`/api/room/${selectedRoom.id}/verify-location?latitude=${selectedRoom.roomLocationLatitude}&longitude=${selectedRoom.roomLocationLongitude}`)
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.roomExists) {
-                        console.log("kakakakakak: ",data.roomExists)
-                        // If room exists, store the roomId in userPresenceAtom
+                        // 방에 들어갈 수 있는 경우
                         setUserPresence((prev) => ({
                             ...prev,
                             roomId: selectedRoom.id, // Set the room ID
                         }));
-
-                        // Navigate to WaitingPage
+    
+                        // WaitingPage로 이동
                         navigate(`/main/secondPlay/wait/${selectedRoom.id}`, { state: { room: selectedRoom } });
                         setIsModalOpen(false);
                     } else {
-                        alert(data.message); // Room doesn't exist
+                        // 방이 차 있으면 모달을 띄운다
+                        if (data.message === "Room is occupied") {
+                            setIsModalOpen(false);
+                            setIsRoomModalOpen(true);
+                        } else {
+                            // 그 외의 경우 일반 알림
+                            alert(data.message); 
+                        }
                     }
                 })
                 .catch(error => {
-                    console.error('Error verifying room location:', error);
-                    alert("There was an error verifying the room location.");
+                    console.error('방 위치 확인 오류:', error);
+                    alert("방 위치 확인 중 오류가 발생했습니다.");
                     window.location.reload();
                 });
         }
     };
+    
 
     return (
         <div style={{ maxWidth: '100vw', height: '100vh', margin: 'auto' }}>
@@ -241,6 +249,24 @@ function FirstPlayMap(props) {
             >
                 <FaSyncAlt size={24} color="#000" />
             </button>
+
+            {/* Modal Window */}
+            {isRoomModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white text-center p-8 rounded-lg max-w-lg w-full"
+                         style={{ fontFamily: 'MyCustomFont, sans-serif' }}>
+                        <h1 className="text-xl mb-4">알림</h1>
+                        
+                        <h3 className="text-2xl font-bold mb-4">방에 인원이 꽉 찼다개굴!</h3> 
+                        <button
+                            className="mt-4 px-4 py-2 bg-green-500 text-white rounded-full"
+                            onClick={() => { navigate('/main/firstPlay'); setIsRoomModalOpen(false); }}
+                        >
+                            다른 방 찾기
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Modal Window */}
             {isModalOpen && (
