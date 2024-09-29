@@ -117,24 +117,6 @@ function NicknamePage() {
 
     // 로딩이 끝나고 나면 닉네임 설정 페이지 표시
     return (
-        // <Container maxWidth="sm" style={{ marginTop: '50px', textAlign: 'center' }}>
-        //     <Typography variant="h4" gutterBottom>
-        //         닉네임 설정
-        //     </Typography>
-        //     <TextField
-        //         label="닉네임"
-        //         variant="outlined"
-        //         fullWidth
-        //         value={nickname}
-        //         onChange={handleNicknameChange}
-        //         error={Boolean(error)}
-        //         helperText={error}
-        //         style={{ marginBottom: '20px' }}
-        //     />
-        //     <Button variant="contained" color="primary" onClick={handleSubmit}>
-        //         닉네임 저장
-        //     </Button>
-        // </Container>
 
         <div className="flex flex-col items-center justify-center h-screen p-4 bg-blue-200"
             style={{ fontFamily: 'MyCustomFont, sans-serif' }}>
