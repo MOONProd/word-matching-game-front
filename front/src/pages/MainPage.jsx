@@ -14,17 +14,9 @@ import { useRecoilValue } from 'recoil';
 import { userAtom } from '../recoil/userAtom';
 
 function MainPage() {
-    const userData = [
-        { id: 1, username: 'Neighbor1', score: 100, profilePic: 'https://via.placeholder.com/150' },
-        { id: 2, username: 'Neighbor2', score: 90, profilePic: 'https://via.placeholder.com/150' },
-        { id: 3, username: 'Neighbor3', score: 85, profilePic: 'https://via.placeholder.com/150' },
-        { id: 4, username: 'Neighbor4', score: 80, profilePic: 'https://via.placeholder.com/150' },
-        { id: 5, username: 'Neighbor5', score: 75, profilePic: 'https://via.placeholder.com/150' },
-    ];
     const user = useRecoilValue(userAtom);
-
-    // Sort user data based on score in descending order
-    const sortedUserData = userData.sort((a, b) => b.score - a.score);
+    
+    const [sortedUserData, setSortedUserData] = useState([]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isRankOpen, setIsRankOpen] = useState(false);
@@ -46,6 +38,25 @@ function MainPage() {
 
     // Ref for scrolling chat to bottom
     const messagesEndRef = useRef(null);
+
+    // 서버에서 순위 데이터를 가져오는 함수
+    const fetchRankData = async () => {
+        try {
+            const response = await fetch('/api/scores'); // 서버로부터 모든 유저의 점수 및 이름 가져오기
+            const data = await response.json();
+
+            // 점수를 내림차순으로 정렬
+            const sortedData = data.sort((a, b) => b.userScore - a.userScore);
+            setSortedUserData(sortedData); // 정렬된 데이터를 상태로 설정
+        } catch (error) {
+            console.error('Error fetching rank data:', error);
+        }
+    };
+
+    // 페이지가 로드될 때 데이터를 가져오는 useEffect
+    useEffect(() => {
+        fetchRankData();
+    }, []);
 
     // Scroll to bottom when messages change
     useEffect(() => {

@@ -25,27 +25,18 @@ const RankModal = ({ isOpen, isAnimating, onClose, userData }) => {
                     </button>
                     <div className="text-center text-white">
                         <h2 className="text-2xl font-bold mb-4">이웃순위</h2>
-                        {/* 1위 사용자 */}
-                        <div className="flex justify-around text-center items-center space-x-4 mb-4 text-black">
-                            <img 
-                                src={userData[0].profilePic} 
-                                alt={`${userData[0].username} 프로필`}
-                                className="w-24 h-24 rounded-full mx-0 mb-4"
-                            />
-                            <div className="mx-10 text-xl font-bold">{userData[0].username}</div>
-                            <div className="text-lg text-green-600">{userData[0].score}점</div>
-                        </div>
-                        {/* 2위 ~ 5위 사용자 */}
+                        {/* 순위 데이터를 렌더링 */}
                         <ol className="list-decimal list-inside">
-                            {userData.slice(1, 5).map((user, index) => (
-                                <li key={user.id} className="flex justify-around items-center mb-4 text-black">
-                                    <img 
-                                        src={user.profilePic} 
+                            {userData.map((user, index) => (
+                                <li key={user.userId} className="flex justify-around items-center mb-10 text-black">
+                                    <div className="text-lg font-semibold">{index + 1}위</div> {/* 순위 표시 */}
+                                    {/* <img 
+                                        src={user.profileImage || 'https://via.placeholder.com/150'} 
                                         alt={`${user.username} 프로필`}
                                         className="w-16 h-16 rounded-full mr-4"
-                                    />
+                                    /> */}
                                     <p className="text-lg font-semibold">{user.username}</p>
-                                    <p className="text-md text-green-500">{user.score}점</p>
+                                    <p className="text-md text-green-500">{user.userScore}점</p>
                                 </li>
                             ))}
                         </ol>
