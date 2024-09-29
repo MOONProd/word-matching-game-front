@@ -61,6 +61,8 @@ function NewLoginPage() {
                 backgroundRepeat: 'no-repeat',
             }}
         >
+            {/* <img src='../src/assets/images/login_bg.png'
+                 style={{width: '100%', height: '100vh', zIndex: -1}}/> */}
             {/* 로그인 버튼 */}
             <div
                 className="absolute top-56 flex flex-col space-y-4 mb-4"
