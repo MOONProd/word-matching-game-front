@@ -233,14 +233,24 @@ export const WaitingPage = () => {
 
     const sendMessage = () => {
         if (stompClientRef.current && connected) {
-            let chatMessage = {
-                senderName: user.username,
-                message: messageContent,
-                status: 'GAME_IS_ON',
-                userId: userId,
-            };
-            stompClientRef.current.send(`/app/room/${roomId}/message`, {}, JSON.stringify(chatMessage));
-            setMessageContent('');
+            if(messageContent.trim() !== ''){
+
+                let chatMessage = {
+                    senderName: user.username,
+                    message: messageContent,
+                    status: 'GAME_IS_ON',
+                    userId: userId,
+                };
+                stompClientRef.current.send(`/app/room/${roomId}/message`, {}, JSON.stringify(chatMessage));
+                setMessageContent('');
+            }
+        }
+    };
+
+    const handleSendMessage = () => {
+        if (chatContent.trim() !== '') {
+            sendChatMessage(chatContent);
+            setChatContent('');
         }
     };
 
@@ -248,9 +258,9 @@ export const WaitingPage = () => {
         setMessageContent(event.target.value);
     };
 
-    const handleChatContentChange = (event) => {
-        setChatContent(event.target.value);
-    };
+    // const handleChatContentChange = (event) => {
+    //     setChatContent(event.target.value);
+    // };
 
     const handleFocus = () => {
         setLabel('메시지를 입력중...');
@@ -375,17 +385,28 @@ export const WaitingPage = () => {
 
     const isInputDisabled = currentTurn !== userId;
 
-    // If the game is over, display the game over message and button
+    // // If the game is over, display the game over message and button
+    // if (gameOver) {
+    //     return (
+    //         <div className="flex flex-col h-screen items-center justify-center bg-blue-50">
+    //             <h1 className="text-4xl font-bold mb-4">Game is over</h1>
+    //             <p className="text-2xl mb-4">{gameResult}</p>
+    //             <Button variant="contained" color="primary" onClick={() => navigate('/main')}>
+    //                 Go back to main
+    //             </Button>
+    //         </div>
+    //     );
+    // }
+
     if (gameOver) {
-        return (
-            <div className="flex flex-col h-screen items-center justify-center bg-blue-50">
-                <h1 className="text-4xl font-bold mb-4">Game is over</h1>
-                <p className="text-2xl mb-4">{gameResult}</p>
-                <Button variant="contained" color="primary" onClick={() => navigate('/main')}>
-                    Go back to main
-                </Button>
-            </div>
-        );
+        navigate('/wordgame/result', {
+            state: {
+                gameResult,
+                userId,
+                opponentId: otherUserId,
+            }
+        });
+        return null;
     }
 
     return (
@@ -460,8 +481,7 @@ export const WaitingPage = () => {
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
                                         e.preventDefault();
-                                        sendChatMessage(chatContent);
-                                        setChatContent('');
+                                        handleSendMessage();
                                     }
                                 }}
                             />
