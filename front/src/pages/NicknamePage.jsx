@@ -14,7 +14,7 @@ function NicknamePage() {
     };
 
     useEffect(() => {
-        fetch('/auth/user-info', {
+        fetch('/auth/callback', {
             method: 'GET',
             credentials: 'include'
         })
