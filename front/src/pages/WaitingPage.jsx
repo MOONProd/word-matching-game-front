@@ -573,17 +573,21 @@ export const WaitingPage = () => {
 
             {/* Footer Area */}
             <div className={`flex justify-center items-center p-4 bg-blue-100 transition-all duration-1000 ${showFooter ? '' : 'translate-y-full opacity-0'}`} 
-                 style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%',
-                          display: showCentralChat ? 'none' : '',
-                  }}>
+                style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%',
+                        display: showCentralChat ? 'none' : '',
+                }}>
                 <button
-                    className='border-solid border-2 border-white rounded-full text-white
-                    bg-blue-500 px-5 py-3 text-lg font-bold hover:bg-blue-400 transition duration-150'
+                    className={`border-solid border-2 border-white rounded-full text-white 
+                            ${isReady ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-400'} 
+                            px-5 py-3 text-lg font-bold transition duration-150`}
                     onClick={handleReadyClick}
+                    disabled={isReady} // 준비 완료 상태일 때 비활성화
                 >
-                    {isReady ? '준비 취소' : '준비!!!!'}
+                    {isReady ? '준비 중...' : '준비!!!!'}
                 </button>
             </div>
+
+
 
             {/* 게임 시작 아이콘 */}
             {showStartIcon && (
