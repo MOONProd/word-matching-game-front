@@ -21,12 +21,15 @@ export const WaitingPage = () => {
     const [connected, setConnected] = useState(false);
     const [messageContent, setMessageContent] = useState('');
     const [isReady, setIsReady] = useState(false);
+    const [isGameStarted, setIsGameStarted] = useState(false);
     const [otherUserIsReady, setOtherUserIsReady] = useState(false);
     const [gameStarted, setGameStarted] = useState(false);
     const [currentTurn, setCurrentTurn] = useState(null); // Will hold userId of the current turn
     const [otherUserId, setOtherUserId] = useState(null);
     const [gameOver, setGameOver] = useState(false); // New state variable
     const [gameResult, setGameResult] = useState(''); // To store 'You won' or 'You lose'
+
+    const [chatContent,setChatContent] = useState('');
 
     const [showLeftSidebar, setShowLeftSidebar] = useState(true);
     const [showFooter, setShowFooter] = useState(true);
@@ -198,7 +201,7 @@ export const WaitingPage = () => {
             } else if (payloadData.status === 'GAME_IS_OFF') {
                 // Handle game over
                 if (Number(payloadData.userId) === userId) {
-                    alert(payloadData.message);
+                    // alert(payloadData.message);
                     setGameResult(payloadData.message); // Set game result
                     if (payloadData.message === 'You won') {
                         // Call API to update score
@@ -211,7 +214,7 @@ export const WaitingPage = () => {
                 setMessages((prevMessages) => [...prevMessages, payloadData]);
             } else if (payloadData.status === 'ERROR') {
                 if (Number(payloadData.userId) === userId) {
-                    alert(payloadData.message);
+                    // alert(payloadData.message);
                 }
             } else {
                 // Regular messages
@@ -245,9 +248,9 @@ export const WaitingPage = () => {
         setMessageContent(event.target.value);
     };
 
-    // const handleChatContentChange = (event) => {
-    //     setChatContent(event.target.value);
-    // };
+    const handleChatContentChange = (event) => {
+        setChatContent(event.target.value);
+    };
 
     const handleFocus = () => {
         setLabel('메시지를 입력중...');
