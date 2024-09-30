@@ -128,7 +128,7 @@ export const WaitingPage = () => {
             if (gameOver && gameResult) { // gameResult가 빈 값이 아닌 경우에만 navigate 호출
                 try {
                     if (gameResult === 'You won') {
-                        console.log('Score Updat 완');
+                        console.log('Score Update 완료');
                     }
                 } catch (error) {
                     console.error('Error updating score:', error);
@@ -147,7 +147,7 @@ export const WaitingPage = () => {
 
         handleGameOver();
     }, [gameOver, gameResult, userId, otherUserId, navigate]);
- 
+
 
     const connectWebSocket = (username, userId, roomId) => {
         let Sock = new SockJS('/ws');
@@ -245,7 +245,7 @@ export const WaitingPage = () => {
                 // 게임 종료 처리
                 if (Number(payloadData.userId) === userId) {
                     setGameResult(payloadData.message); // Set game result
-                    console.log('your result....', payloadData.message);
+                    console.log('Your result:', payloadData.message);
                     if (payloadData.message === 'You won') {
                         // 승자 점수 업데이트
                         updateWinnerScore();
@@ -255,10 +255,15 @@ export const WaitingPage = () => {
                 setCurrentTurn(null);
                 setGameOver(true); // 게임 종료 상태 설정
                 setMessages((prevMessages) => [...prevMessages, payloadData]);
+            } else if (payloadData.status === 'DUPLICATED') {
+                // Handle duplicated word
+                setMessages((prevMessages) => [...prevMessages, payloadData]);
+                // Assuming the server sends GAME_IS_OFF after DUPLICATED, so gameOver and gameResult will be handled there
             } else if (payloadData.status === 'ERROR') {
                 // 에러 처리
                 if (Number(payloadData.userId) === userId) {
-                    // 에러 메시지 처리
+                    // 에러 메시지 처리 (Optional: Display error to user)
+                    // You can add error handling logic here if needed
                 }
             } else {
                 // 일반 메시지 처리
@@ -266,7 +271,11 @@ export const WaitingPage = () => {
             }
 
             // Ensure otherUserId is set whenever we receive a message from the other user
-            if (payloadData.userId && Number(payloadData.userId) !== userId && Number(payloadData.userId) !== otherUserId) {
+            if (
+                payloadData.userId &&
+                Number(payloadData.userId) !== userId &&
+                Number(payloadData.userId) !== otherUserId
+            ) {
                 setOtherUserId(Number(payloadData.userId));
             }
 
@@ -433,21 +442,21 @@ export const WaitingPage = () => {
     return (
         <div className={`bg-blue-50 flex flex-col h-screen transition-all duration-1000 ${isGameStarted ? 'bg-blue-300' : ''}`}>
             {/* Header Area */}
-            <div className={`flex justify-between items-center p-4 bg-blue-200 transition-all duration-1000 ${showHeader ? '' : '-translate-y-full opacity-0'}`} 
+            <div className={`flex justify-between items-center p-4 bg-blue-200 transition-all duration-1000 ${showHeader ? '' : '-translate-y-full opacity-0'}`}
                  style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%', transition: 'all 1s ease-in-out',
-                          display: showCentralChat ? 'none' : '',
-                  }}
+                     display: showCentralChat ? 'none' : '',
+                 }}
             >
                 <h2 className="text-xl font-bold">플레이어 준비 상태</h2>
                 <div className="flex space-x-4">
                 <span className="text-black">
-                    You 
+                    You
                     <span className={isReady ? 'text-green-700 ml-1 font-bold' : 'text-red-500 ml-1 font-bold'}>
                         {isReady ? '준비 완료' : '준비 대기'}
                     </span>
                 </span>
-                <span className="text-black">
-                    Other 
+                    <span className="text-black">
+                    Other
                     <span className={otherUserIsReady ? 'text-green-700 ml-1 font-bold' : 'text-red-500 ml-1 font-bold'}>
                         {otherUserIsReady ? '준비 완료' : '준비 대기'}
                     </span>
@@ -471,41 +480,41 @@ export const WaitingPage = () => {
                     <div>
                         <h3 className="text-lg font-bold mb-4"
                             style={{ fontFamily: 'MyCustomFont, sans-serif' }}>전체 채팅</h3>
-                        <div className='bg-blue-400 bg-opacity-60 
+                        <div className='bg-blue-400 bg-opacity-60
                                         text-white rounded-lg p-2'>
                             <div className="overflow-y-auto h-40 mb-4">
-                                    <ul className="list-none p-0">
-                                        {chatMessages.map((item, index) => (
-                                            <li key={index} className="mb-2">
-                                                {item.status === 'JOIN' || item.status === 'LEAVE' ? (
-                                                    <strong>{`${item.senderName}님이 ${item.status === 'JOIN' ? '들어왔습니다.' : '나갔습니다.'}`}</strong>
-                                                ) : (
-                                                    <>
-                                                        <strong>{item.senderName}:</strong> {item.message}
-                                                    </>
-                                                ) }
-                                            </li>
-                                        ))}
-                                        <div ref={chatEndRef} /> {/* 자동 스크롤을 위한 Ref */}
-                                    </ul>
+                                <ul className="list-none p-0">
+                                    {chatMessages.map((item, index) => (
+                                        <li key={index} className="mb-2">
+                                            {item.status === 'JOIN' || item.status === 'LEAVE' ? (
+                                                <strong>{`${item.senderName}님이 ${item.status === 'JOIN' ? '들어왔습니다.' : '나갔습니다.'}`}</strong>
+                                            ) : (
+                                                <>
+                                                    <strong>{item.senderName}:</strong> {item.message}
+                                                </>
+                                            ) }
+                                        </li>
+                                    ))}
+                                    <div ref={chatEndRef} /> {/* 자동 스크롤을 위한 Ref */}
+                                </ul>
                             </div>
                             <div className="flex">
-                            <TextField
-                                id="standard-chat"
-                                label={label}
-                                variant="standard"
-                                value={chatContent}
-                                onFocus={handleFocus} 
-                                onBlur={handleBlur}   
-                                onChange={(e) => setChatContent(e.target.value)}
-                                className="flex-grow text-white"
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
-                                        e.preventDefault();
-                                        handleSendMessage();
-                                    }
-                                }}
-                            />
+                                <TextField
+                                    id="standard-chat"
+                                    label={label}
+                                    variant="standard"
+                                    value={chatContent}
+                                    onFocus={handleFocus}
+                                    onBlur={handleBlur}
+                                    onChange={(e) => setChatContent(e.target.value)}
+                                    className="flex-grow text-white"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                                            e.preventDefault();
+                                            handleSendMessage();
+                                        }
+                                    }}
+                                />
                                 <button
                                     onClick={() => {
                                         sendChatMessage(chatContent);
@@ -520,11 +529,11 @@ export const WaitingPage = () => {
 
                 {/* Right Side: Room-specific chat */}
                 <div className={`flex flex-col flex-grow overflow-hidden p-5 transition-all duration-1000 ${showCentralChat ? 'fixed inset-0 justify-center' : ''}`}
-                     style={showCentralChat ? { 
-                        marginLeft: '300px', // 왼쪽 이미지 공간 확보
-                        marginRight: '300px', // 오른쪽 이미지 공간 확보
-                        maxHeight: 'calc(100vh - 20px)' // 전체 화면 높이에서 여유를 두고 최대 높이 설정
-                    } : { maxHeight: 'calc(100vh - 20px)' }} // 기본 상태에서도 최대 높이 설정
+                     style={showCentralChat ? {
+                         marginLeft: '300px', // 왼쪽 이미지 공간 확보
+                         marginRight: '300px', // 오른쪽 이미지 공간 확보
+                         maxHeight: 'calc(100vh - 20px)' // 전체 화면 높이에서 여유를 두고 최대 높이 설정
+                     } : { maxHeight: 'calc(100vh - 20px)' }} // 기본 상태에서도 최대 높이 설정
                 >
                     <div className="flex-grow overflow-y-auto mb-2">
                         <ul className="list-none p-0">
@@ -578,7 +587,7 @@ export const WaitingPage = () => {
                             }}
                         />
                         <button
-                            onClick={sendMessage} 
+                            onClick={sendMessage}
                             className="px-4 py-2 border-l-2 border-white"
                             disabled={isInputDisabled}
                         >
@@ -589,11 +598,11 @@ export const WaitingPage = () => {
             </div>
 
             {/* Footer Area */}
-            <div className={`flex justify-center items-center p-4 bg-blue-100 transition-all duration-1000 ${showFooter ? '' : 'translate-y-full opacity-0'}`} 
-                style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%',
-                        display: showCentralChat ? 'none' : '',
-                }}>
-                {!gameStarted && 
+            <div className={`flex justify-center items-center p-4 bg-blue-100 transition-all duration-1000 ${showFooter ? '' : 'translate-y-full opacity-0'}`}
+                 style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%',
+                     display: showCentralChat ? 'none' : '',
+                 }}>
+                {!gameStarted &&
                     <button
                         className={`border-solid border-2 border-white rounded-full text-white 
                                     ${(connectedUsers.length < 2) ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-400'} 
@@ -622,16 +631,16 @@ export const WaitingPage = () => {
                 <>
                     <div className='absolute left-10 bottom-1/3 transform translate-y-1/2 animate-slideInLeft'>
                         <img src="/cheerGagul.png"
-                            className="animate-rotate-wiper-left"
-                            style={{ width: '250px', height: 'auto' }} />
+                             className="animate-rotate-wiper-left"
+                             style={{ width: '250px', height: 'auto' }} />
                     </div>
                     <div className='absolute right-10 bottom-1/3 transform translate-y-1/2 animate-slideInRight'>
                         <img src="/cheerGagul.png"
-                            className="animate-rotate-wiper-right"
-                            style={{ width: '250px', height: 'auto' }} />
+                             className="animate-rotate-wiper-right"
+                             style={{ width: '250px', height: 'auto' }} />
                     </div>
                 </>
             )}
         </div>
-    )
+    );
 };
