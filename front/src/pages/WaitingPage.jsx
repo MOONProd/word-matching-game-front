@@ -14,7 +14,7 @@ export const WaitingPage = () => {
 
     const { roomId } = useParams();
 
-    const { messages: chatMessages, sendMessage: sendChatMessage, connectedUsers } = useChat(); // 전체 채팅 관련 useChat 훅 사용
+    const { messages: chatMessages, sendMessage: sendChatMessage, connectedChatUsers } = useChat(); // 전체 채팅 관련 useChat 훅 사용
     const navigate = useNavigate(); // Hook for navigation
 
     const [messages, setMessages] = useState([]);
@@ -31,6 +31,8 @@ export const WaitingPage = () => {
 
     const [chatContent,setChatContent] = useState('');
     const [systemMessageDisplayed, setSystemMessageDisplayed] = useState(false);
+
+    const [connectedUsers, setConnectedUsers] = useState([]);
 
     const [showLeftSidebar, setShowLeftSidebar] = useState(true);
     const [showFooter, setShowFooter] = useState(true);
@@ -180,6 +182,8 @@ export const WaitingPage = () => {
 
             if (payloadData.status === 'USER_LIST') {
                 // 접속자 목록 처리 로직 (필요 시 사용)
+                const uniqueUsers = Array.from(new Set(payloadData.userList));
+                setConnectedUsers(uniqueUsers);
             } else if (payloadData.status === 'READY' || payloadData.status === 'NOT_READY') {
                 // READY/NOT_READY 상태 처리
                 const senderUserId = Number(payloadData.userId);
@@ -205,6 +209,8 @@ export const WaitingPage = () => {
                 if (payloadData.userId !== userId) {
                     setOtherUserIsReady(false);
                     setOtherUserId(null);
+                    setIsReady(false);
+                    updateReadyStatusOnServer(false);
                 }
                 if (payloadData.userId === userId) {
                     setIsReady(false);
@@ -587,16 +593,19 @@ export const WaitingPage = () => {
                 style={{ fontFamily: 'MyCustomFont, sans-serif', height: '10%',
                         display: showCentralChat ? 'none' : '',
                 }}>
-                <button
-                    className={`border-solid border-2 border-white rounded-full text-white 
-                            ${isReady ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-400'} 
-                            px-5 py-3 text-lg font-bold transition duration-150`}
-                    onClick={handleReadyClick}
-                    disabled={isReady} // 준비 완료 상태일 때 비활성화
-                >
-                    {isReady ? '준비 중...' : '준비!!!!'}
-                </button>
+                {!gameStarted && 
+                    <button
+                        className={`border-solid border-2 border-white rounded-full text-white 
+                                    ${(connectedUsers.length < 2) ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-400'} 
+                                    px-5 py-3 text-lg font-bold transition duration-150`}
+                        onClick={handleReadyClick}
+                        disabled={connectedUsers.length < 2}
+                    >
+                        {isReady ? '준비 취소' : '준비!!!!'}
+                    </button>
+                }
             </div>
+
 
 
 
