@@ -250,9 +250,11 @@ export const WaitingPage = () => {
                         // 승자 점수 업데이트
                         updateWinnerScore();
                     }
-                } else if (Number(payloadData.userId) === 999) {
-                    navigate('/main');
+                } // WaitingPage.js에서 navigate 호출 부분 수정
+                else if (Number(payloadData.userId) === 999) {
+                    navigate('/main', { state: { fromGameEnd: true } });
                 }
+                
                 setGameStarted(false); // 게임 상태 초기화
                 setCurrentTurn(null);
                 setGameOver(true); // 게임 종료 상태 설정
