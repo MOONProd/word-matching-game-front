@@ -33,7 +33,7 @@ function MainPage() {
     const [hovered, setHovered] = useState(null);
     const navigate = useNavigate();
 
-    const { messages, sendMessage, connectedUsers } = useChat();
+    const { messages, sendMessage, connectedUsers, stompClientRef } = useChat();
     const [message, setMessage] = useState('');
 
     // Ref for scrolling chat to bottom
@@ -146,6 +146,13 @@ function MainPage() {
         })
             .then(response => {
                 if (response.ok) {
+
+                     // Disconnect the WebSocket before navigating away
+                if (stompClientRef.current && stompClientRef.current.connected) {
+                    stompClientRef.current.disconnect(() => {
+                        console.log('WebSocket disconnected successfully.');
+                    });
+                }
                     // Clear tokens from localStorage
                     localStorage.removeItem('accessToken');
                     localStorage.removeItem('refreshToken');

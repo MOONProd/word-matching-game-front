@@ -122,7 +122,7 @@ export const ChatLogicProvider = ({ children }) => {
     };
 
     return (
-        <ChatContext.Provider value={{ messages, sendMessage, connected, connectedUsers }}>
+        <ChatContext.Provider value={{ messages, sendMessage, connected, connectedUsers, stompClientRef }}>
             {children}
         </ChatContext.Provider>
     );
