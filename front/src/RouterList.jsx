@@ -54,18 +54,29 @@ export const RouterList = () => [
             },
             {
                 path: 'info',
-                element: <InfoPage />,
+                element: (
+                    <UserInfo>
+                        <InfoPage />
+                    </UserInfo>
+                ),
             },
             {
                 path: 'firstPlay',
-                element: <FirstPlayMap />,
+                element: (
+                    <UserInfo>
+                        <FirstPlayMap />
+                    </UserInfo>
+                    ),
             },
             {
                 path: 'secondPlay',
                 children: [
                     {
                         path: '',
-                        element: <SecondPlayMap />,
+                        element: (
+                            <UserInfo>
+                                <SecondPlayMap />
+                            </UserInfo>),
                     },
                     {
                         path: 'wait/:roomId',

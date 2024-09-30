@@ -88,7 +88,7 @@ export const ChatLogicProvider = ({ children }) => {
     };
 
     const sendMessage = (messageContent) => {
-        if (stompClientRef.current && user && user.userInformation && user.userInformation.id) {
+        if (stompClientRef.current && user && user.userInformation?.id) {
             let chatMessage = {
                 senderName: user.username,
                 message: messageContent,
@@ -122,7 +122,7 @@ export const ChatLogicProvider = ({ children }) => {
     };
 
     return (
-        <ChatContext.Provider value={{ messages, sendMessage, connected, connectedUsers }}>
+        <ChatContext.Provider value={{ messages, sendMessage, connected, connectedUsers, stompClientRef, handleUserLeave }}>
             {children}
         </ChatContext.Provider>
     );

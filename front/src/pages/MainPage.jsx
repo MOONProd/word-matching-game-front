@@ -10,11 +10,11 @@ import RankModal from '../modal/RankModal';
 import LogoutModal from '../modal/LogoutModal';
 import UserListModal from '../modal/UserListModal';
 
-import { useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { userAtom } from '../recoil/userAtom';
 
 function MainPage() {
-    const user = useRecoilValue(userAtom);
+    const [user,setUser] = useRecoilState(userAtom);
     
     const [sortedUserData, setSortedUserData] = useState([]);
 
@@ -33,7 +33,7 @@ function MainPage() {
     const [hovered, setHovered] = useState(null);
     const navigate = useNavigate();
 
-    const { messages, sendMessage, connectedUsers } = useChat();
+    const { messages, sendMessage, connectedUsers, handleUserLeave } = useChat();
     const [message, setMessage] = useState('');
 
     // Ref for scrolling chat to bottom
@@ -58,12 +58,22 @@ function MainPage() {
         fetchRankData();
     }, []);
 
+    // useEffect(()=>{
+    //     window.location.reload();
+    // },[]);
+
     // Scroll to bottom when messages change
     useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages]);
+
+    useEffect(() => {
+        if (user === null) {
+            console.log('User has been logged out', user);
+        }
+    }, [user]);
 
     const handleSendMessage = () => {
         if (message.trim() !== '') {
@@ -146,9 +156,14 @@ function MainPage() {
         })
             .then(response => {
                 if (response.ok) {
+
+                    handleUserLeave();
                     // Clear tokens from localStorage
                     localStorage.removeItem('accessToken');
                     localStorage.removeItem('refreshToken');
+
+                    setUser(null);
+
                     // Redirect to login page
                     navigate('/');
                 } else {
