@@ -250,6 +250,8 @@ export const WaitingPage = () => {
                         // 승자 점수 업데이트
                         updateWinnerScore();
                     }
+                } else if (Number(payloadData.userId) === 999) {
+                    navigate('/main');
                 }
                 setGameStarted(false); // 게임 상태 초기화
                 setCurrentTurn(null);
