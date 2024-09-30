@@ -1,7 +1,7 @@
 // src/pages/MainPage.jsx
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../assets/fonts/font.css';
 import { useChat } from './ChatLogic';
 import { FaUserFriends } from 'react-icons/fa';
@@ -25,6 +25,7 @@ function MainPage() {
 
     // Animation states for modals
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+    const [showGameEndModal, setShowGameEndModal] = useState(false);
     
     // 개별 애니메이션 상태 관리
     const [isModalAnimating, setIsModalAnimating] = useState(false);
@@ -32,6 +33,7 @@ function MainPage() {
 
     const [hovered, setHovered] = useState(null);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const { messages, sendMessage, connectedUsers, handleUserLeave } = useChat();
     const [message, setMessage] = useState('');
@@ -69,6 +71,12 @@ function MainPage() {
     //         navigate(0);
     //     }
     // }, []);
+
+    useEffect(() => {
+        if (location.state && location.state.fromGameEnd) {
+            setShowGameEndModal(true);
+        }
+    }, [location.state]);
 
     // Scroll to bottom when messages change
     useEffect(() => {
@@ -188,6 +196,13 @@ function MainPage() {
         // 오버레이 클릭 시 모달 닫기
         const handleOverlayClick = () => {
             setIsInfoModalOpen(false);
+        };
+
+            // 모달 닫기 핸들러
+        const closeGameEndModal = () => {
+            setShowGameEndModal(false);
+            // 필요한 경우 location.state 초기화
+            navigate(location.pathname, { replace: true, state: {} });
         };
 
     return (
@@ -383,6 +398,32 @@ function MainPage() {
                     </button>
                 </div>
             </div>
+
+            {showGameEndModal && (
+                <div 
+                    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+                    style={{ fontFamily: 'MyCustomFont, sans-serif' }}
+                    onClick={() => setShowGameEndModal(false)} // 오버레이 클릭 시 모달 닫기
+                >
+                    <div 
+                        className="bg-white text-center p-6 rounded-lg max-w-sm w-full mx-4"
+                        onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 이벤트 전파 방지
+                    >
+                        <h2 className="text-xl font-bold mb-4">알림</h2>
+                        <p className="mb-4">
+                            상대방이 게임을 종료하여 메인 페이지로 이동되었습니다.
+                        </p>
+                        <button 
+                            className="border-solid border-2 border-white rounded-full text-white
+                                bg-blue-500 px-5 py-3 text-lg font-bold hover:bg-blue-400 transition duration-150"
+                            onClick={closeGameEndModal}
+                        >
+                            확인
+                        </button>
+                    </div>
+                </div>
+            )}
+
 
             {/* Rule Modal */}
             <RuleModal
