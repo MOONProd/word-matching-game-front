@@ -6,7 +6,7 @@ import { FaSyncAlt } from "react-icons/fa";
 import Loading from "./Loading.jsx";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userPresenceAtom } from "../recoil/userPresenseAtom.jsx";
-import { userAtom } from "../recoil/userAtom.jsx";
+import { SeoulAtom } from "../recoil/SeoulAtom";
 
 import gaguliImage from "../assets/images/gaguli.png";
 
@@ -15,6 +15,7 @@ function FirstPlayMap(props) {
     const googleMapId = import.meta.env.VITE_APP_GOOGLE_MAPS_ID;
     const navigate = useNavigate();
     const setUserPresence = useSetRecoilState(userPresenceAtom);
+    const seoulLocal = useRecoilValue(SeoulAtom);
 
     const [roomData, setRoomData] = useState([]);
     const [mapKey, setMapKey] = useState(0);
@@ -25,7 +26,7 @@ function FirstPlayMap(props) {
     const [showDefaultMap, setShowDefaultMap] = useState(false); // Default map view 상태
 
     const pinColors = ["#FFBB00", "#FF5733", "#33FF57", "#3357FF", "#FF33A6"];
-    const defaultCenter = { lat: 37.5665, lng: 126.9780 }; // 서울시청 좌표
+    const defaultCenter = { lat: seoulLocal.lat, lng: seoulLocal.long }; // 서울시청 좌표
     const defaultZoom = 17; // 기본 줌 레벨
 
     const getRandomColor = () => {

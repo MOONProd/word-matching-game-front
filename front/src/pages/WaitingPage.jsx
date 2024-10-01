@@ -564,7 +564,7 @@ export const WaitingPage = () => {
                                     onClick={() => {
                                         sendChatMessage(chatContent);
                                         setChatContent('');
-                                    }} className="px-4 py-2 border-l-2 border-white">
+                                    }} className="px-4 py-2">
                                     Send
                                 </button>
                             </div>

@@ -59,7 +59,7 @@ function ResultPage() {
     }, [location.pathname]); // 페이지 이동을 감지하여 fetchUserData를 다시 호출
 
      // 사용자가 없거나 로딩 중일 때 로딩 화면 표시
-     if (loading) {
+     if (!user || loading) {
         return (
             <div style={{ maxWidth: '100vw', height: '100vh', margin: 'auto' }}>
                 <div className="flex items-center justify-center h-full">

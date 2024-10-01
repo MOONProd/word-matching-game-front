@@ -9,11 +9,7 @@ import FirstPlayMap from './pages/FirstPlayMap.jsx';
 import {SecondPlayMap} from './pages/SecondPlayMap.jsx';
 import {WaitingPage} from './pages/WaitingPage.jsx';
 import ResultPage from './pages/ResultPage.jsx';
-import {ChatPage} from './pages/ChatPage.jsx';
-import {GamePage} from './pages/GamePage.jsx';
-// import {LoginPage} from './pages/LoginPage.jsx';
 import NicknamePage from './pages/NicknamePage.jsx';
-// import TestTwo from './pages/TestTwo.jsx';
 import ProtectedRoute from './pages/ProtectedRoute.jsx';
 import PresenceTracker from "./pages/PresenseTracker.jsx";
 import UserInfo from "./pages/UserInfo.jsx";
@@ -92,36 +88,6 @@ export const RouterList = () => [
             },
         ],
 
-    },
-    {
-        path: '/chat',
-        element: <ProtectedRoute />,
-        children: [
-            {
-                path: '',
-                element: <ChatPage />,
-            },
-            {
-                path: 'result',
-                element: <ResultPage />,
-            },
-
-        ],
-    },
-    {
-        path: '/wordgame',
-        element: <ProtectedRoute />,
-        children: [
-            {
-                path: '',
-                element: <GamePage />,
-            },
-            {
-                path: 'result',
-                element: <ResultPage />,
-            },
-
-        ],
     },
     {
         path: '/result',

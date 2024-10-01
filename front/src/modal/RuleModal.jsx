@@ -8,7 +8,7 @@ const RuleModal = ({ isOpen, isAnimating, onClose }) => {
                     className={`relative p-8 rounded-lg max-w-lg w-full transform transition-transform duration-500 ease-in-out
                         ${isAnimating ? 'translate-y-0' : 'translate-y-full'}`}
                     style={{
-                        backgroundImage: 'url(../src/assets/images/test-modal.png)',
+                        backgroundImage: 'url(../src/assets/images/modal.png)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
@@ -30,10 +30,10 @@ const RuleModal = ({ isOpen, isAnimating, onClose }) => {
                         <p className="text-center">이 게임은 주어진 단어로 새로운 단어를 이어가는 게임입니다.</p>
                         <p className="mt-2 text-center"><strong>예시:</strong> "사과" → "과일" → "일출"</p>
                         <br />
-                        <p className="text-center">선공을 선택 시, 현재 접속한 이웃에게 대결 신청을 할 수 있습니다.</p>
-                        <p className="text-center">후공을 선택 시, 원하는 지역에서 대결을 대기합니다.</p>
+                        <p className="text-center">선공을 선택 시, 현재 접속한 이웃에게 <strong>대결 신청</strong>을 할 수 있습니다.</p>
+                        <p className="text-center">후공을 선택 시, 원하는 지역에서 <strong>대결을 대기</strong>합니다.</p>
                         <br />
-                        <p className="text-center">한 게임에서 이기면 +30점, 지면 -20점이 누적됩니다.</p>
+                        <p className="text-center">한 게임에서 이기면 <strong>+1점씩 누적</strong>됩니다.</p>
                         <p className="text-center">누적된 점수로 순위가 매겨집니다.</p>
                     </div>
                 </div>

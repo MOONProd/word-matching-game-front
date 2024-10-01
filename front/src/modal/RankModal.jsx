@@ -8,7 +8,7 @@ const RankModal = ({ isOpen, isAnimating, onClose, userData }) => {
                     className={`relative p-8 rounded-lg max-w-lg w-full transform transition-transform duration-500 ease-in-out 
                         ${isAnimating ? 'translate-y-0' : 'translate-y-full'}`}
                     style={{
-                        backgroundImage: 'url(../src/assets/images/test-modal.png)',
+                        backgroundImage: 'url(../src/assets/images/modal.png)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
