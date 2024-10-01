@@ -12,6 +12,7 @@ import UserListModal from '../modal/UserListModal';
 
 import { useRecoilState } from 'recoil';
 import { userAtom } from '../recoil/userAtom';
+import PublicSocketConnection from "../socket/PublicSocketConnection.jsx";
 
 function MainPage() {
     const [user,setUser] = useRecoilState(userAtom);
@@ -453,6 +454,7 @@ function MainPage() {
                 onClose={() => setIsUserListOpen(false)}
                 connectedUsers={connectedUsers}
             />
+            <PublicSocketConnection />
 
         </div>
     );
