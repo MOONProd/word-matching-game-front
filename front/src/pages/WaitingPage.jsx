@@ -39,6 +39,11 @@ export const WaitingPage = () => {
     const [showHeader, setShowHeader] = useState(true);
     const [showCentralChat, setShowCentralChat] = useState(false);
     const [showStartIcon, setShowStartIcon] = useState(false);
+
+    const [timeProgress, setTimeProgress] = useState(0); // 타이머 진행 상태
+    const [isTimerActive, setIsTimerActive] = useState(false); // 타이머 활성화 상태
+    const timerRef = useRef(null); // 타이머 참조
+
     const stompClientRef = useRef(null);
     const roomIdRef = useRef(roomId);
 
@@ -121,6 +126,33 @@ export const WaitingPage = () => {
             }, 4000);
         }
     }, [isReady, otherUserIsReady]);
+
+    // 타이머 초기화 및 관리
+    useEffect(() => {
+        if (currentTurn === userId && isGameStarted) {
+            setIsTimerActive(true);
+            timerRef.current = setInterval(() => {
+                setTimeProgress((prev) => {
+                    if (prev < 100) {
+                        return prev + 2; // 5초 동안 타임바가 0에서 100까지 증가
+                    } else {
+                        clearInterval(timerRef.current);
+                        alert('시간 종료! 턴이 넘어갑니다.');
+                        setIsTimerActive(false);
+                        // 여기에 턴 넘기기 로직 추가
+                        return 0;
+                    }
+                });
+            }, 100); // 0.1초마다 업데이트
+        } else {
+            clearInterval(timerRef.current);
+            setTimeProgress(0);
+            setIsTimerActive(false);
+        }
+
+        return () => clearInterval(timerRef.current); // 컴포넌트 언마운트 시 타이머 정리
+    }, [currentTurn, userId, isGameStarted]);
+
 
     // 게임 종료 시 navigate로 이동
     useEffect(() => {
@@ -539,6 +571,7 @@ export const WaitingPage = () => {
                          maxHeight: 'calc(100vh - 20px)' // 전체 화면 높이에서 여유를 두고 최대 높이 설정
                      } : { maxHeight: 'calc(100vh - 20px)' }} // 기본 상태에서도 최대 높이 설정
                 >
+
                     <div className="flex-grow overflow-y-auto mb-2">
                         <ul className="list-none p-0">
                             {messages.map((item, index) => (
@@ -569,6 +602,14 @@ export const WaitingPage = () => {
                             <div ref={roomChatEndRef} /> {/* 자동 스크롤을 위한 Ref */}
                         </ul>
                     </div>
+                    {isTimerActive && (
+                        <div className="w-full bg-gray-300 h-1 relative">
+                            <div 
+                                className="bg-blue-500 h-1 absolute left-0 bottom-0 transition-all duration-100" 
+                                style={{ width: `${timeProgress}%` }}
+                            />
+                        </div>
+                    )}
                     <div className="flex items-center w-full max-w-full"
                          style={{display: showCentralChat ? '' : 'none'}}>
                         <TextField
