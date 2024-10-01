@@ -137,8 +137,15 @@ export const WaitingPage = () => {
                         return prev + 2; // 5초 동안 타임바가 0에서 100까지 증가
                     } else {
                         clearInterval(timerRef.current);
-                        alert('시간 종료! 턴이 넘어갑니다.');
                         setIsTimerActive(false);
+                            let overMessage = {
+                                senderName: "user.username",
+                                message: "TIMEOUT",
+                                status: 'GAME_IS_OFF',
+                                userId: userId,
+                            };
+                            stompClientRef.current.send(`/app/room/${roomId}/message`, {}, JSON.stringify(chatMessage));
+                            setMessageContent('');
                         // 여기에 턴 넘기기 로직 추가
                         return 0;
                     }
@@ -319,6 +326,8 @@ export const WaitingPage = () => {
             console.error('Message Parsing Error: ', error, payload.body);
         }
     };
+
+
 
 
     const sendMessage = () => {
