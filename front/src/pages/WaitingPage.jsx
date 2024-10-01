@@ -144,7 +144,7 @@ export const WaitingPage = () => {
                                 status: 'GAME_IS_OFF',
                                 userId: userId,
                             };
-                            stompClientRef.current.send(`/app/room/${roomId}/message`, {}, JSON.stringify(chatMessage));
+                            stompClientRef.current.send(`/app/room/${roomId}/message`, {}, JSON.stringify(overMessage));
                             setMessageContent('');
                         // 여기에 턴 넘기기 로직 추가
                         return 0;
