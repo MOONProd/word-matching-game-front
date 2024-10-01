@@ -60,17 +60,17 @@ function MainPage() {
         fetchRankData();
     }, []);
 
-    // useEffect(() => {
-    //     // 새로고침 여부를 sessionStorage에 저장하여 확인
-    //     const hasReloaded = sessionStorage.getItem('hasReloaded');
+    useEffect(() => {
+        // 새로고침 여부를 sessionStorage에 저장하여 확인
+        const hasReloaded = sessionStorage.getItem('hasReloaded');
 
-    //     if (!hasReloaded) {
-    //         // 새로고침이 아직 실행되지 않았다면 새로고침을 한 번 실행
-    //         sessionStorage.setItem('hasReloaded', 'true'); // 새로고침된 상태로 저장
-    //         // window.location.reload();
-    //         navigate(0);
-    //     }
-    // }, []);
+        if (!hasReloaded) {
+            // 새로고침이 아직 실행되지 않았다면 새로고침을 한 번 실행
+            sessionStorage.setItem('hasReloaded', 'true'); // 새로고침된 상태로 저장
+            // window.location.reload();
+            navigate(0);
+        }
+    }, []);
 
     useEffect(() => {
         if (location.state && location.state.fromGameEnd) {
@@ -178,7 +178,7 @@ function MainPage() {
                     localStorage.removeItem('accessToken');
                     localStorage.removeItem('refreshToken');
 
-                    // sessionStorage.removeItem('hasReloaded');
+                    sessionStorage.removeItem('hasReloaded');
 
                     setUser(null);
 
