@@ -2,6 +2,7 @@
 
 <div align="center">
   <img width="300" alt="image" src="https://github.com/user-attachments/assets/8f226fda-9cdc-4a55-af56-644165a4dca0">
+  <img width="300" alt="image" src="https://github.com/user-attachments/assets/2977cb78-1d6f-4576-99f8-8c22fcefe265">
 </div>
 
 # WordBridge
