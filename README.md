@@ -4,7 +4,7 @@
   <img width="300" alt="image" src="https://github.com/user-attachments/assets/8f226fda-9cdc-4a55-af56-644165a4dca0">
 </div>
 
-# WordBridge
+# WordBridge
 > **2인 팀 프로젝트** <br/> **개발기간: 2024.09 ~ 2024.10 배포 세팅 중**
 
 ## 웹개발팀 소개
@@ -12,7 +12,7 @@
 |      문소연       |          조용주         |                                                                                                             
 | :------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------: |
 |   [@MOONProd](https://github.com/MOONProd)   |    [@fishman1123](https://github.com/fishman1123)  |
-| 중앙대학교 컴퓨터예술학부 졸업 | 중앙대학교 커뮤니케이션학부 졸업 |
+| 프론트엔드 개발 | 백엔드 개발 |
 
 ## 프로젝트 소개
 
@@ -49,6 +49,11 @@ WordBridge는 온라인 양방향 통신 끝말잇기 게임입니다. 'Host'는
 
 ## 화면 구성 📺
 
+| 메인 페이지  |  Visitor 페이지   |
+| :-------------------------------------------: | :------------: |
+|  <img width="500" src="https://github.com/user-attachments/assets/3e26f054-b9ae-4e04-a852-c1542689b270"/> |  <img width="500" src="https://github.com/user-attachments/assets/d81bc023-f512-43e9-b305-e2baa477d8d8"/>|  
+| 게임 시작 페이지  |  Host 대기방 생성 안내   |  
+| <img width="500" src="https://github.com/user-attachments/assets/ba5ac723-589f-4ad1-a52d-6a5331c4ae38"/>   |  <img width="500" src="https://github.com/user-attachments/assets/ca32c1ec-3993-42ab-b093-64c79f51b57e"/>     |
 
 ---
 ## 주요 기능 📦
@@ -62,4 +67,4 @@ WordBridge는 온라인 양방향 통신 끝말잇기 게임입니다. 'Host'는
 - Visitor 또한 본인이 원하는 위치에서 대기방 탐색
 
 ### ✨ 누적 점수로 이웃 순위 확인 
-- 사용자들의 누적 점수로 이웃들의 점수로 순위 확인 가능
+- 사용자들의 누적 점수로 이웃들의 점수로 순위 확인 가능
